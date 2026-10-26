@@ -1,0 +1,245 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Family Platform UI Wireframe Kit (clickable)</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--line:#C4D0D6;--bg:#F2F6F8;--card:#fff}
+ *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:14px 24px}header h1{margin:0;font-size:18px}header p{margin:4px 0 0;color:#CADCEA;font-size:12.5px}
+ .shell{display:flex;max-width:1240px;margin:0 auto;gap:18px;padding:18px}
+ nav{width:230px;flex:none}
+ nav button{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--navy)}
+ nav button.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+ nav .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--grey);margin:12px 0 6px}
+ main{flex:1;min-width:0}
+ .screen{display:none}.screen.on{display:block}
+ .note{background:#FDF6E3;border-left:4px solid var(--gold);padding:10px 13px;border-radius:6px;font-size:12.5px;margin-bottom:14px}
+ .note.red{background:#F6E0E4;border-left-color:var(--red)}
+ .win{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(18,59,79,.07)}
+ .win h2{margin:0;font-size:13px;background:#EAF0F2;color:var(--navy);padding:9px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+ .win h2 span{color:var(--grey);font-weight:400;font-size:11px}
+ .body{padding:16px}
+ .bar{height:36px;background:var(--navy);border-radius:6px;display:flex;align-items:center;padding:0 12px;color:#fff;font-size:12px;justify-content:space-between;margin-bottom:12px}
+ .pill{background:var(--teal);color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;display:inline-block}
+ .pill.g{background:var(--green)}.pill.gold{background:var(--gold);color:#20303a}.pill.r{background:var(--red)}.pill.gr{background:var(--grey)}
+ .cols{display:flex;gap:14px;flex-wrap:wrap}.col{flex:1;min-width:210px}
+ .field{border:1px solid var(--line);border-radius:6px;height:30px;margin:7px 0;background:#FAFCFD;display:flex;align-items:center;padding:0 9px;color:var(--grey);font-size:12px}
+ .lbl{font-size:11px;color:var(--navy);font-weight:600;margin-top:9px}
+ .btn{background:var(--teal);color:#fff;border-radius:6px;padding:9px 12px;text-align:center;font-size:12px;font-weight:600;margin-top:10px;cursor:pointer;border:0;font-family:inherit}
+ .btn.gold{background:var(--gold);color:#20303a}.btn.ghost{background:#EAF0F2;color:var(--navy)}.btn.red{background:var(--red);color:#fff}
+ .btn[disabled]{opacity:.45;cursor:not-allowed}
+ table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}th{background:#EAF0F2;color:var(--navy)}
+ .kpi{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}.kpi>div{flex:1;min-width:110px;border:1px solid var(--line);border-radius:8px;padding:9px;text-align:center;background:#FAFCFD}
+ .kpi b{display:block;font-size:18px;color:var(--navy)}.kpi small{font-size:10px;color:var(--grey)}
+ .vid{background:#0E2A38;border-radius:8px;height:150px;display:flex;align-items:center;justify-content:center;color:#9DBCCB;font-size:12px;position:relative}
+ .vid .self{position:absolute;right:10px;bottom:10px;width:78px;height:52px;background:#17485E;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px}
+ .sealed{background:#F6E0E4;border:1px dashed var(--red);border-radius:8px;padding:10px;font-size:11.5px;color:var(--ink)}
+ .track{display:flex;align-items:center;gap:5px;margin:10px 0}.dot{width:14px;height:14px;border-radius:50%;background:var(--line)}.dot.on{background:var(--green)}.seg{flex:1;height:3px;background:var(--line)}.seg.on{background:var(--green)}
+ .cap{font-size:11px;color:var(--grey);margin-top:9px;font-style:italic}
+ .tabs{display:flex;gap:6px;margin-bottom:10px}.tabs .t{border:1px solid var(--line);border-radius:6px 6px 0 0;padding:6px 11px;font-size:11.5px;background:#EAF0F2;color:var(--navy);cursor:pointer}.tabs .t.on{background:#fff;border-bottom-color:#fff;font-weight:600}
+</style></head><body>
+<header><h1>Equator Resolution — Family Platform UI Wireframe Kit</h1><p>Clickable low-fidelity reference · Family &amp; Marital vertical · structure only, not final visual design</p></header>
+<div class="shell">
+ <nav>
+  <div class="grp">Party</div>
+  <button class="on" onclick="show('s1',this)">1 · Party portal</button>
+  <button onclick="show('s2',this)">2 · Safety screening</button>
+  <button onclick="show('s3',this)">3 · Secure case room</button>
+  <button onclick="show('s7',this)">4 · Settlement &amp; e-Sign</button>
+  <button onclick="show('s8',this)">5 · Escrow tracker</button>
+  <div class="grp">Staff</div>
+  <button onclick="show('s4',this)">6 · Mediator dashboard</button>
+  <button onclick="show('s5',this)">7 · Mediator — case view</button>
+  <button onclick="show('s6',this)">8 · Case-manager console</button>
+ </nav>
+ <main>
+
+  <!-- 1 PARTY PORTAL -->
+  <div class="screen on" id="s1">
+   <div class="note">The party's home. Shows only their own case data; the other party's material is never rendered here.</div>
+   <div class="win"><h2>Party portal — my case <span>GET /cases/{id}</span></h2><div class="body">
+    <div class="bar"><span>Case FAM-2418 · Mutual-consent divorce &amp; custody</span><span class="pill">In mediation</span></div>
+    <div class="kpi"><div><b>3</b><small>Sessions held</small></div><div><b>2</b><small>Documents to sign</small></div><div><b>12 Aug</b><small>Next session</small></div><div><b>Grade A</b><small>Mediator</small></div></div>
+    <div class="cols">
+     <div class="col">
+      <div class="lbl">Next steps</div>
+      <table><tr><th>Task</th><th>Due</th></tr>
+       <tr><td>Upload income affidavit (F-08)</td><td>05 Aug</td></tr>
+       <tr><td>Review draft parenting plan</td><td>10 Aug</td></tr>
+       <tr><td>Join session (video)</td><td>12 Aug</td></tr></table>
+      <button class="btn" onclick="show('s3',null)">Enter case room →</button>
+     </div>
+     <div class="col">
+      <div class="lbl">My documents</div>
+      <table><tr><th>Doc</th><th>Status</th></tr>
+       <tr><td>F-01 Consent &amp; DPDP</td><td><span class="pill g">Signed</span></td></tr>
+       <tr><td>F-08 Income affidavit</td><td><span class="pill gold">Pending</span></td></tr>
+       <tr><td>Draft MSA</td><td><span class="pill gr">In review</span></td></tr></table>
+      <button class="btn ghost">Get help · talk to a case manager</button>
+     </div></div>
+    <div class="cap">Accessibility: WCAG 2.1 AA, vernacular toggle, and a persistent "get support" affordance.</div>
+   </div></div>
+  </div>
+
+  <!-- 2 SCREENING -->
+  <div class="screen" id="s2">
+   <div class="note red"><b>Safety-critical screen.</b> Conducted separately and confidentially with each party. The other party never sees this, and is not told it took place. A safety outcome technically blocks joint sessions.</div>
+   <div class="win"><h2>Confidential safety &amp; suitability screening <span>POST /cases/{id}/screening</span></h2><div class="body">
+    <div class="bar"><span>Private — case manager &amp; mediator only</span><span class="pill r">Confidential</span></div>
+    <div class="lbl">Is it safe and comfortable for you to meet the other party?</div><div class="field">Yes / No / Not sure ▾</div>
+    <div class="lbl">Indicators (private)</div>
+    <div class="cols"><div class="col"><div class="field">☐ Domestic violence / fear</div><div class="field">☐ Coercion or control</div></div>
+     <div class="col"><div class="field">☐ Power imbalance</div><div class="field">☐ Capacity concern</div></div></div>
+    <div class="lbl">Outcome</div><div class="field">Suitable · Suitable with safeguards · Shuttle only · Not suitable (safety) ▾</div>
+    <div class="lbl">Safeguards to apply</div><div class="field">Shuttle mediation · separate arrival times · support person · no direct contact ▾</div>
+    <div class="cols"><div class="col"><button class="btn red">Raise safety flag</button></div>
+     <div class="col"><button class="btn ghost">Signpost support services</button></div></div>
+    <div class="cap">If a safety flag is raised, the scheduler disables joint sessions (API returns 409) and support resources are surfaced to the party.</div>
+   </div></div>
+  </div>
+
+  <!-- 3 CASE ROOM -->
+  <div class="screen" id="s3">
+   <div class="note">The secure case room. Per-party walls: each party sees shared material plus their own. Caucus is a separate, sealed space.</div>
+   <div class="win"><h2>Secure case room — FAM-2418 <span>WebRTC + POST /sessions</span></h2><div class="body">
+    <div class="tabs"><span class="t on">Joint session</span><span class="t">Private caucus</span><span class="t">Shared documents</span><span class="t">Parenting plan</span></div>
+    <div class="cols">
+     <div class="col" style="min-width:320px">
+      <div class="vid">Joint session · mediator + both parties<div class="self">You</div></div>
+      <div class="cols" style="margin-top:8px">
+       <div class="col"><button class="btn ghost">Mute</button></div>
+       <div class="col"><button class="btn ghost">Share document</button></div>
+       <div class="col"><button class="btn gold">Request private caucus</button></div>
+       <div class="col"><button class="btn red">Leave</button></div></div>
+     </div>
+     <div class="col">
+      <div class="lbl">On the table today</div>
+      <table><tr><th>Item</th><th>Status</th></tr>
+       <tr><td>Parenting schedule</td><td><span class="pill gold">Discussing</span></td></tr>
+       <tr><td>Maintenance</td><td><span class="pill gr">Not started</span></td></tr>
+       <tr><td>Matrimonial home</td><td><span class="pill g">Agreed</span></td></tr></table>
+      <div class="lbl">Caucus notes</div>
+      <div class="sealed"><b>Sealed.</b> Notes taken in private caucus are encrypted and visible only to the mediator. They are never disclosed to the other party (Mediation Act, s.22).</div>
+     </div></div>
+    <div class="cap">Recording is off by default and can only be enabled with both parties' explicit consent.</div>
+   </div></div>
+  </div>
+
+  <!-- 4 MEDIATOR DASHBOARD -->
+  <div class="screen" id="s4">
+   <div class="note">The mediator's home: caseload, today's sessions, and anything blocked or at risk of breaching an SLA.</div>
+   <div class="win"><h2>Mediator dashboard <span>GET /cases?assignedTo=me</span></h2><div class="body">
+    <div class="bar"><span>Welcome back, Adv. R. Menon (Grade A)</span><span class="pill g">4 active cases</span></div>
+    <div class="kpi"><div><b>4</b><small>Active</small></div><div><b>2</b><small>Today</small></div><div><b>1</b><small>Safety-flagged</small></div><div><b>78%</b><small>Settlement rate</small></div><div><b>41d</b><small>Median to settle</small></div></div>
+    <div class="lbl">My caseload</div>
+    <table><tr><th>Case</th><th>Type</th><th>Stage</th><th>Next</th><th>Flags</th></tr>
+     <tr><td>FAM-2418</td><td>Divorce + custody</td><td>Session 4</td><td>12 Aug</td><td>—</td></tr>
+     <tr><td>FAM-2402</td><td>Maintenance</td><td>Drafting MSA</td><td>08 Aug</td><td><span class="pill gold">Doc pending</span></td></tr>
+     <tr><td>FAM-2377</td><td>Custody</td><td>Screening</td><td>—</td><td><span class="pill r">Safety flag — shuttle only</span></td></tr>
+     <tr><td>FAM-2350</td><td>Property</td><td>Escrow</td><td>15 Aug</td><td><span class="pill g">Settled</span></td></tr></table>
+    <div class="cols"><div class="col"><button class="btn" onclick="show('s5',null)">Open FAM-2418 →</button></div>
+     <div class="col"><button class="btn ghost">My certification &amp; CPD</button></div></div>
+    <div class="cap">A safety-flagged case shows the constraint prominently; joint-session controls are disabled for it.</div>
+   </div></div>
+  </div>
+
+  <!-- 5 MEDIATOR CASE VIEW -->
+  <div class="screen" id="s5">
+   <div class="note">The mediator's working view of one case — the only role that can read sealed caucus notes.</div>
+   <div class="win"><h2>Mediator — case FAM-2418 <span>GET /cases/{id} (mediator scope)</span></h2><div class="body">
+    <div class="tabs"><span class="t on">Overview</span><span class="t">Parties</span><span class="t">Sealed notes</span><span class="t">Documents</span><span class="t">Issues</span></div>
+    <div class="cols">
+     <div class="col">
+      <div class="lbl">Issue tracker</div>
+      <table><tr><th>Issue</th><th>Position A</th><th>Position B</th><th>Status</th></tr>
+       <tr><td>Custody</td><td>Joint</td><td>Primary+access</td><td><span class="pill gold">Open</span></td></tr>
+       <tr><td>Maintenance</td><td>₹25k</td><td>₹40k</td><td><span class="pill gold">Open</span></td></tr>
+       <tr><td>Home</td><td>Sell</td><td>Sell</td><td><span class="pill g">Agreed</span></td></tr></table>
+      <button class="btn">Generate draft MSA</button>
+     </div>
+     <div class="col">
+      <div class="lbl">Sealed caucus notes (mediator only)</div>
+      <div class="sealed">02 Aug — Party A: flexible on maintenance if schooling is secured.<br/>04 Aug — Party B: priority is stability for the child.<br/><b>Encrypted · never shared across parties.</b></div>
+      <div class="lbl">Child-inclusive mediation</div>
+      <div class="field">Consent obtained ☐ · Specialist assigned ☐</div>
+      <button class="btn ghost">Add sealed note</button>
+     </div></div>
+    <div class="cap">Cross-party leakage is prevented at the API: no endpoint returns another party's caucus content.</div>
+   </div></div>
+  </div>
+
+  <!-- 6 CASE MANAGER CONSOLE -->
+  <div class="screen" id="s6">
+   <div class="note">The case-manager console: intake queue, SLA breaches, appointments, escrow and referrals across all cases.</div>
+   <div class="win"><h2>Case-manager console <span>GET /cases · GET /case-sla</span></h2><div class="body">
+    <div class="bar"><span>Operations · Equator Resolution</span><span class="pill gold">3 SLA at risk</span></div>
+    <div class="kpi"><div><b>62</b><small>Open cases</small></div><div><b>9</b><small>Awaiting triage</small></div><div><b>3</b><small>SLA at risk</small></div><div><b>5</b><small>Safety-flagged</small></div><div><b>11</b><small>In escrow</small></div></div>
+    <div class="tabs"><span class="t on">Intake queue</span><span class="t">Appointments</span><span class="t">SLA monitor</span><span class="t">Escrow</span><span class="t">Court referrals</span></div>
+    <div class="lbl">Intake queue</div>
+    <table><tr><th>Case</th><th>Received</th><th>Type</th><th>Screening</th><th>Route</th><th>Action</th></tr>
+     <tr><td>FAM-2431</td><td>1 hr ago</td><td>Maintenance</td><td><span class="pill gold">Pending</span></td><td>—</td><td>Assign screener</td></tr>
+     <tr><td>FAM-2430</td><td>3 hrs ago</td><td>Custody</td><td><span class="pill g">Done</span></td><td>Mediation</td><td>Appoint mediator</td></tr>
+     <tr><td>FAM-2429</td><td>Yesterday</td><td>DV-linked</td><td><span class="pill r">Safety flag</span></td><td>Safety pathway</td><td>Signpost + shuttle</td></tr></table>
+    <div class="cols"><div class="col"><button class="btn">Appoint mediator</button></div>
+     <div class="col"><button class="btn ghost">Serve notice (F-03)</button></div>
+     <div class="col"><button class="btn ghost">Link court referral</button></div>
+     <div class="col"><button class="btn gold">Export MIS</button></div></div>
+    <div class="cap">Every action writes a hash-chained audit event; SLA breaches escalate automatically.</div>
+   </div></div>
+  </div>
+
+  <!-- 7 SETTLEMENT + ESIGN -->
+  <div class="screen" id="s7">
+   <div class="note">Settlement assembly, consent, e-Sign and e-Stamp — ending in an instrument enforceable as a decree.</div>
+   <div class="win"><h2>Settlement &amp; e-Sign <span>POST /cases/{id}/settlement · /documents/{id}/esign</span></h2><div class="body">
+    <div class="track"><div class="dot on"></div><div class="seg on"></div><div class="dot on"></div><div class="seg on"></div><div class="dot"></div><div class="seg"></div><div class="dot"></div></div>
+    <div class="cap" style="margin-top:0">Drafted → Both consented → e-Signed → e-Stamped &amp; registered</div>
+    <div class="cols">
+     <div class="col">
+      <div class="lbl">Agreed terms</div>
+      <table><tr><th>Head</th><th>Term</th></tr>
+       <tr><td>Custody</td><td>Joint legal; primary with mother; access alternate weekends</td></tr>
+       <tr><td>Maintenance</td><td>₹32,000 / month, index-linked</td></tr>
+       <tr><td>Home</td><td>Sale; net proceeds 50:50</td></tr></table>
+     </div>
+     <div class="col">
+      <div class="lbl">Execution</div>
+      <div class="field">Party A — e-Sign ✓ (Aadhaar)</div>
+      <div class="field">Party B — awaiting e-Sign</div>
+      <div class="field">e-Stamp — state schedule ▾</div>
+      <button class="btn" disabled>Register under s.20</button>
+      <div class="cap">Enforceable as a decree under s.27 once executed; registration under s.20 is optional but recommended.</div>
+     </div></div>
+   </div></div>
+  </div>
+
+  <!-- 8 ESCROW -->
+  <div class="screen" id="s8">
+   <div class="note">Money is never held by the institution — it sits with a regulated escrow bank and moves only on verified milestones.</div>
+   <div class="win"><h2>Escrow &amp; obligation tracker <span>POST /cases/{id}/escrow · /escrow/{id}/release</span></h2><div class="body">
+    <div class="bar"><span>Escrow — FAM-2350</span><span class="pill g">Funded ₹18,00,000</span></div>
+    <table><tr><th>Milestone</th><th>Condition</th><th>Amount</th><th>Status</th></tr>
+     <tr><td>On execution</td><td>MSA signed &amp; stamped</td><td>6,00,000</td><td><span class="pill g">Released</span></td></tr>
+     <tr><td>On handover</td><td>Possession of flat</td><td>6,00,000</td><td><span class="pill g">Released</span></td></tr>
+     <tr><td>On decree</td><td>Court records settlement</td><td>6,00,000</td><td><span class="pill gold">Pending</span></td></tr></table>
+    <div class="lbl">Ongoing obligations</div>
+    <table><tr><th>Obligation</th><th>Due</th><th>Compliance</th></tr>
+     <tr><td>Maintenance ₹32,000</td><td>5th monthly</td><td><span class="pill g">On time (6/6)</span></td></tr>
+     <tr><td>School fees share</td><td>Apr &amp; Oct</td><td><span class="pill gold">Next due Oct</span></td></tr></table>
+    <button class="btn gold">Release next tranche</button>
+    <div class="cap">Feeds the Settlement Compliance Tracker; a missed obligation raises an alert to the case manager.</div>
+   </div></div>
+  </div>
+
+ </main>
+</div>
+<script>
+function show(id,btn){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  var btns=document.querySelectorAll('nav button');
+  if(btn){btns.forEach(function(b){b.classList.remove('on');});btn.classList.add('on');}
+  else{btns.forEach(function(b){b.classList.remove('on');});
+       var map={s1:0,s2:1,s3:2,s7:3,s8:4,s4:5,s5:6,s6:7};
+       if(map[id]!==undefined)btns[map[id]].classList.add('on');}
+  window.scrollTo(0,0);
+}
+</script></body></html>

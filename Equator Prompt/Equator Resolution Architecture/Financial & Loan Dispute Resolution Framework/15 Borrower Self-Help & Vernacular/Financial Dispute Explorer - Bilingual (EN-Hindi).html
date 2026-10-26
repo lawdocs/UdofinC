@@ -1,0 +1,191 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Financial Dispute Explorer (English / हिंदी)</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8}
+ *{box-sizing:border-box}body{margin:0;font-family:'Segoe UI','Noto Sans Devanagari','Nirmala UI',Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:17px}header .tag{color:#CADCEA;font-size:12px;font-style:italic}
+ .langtog{display:flex;border:1px solid #3a6076;border-radius:20px;overflow:hidden}
+ .langtog button{background:transparent;color:#CADCEA;border:0;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+ .langtog button.on{background:var(--gold);color:#20303a;font-weight:700}
+ .wrap{max-width:900px;margin:0 auto;padding:20px 16px 90px}
+ .prog{height:8px;background:#dfe7ea;border-radius:6px;overflow:hidden;margin:6px 0 18px}.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:25%;transition:.3s}
+ .step{background:#fff;border:1px solid #e2e8eb;border-radius:14px;padding:22px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ h1{font-size:21px;margin:.1em 0 .2em;color:var(--navy)}.sub{color:var(--grey);font-size:13.5px;margin-bottom:15px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px}
+ .opt{border:1.5px solid #d7e0e4;border-radius:10px;padding:13px;cursor:pointer;background:#fff;font-size:14px}.opt:hover{border-color:var(--teal);background:#f7fbfc}.opt.sel{border-color:var(--teal);background:var(--ltteal);box-shadow:inset 0 0 0 1px var(--teal)}
+ .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:8px 14px;margin:5px 6px 0 0;cursor:pointer;font-size:13.5px;background:#fff}.chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+ label.f{display:block;font-size:12px;color:var(--navy);font-weight:600;margin:12px 0 4px}select,input[type=number],textarea{padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px;font-family:inherit}select,input{min-width:170px}textarea{width:100%;min-height:78px}
+ .nav{display:flex;justify-content:space-between;margin-top:20px}button.b{border:0;border-radius:9px;padding:11px 20px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}.primary{background:var(--teal);color:#fff}.ghost{background:#eaf0f2;color:var(--navy)}
+ .banner{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:13.5px}.b-red{background:#F6E0E4;border-left:5px solid var(--red)}.b-gold{background:var(--lgold);border-left:5px solid var(--gold)}.b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}
+ .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:15px 17px;margin:12px 0;background:#fff}.sumcard h3{margin:.1em 0 .5em;color:var(--navy);font-size:15.5px}
+ .kv{font-size:13.5px;margin:4px 0}.muted{color:var(--grey);font-size:12px}.pill{display:inline-block;background:var(--ltteal);color:var(--navy);border-radius:20px;padding:4px 11px;margin:3px 4px 0 0;font-size:12.5px}
+ .badge{display:inline-block;border-radius:20px;padding:5px 13px;font-size:13px;font-weight:700;color:#fff}
+ a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:11px 19px;border-radius:9px;font-weight:700;margin-top:8px}.disc{font-size:11px;color:var(--grey);margin-top:16px;line-height:1.5}
+ #aiBtn{position:fixed;right:18px;bottom:18px;background:var(--gold);color:#20303a;border:0;border-radius:30px;padding:12px 18px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:40;cursor:pointer;font-family:inherit;font-weight:600}
+ #aiPanel{position:fixed;right:18px;bottom:74px;width:min(410px,92vw);max-height:72vh;background:#fff;border:1px solid #d7e0e4;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:none;flex-direction:column;z-index:41;overflow:hidden}#aiPanel.open{display:flex}
+ #aiPanel .hd{background:var(--navy);color:#fff;padding:11px 15px;font-weight:700;display:flex;justify-content:space-between}#aiLog{padding:12px 14px;overflow:auto;flex:1;font-size:13.5px}
+ .msg{margin:8px 0;padding:9px 11px;border-radius:10px;line-height:1.45}.msg.ai{background:var(--ltteal)}.msg.me{background:#eef3f5;text-align:right}
+ #aiChips{padding:6px 12px;border-top:1px solid #eee;max-height:120px;overflow:auto}#aiForm{display:flex;gap:6px;padding:9px 12px;border-top:1px solid #eee}#aiForm input{flex:1;min-width:0}
+ .modal{position:fixed;inset:0;background:rgba(10,25,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.modal.open{display:flex}.modal .box{background:#fff;border-radius:14px;max-width:740px;width:100%;max-height:86vh;overflow:auto;padding:20px}
+</style></head><body>
+<header>
+ <div><span class="brand">EQUATOR RESOLUTION</span> &nbsp;<span class="tag" id="tagline"></span></div>
+ <div class="langtog"><button id="lgEn" class="on" onclick="setLang('en')">English</button><button id="lgHi" onclick="setLang('hi')">हिंदी</button></div>
+</header>
+<div class="wrap"><div class="prog"><i id="bar"></i></div><div id="app"></div></div>
+<button id="aiBtn" onclick="toggleAI()"></button>
+<div id="aiPanel"><div class="hd"><span id="aiHd"></span><span style="cursor:pointer" onclick="toggleAI()">✕</span></div><div id="aiLog"></div><div id="aiChips"></div><form id="aiForm" onsubmit="return askFree(event)"><input id="aiInput" autocomplete="off"/><button class="b primary" type="submit" id="aiSend"></button></form></div>
+<div class="modal" id="draftModal"><div class="box" id="draftBox"></div></div>
+<script>
+// ---------- bilingual data ----------
+var lang="en";
+const DTYPES=[
+ {k:"default", route:"mediation", en:"Loan default & recovery", hi:"ऋण चूक एवं वसूली", law_en:"Contract; Mediation Act", law_hi:"संविदा; मध्यस्थता अधिनियम"},
+ {k:"ots", route:"mediation", en:"One-time settlement (OTS)", hi:"एकमुश्त समझौता (OTS)", law_en:"Mediation Act; RBI 2023 framework", law_hi:"मध्यस्थता अधिनियम; RBI 2023 ढाँचा"},
+ {k:"cheque", route:"ni138", en:"Cheque bounce (NI-138)", hi:"चेक बाउंस (NI-138)", law_en:"NI Act ss.138,147", law_hi:"NI अधिनियम धारा 138,147"},
+ {k:"charges", route:"grievance", en:"Wrong / excess charges", hi:"गलत / अधिक शुल्क", law_en:"RBI Fair Practices; consumer", law_hi:"RBI फेयर प्रैक्टिसेज़; उपभोक्ता"},
+ {k:"digital", route:"grievance", en:"Digital-lending grievance", hi:"डिजिटल-लेंडिंग शिकायत", law_en:"RBI Digital Lending Directions 2025", law_hi:"RBI डिजिटल लेंडिंग निर्देश 2025"},
+ {k:"harass", route:"harassment", en:"Recovery-agent harassment", hi:"वसूली-एजेंट उत्पीड़न", law_en:"RBI Fair Practices; BNS", law_hi:"RBI फेयर प्रैक्टिसेज़; BNS"},
+ {k:"bureau", route:"grievance", en:"Credit-bureau dispute", hi:"क्रेडिट-ब्यूरो विवाद", law_en:"Credit Information Cos Act", law_hi:"क्रेडिट सूचना कंपनी अधिनियम"},
+ {k:"secured", route:"drt", en:"Secured-debt recovery (bank/FI)", hi:"सुरक्षित-ऋण वसूली (बैंक/FI)", law_en:"SARFAESI 2002; RDDBFI (DRT)", law_hi:"SARFAESI 2002; RDDBFI (DRT)"}
+];
+const RELIEF=[
+ {k:"ots", en:"OTS / waiver", hi:"OTS / छूट"},{k:"refund", en:"Refund of charges", hi:"शुल्क वापसी"},
+ {k:"stop", en:"Stop harassment", hi:"उत्पीड़न रोकें"},{k:"bureau", en:"Credit-bureau correction", hi:"क्रेडिट-ब्यूरो सुधार"},
+ {k:"restr", en:"Restructuring", hi:"पुनर्गठन"},{k:"recover", en:"Recovery of amount", hi:"राशि वसूली"},
+ {k:"security", en:"Return of security", hi:"प्रतिभूति वापसी"},{k:"noc", en:"No-Dues / NOC", hi:"अदेयता / NOC"},
+ {k:"compound", en:"Compounding (cheque)", hi:"कंपाउंडिंग (चेक)"}
+];
+const LOANTYPES=[["personal","Personal","व्यक्तिगत"],["vehicle","Vehicle","वाहन"],["home","Home","गृह"],["gold","Gold","स्वर्ण"],["education","Education","शिक्षा"],["business","Business / MSME","व्यापार / MSME"],["card","Credit card","क्रेडिट कार्ड"],["bnpl","BNPL","BNPL"],["mfi","Microfinance","माइक्रोफाइनेंस"],["p2p","P2P","P2P"]];
+const WHO=[["borrower","Borrower / customer","ऋण-लेने वाला / ग्राहक"],["guarantor","Guarantor / co-borrower","गारंटर / सह-ऋणी"],["lender","Lender (Bank/NBFC/Fintech)","ऋणदाता (बैंक/एनबीएफसी/फिनटेक)"]];
+const STR={
+ en:{tag:"Financial & Loan AI Dispute Explorer — the right route, your rights, a settlement",
+  aiBtn:"💬 Ask Equator AI", aiHd:"Equator AI assistant", aiSend:"Ask", aiPh:"Type a question…",
+  s1:"Are you the borrower or the lender?", s1sub:"Either can start. Nothing is stored on this page.",
+  loan:"Loan type", pick:"Select…", amount:"Outstanding / disputed amount (₹)",
+  s2:"What is the dispute about?", s2sub:"Choose all that apply.", secured:"Is the loan secured (mortgage / hypothecation)?", yes:"Yes", no:"No",
+  s3:"What outcome do you want?", s3sub:"Select any that fit.",
+  facts:"Briefly, what happened? (optional)", factsph:"e.g. I took a personal loan of ₹5,00,000; recovery agents are calling at odd hours…",
+  cont:"Continue →", seeSum:"See my summary →", back:"← Back", startover:"Start over",
+  sumT:"Your options at a glance", sumSub:"General guidance, not legal advice — but this is how Equator would approach your matter.",
+  recRoute:"Recommended route", appLaw:"Applicable law", outcomes:"Outcomes you're seeking", none:"None selected.",
+  draftH:"Draft with AI", draftSub:"Generate a first draft from your inputs — review it, then have counsel settle it.",
+  draftG:"Draft a grievance / complaint", draftR:"Draft a request for resolution",
+  howH:"How it runs — fully online", how1:"A neutral mediator/conciliator; fast, confidential; borrower protected from coercion.",
+  how2:"File & sign with Aadhaar e-Sign; settlement e-stamped; escrow releases against the No-Dues/NOC.",
+  how3:"Enforceable as a decree (MSA s.27); Lok Adalat awards are final civil-court decrees.",
+  cta:"Start confidentially with Equator →",
+  rightsBanner:"You have rights. Recovery agents cannot threaten or harass you. If you are in immediate danger, contact the police.",
+  otsBanner:"A one-time settlement may be possible. The money is held in escrow and released against a No-Dues/NOC, with your credit record updated.",
+  disc:"This is general information about your options and the law, not legal advice. Please consult a lawyer before deciding.",
+  proto:"Prototype. Demonstration of the AI-assisted financial intake only; stores no data; illustrative AI; not legal advice.",
+  copy:"Copy draft", copied:"Copied ✓", close:"Close", aiHello:"Hello — I'm the Equator AI assistant for loan & financial disputes. I can recommend the right route, explain your rights, estimate a settlement, and draft your complaint."},
+ hi:{tag:"ऋण एवं वित्तीय AI विवाद एक्सप्लोरर — सही रास्ता, आपके अधिकार, एक समझौता",
+  aiBtn:"💬 Equator AI से पूछें", aiHd:"Equator AI सहायक", aiSend:"पूछें", aiPh:"अपना सवाल लिखें…",
+  s1:"आप ऋण-लेने वाले हैं या ऋणदाता?", s1sub:"कोई भी शुरू कर सकता है। इस पेज पर कुछ संग्रहीत नहीं होता।",
+  loan:"ऋण प्रकार", pick:"चुनें…", amount:"बकाया / विवादित राशि (₹)",
+  s2:"विवाद किस बारे में है?", s2sub:"जो भी लागू हों, सभी चुनें।", secured:"क्या ऋण सुरक्षित है (बंधक / हाइपोथिकेशन)?", yes:"हाँ", no:"नहीं",
+  s3:"आप क्या परिणाम चाहते हैं?", s3sub:"जो भी उपयुक्त हों, चुनें।",
+  facts:"संक्षेप में, क्या हुआ? (वैकल्पिक)", factsph:"जैसे मैंने ₹5,00,000 का व्यक्तिगत ऋण लिया; वसूली एजेंट असामान्य समय पर कॉल कर रहे हैं…",
+  cont:"आगे →", seeSum:"मेरा सारांश देखें →", back:"← पीछे", startover:"फिर से शुरू करें",
+  sumT:"आपके विकल्प एक नज़र में", sumSub:"सामान्य मार्गदर्शन, कानूनी सलाह नहीं — पर Equator आपके मामले को ऐसे देखेगा।",
+  recRoute:"अनुशंसित रास्ता", appLaw:"लागू कानून", outcomes:"आप जो परिणाम चाहते हैं", none:"कुछ नहीं चुना।",
+  draftH:"AI से मसौदा बनाएँ", draftSub:"आपकी जानकारी से पहला मसौदा बनाएँ — समीक्षा करें, फिर वकील से अंतिम रूप दिलवाएँ।",
+  draftG:"शिकायत का मसौदा बनाएँ", draftR:"समाधान अनुरोध का मसौदा बनाएँ",
+  howH:"यह कैसे चलता है — पूरी तरह ऑनलाइन", how1:"एक तटस्थ मध्यस्थ; तेज़, गोपनीय; ऋण-लेने वाला दबाव से सुरक्षित।",
+  how2:"आधार ई-हस्ताक्षर से दाखिल करें और हस्ताक्षर करें; समझौता ई-स्टाम्प्ड; एस्क्रो NOC पर जारी।",
+  how3:"डिक्री के रूप में लागू (MSA धारा 27); लोक अदालत अवार्ड अंतिम दीवानी डिक्री हैं।",
+  cta:"Equator के साथ गोपनीय रूप से शुरू करें →",
+  rightsBanner:"आपके अधिकार हैं। वसूली एजेंट आपको धमका या परेशान नहीं कर सकते। तत्काल खतरे में हों तो पुलिस से संपर्क करें।",
+  otsBanner:"एकमुश्त समझौता संभव हो सकता है। पैसा एस्क्रो में रखा जाता है और NOC पर जारी होता है, आपके क्रेडिट रिकॉर्ड के अपडेट के साथ।",
+  disc:"यह आपके विकल्पों और कानून के बारे में सामान्य जानकारी है, कानूनी सलाह नहीं। निर्णय से पहले वकील से सलाह लें।",
+  proto:"प्रोटोटाइप। केवल AI-सहायित वित्तीय इनटेक का प्रदर्शन; कोई डेटा संग्रहीत नहीं; उदाहरणात्मक AI; कानूनी सलाह नहीं।",
+  copy:"मसौदा कॉपी करें", copied:"कॉपी हो गया ✓", close:"बंद करें", aiHello:"नमस्ते — मैं ऋण एवं वित्तीय विवादों के लिए Equator AI सहायक हूँ। मैं सही रास्ता सुझा सकता हूँ, आपके अधिकार बता सकता हूँ, समझौते का अनुमान दे सकता हूँ, और आपकी शिकायत का मसौदा बना सकता हूँ।"}
+};
+const QUICK={en:["Which route should I use?","How does the RBI Ombudsman work?","Can I settle a cheque-bounce case?","What is a one-time settlement (OTS)?","Recovery agents are harassing me","Will my credit score be fixed?","Is it confidential?","How long does it take?"],
+ hi:["मुझे कौन-सा रास्ता अपनाना चाहिए?","RBI लोकपाल कैसे काम करता है?","क्या मैं चेक-बाउंस मामला निपटा सकता हूँ?","एकमुश्त समझौता (OTS) क्या है?","वसूली एजेंट मुझे परेशान कर रहे हैं","क्या मेरा क्रेडिट स्कोर ठीक होगा?","क्या यह गोपनीय है?","इसमें कितना समय लगता है?"]};
+function L(k){return STR[lang][k];}
+function nmeL(o){return o[lang];}
+// ---------- state ----------
+const state={who:null,loan:"",amount:"",dtypes:new Set(),relief:new Set(),facts:"",secured:"no"};
+let step=0;const STEPS=4;const app=document.getElementById('app'),bar=document.getElementById('bar');
+function setLang(l){lang=l;document.getElementById('lgEn').className=l==='en'?'on':'';document.getElementById('lgHi').className=l==='hi'?'on':'';
+ document.documentElement.lang=l;chrome();render();
+ // refresh AI panel labels
+ document.getElementById('aiHd').textContent=L('aiHd');document.getElementById('aiSend').textContent=L('aiSend');document.getElementById('aiInput').placeholder=L('aiPh');
+ const log=document.getElementById('aiLog');if(log.dataset.init){log.innerHTML='';log.dataset.init='';toggleReset();}
+ renderChips();}
+function chrome(){document.getElementById('tagline').textContent=L('tag');document.getElementById('aiBtn').textContent=L('aiBtn');document.getElementById('aiHd').textContent=L('aiHd');document.getElementById('aiSend').textContent=L('aiSend');document.getElementById('aiInput').placeholder=L('aiPh');}
+function render(){bar.style.width=Math.round(((step+1)/STEPS)*100)+"%";[stepWho,stepDispute,stepRelief,stepSummary][step]();}
+function nav(l,ok){return '<div class="nav"><button class="b ghost" onclick="go(-1)" '+(step===0?'style="visibility:hidden"':'')+'>'+L('back')+'</button><button class="b primary" onclick="next()" '+(ok?'':'disabled style="opacity:.5"')+'>'+l+'</button></div>';}
+function go(d){step=Math.max(0,Math.min(STEPS-1,step+d));render();window.scrollTo(0,0);}
+function next(){if(step<STEPS-1){step++;render();window.scrollTo(0,0);}}
+function toggle(set,v){const s=state[set];s.has(v)?s.delete(v):s.add(v);render();}
+function stepWho(){app.innerHTML='<div class="step"><h1>'+L('s1')+'</h1><div class="sub">'+L('s1sub')+'</div>'
+ +'<div class="grid">'+WHO.map(function(o){return '<div class="opt '+(state.who===o[0]?'sel':'')+'" onclick="state.who=\''+o[0]+'\';render()">'+o[lang==='en'?1:2]+'</div>';}).join('')+'</div>'
+ +'<label class="f">'+L('loan')+'</label><select onchange="state.loan=this.value"><option value="">'+L('pick')+'</option>'+LOANTYPES.map(function(l){return '<option value="'+l[0]+'" '+(state.loan===l[0]?'selected':'')+'>'+l[lang==='en'?1:2]+'</option>';}).join('')+'</select>'
+ +'<label class="f">'+L('amount')+'</label><input type="number" value="'+state.amount+'" oninput="state.amount=this.value" placeholder="e.g. 500000">'
+ +nav(L('cont'),!!state.who)+'</div>';}
+function stepDispute(){app.innerHTML='<div class="step"><h1>'+L('s2')+'</h1><div class="sub">'+L('s2sub')+'</div>'
+ +'<div>'+DTYPES.map(function(t){return '<span class="chip '+(state.dtypes.has(t.k)?'sel':'')+'" onclick="toggle(\'dtypes\',\''+t.k+'\')">'+nmeL(t)+'</span>';}).join('')+'</div>'
+ +'<label class="f">'+L('secured')+'</label><div>'+[["no",L('no')],["yes",L('yes')]].map(function(o){return '<span class="chip '+(state.secured===o[0]?'sel':'')+'" onclick="state.secured=\''+o[0]+'\';render()">'+o[1]+'</span>';}).join('')+'</div>'
+ +nav(L('cont'),state.dtypes.size>0)+'</div>';}
+function stepRelief(){app.innerHTML='<div class="step"><h1>'+L('s3')+'</h1><div class="sub">'+L('s3sub')+'</div>'
+ +'<div>'+RELIEF.map(function(r){return '<span class="chip '+(state.relief.has(r.k)?'sel':'')+'" onclick="toggle(\'relief\',\''+r.k+'\')">'+nmeL(r)+'</span>';}).join('')+'</div>'
+ +'<label class="f">'+L('facts')+'</label><textarea oninput="state.facts=this.value" placeholder="'+L('factsph')+'">'+state.facts+'</textarea>'
+ +nav(L('seeSum'),true)+'</div>';}
+function recommend(){const routes=new Set([...state.dtypes].map(function(k){var o=DTYPES.find(function(d){return d.k===k;});return o&&o.route;}));
+ if(routes.has("drt"))return {c:"var(--red)", en:"DRT / SARFAESI (special forum)", hi:"DRT / SARFAESI (विशेष मंच)", note_en:"Bank/FI enforcement of security goes to the Debts Recovery Tribunal (non-arbitrable). Equator can still mediate any settlement.", note_hi:"बैंक/FI द्वारा प्रतिभूति की वसूली ऋण वसूली न्यायाधिकरण (DRT) में जाती है (गैर-मध्यस्थ)। Equator फिर भी समझौते पर मध्यस्थता कर सकता है।"};
+ if(routes.has("ni138"))return {c:"var(--green)", en:"Mediation → compounding / Lok Adalat", hi:"मध्यस्थता → कंपाउंडिंग / लोक अदालत", note_en:"A dishonoured cheque (s.138) is best settled: mediate, then compound (s.147) or record in a Lok Adalat. Escrow secures the payment.", note_hi:"बाउंस हुआ चेक (धारा 138) सबसे अच्छे से निपटता है: मध्यस्थता करें, फिर कंपाउंड (धारा 147) करें या लोक अदालत में दर्ज करें। एस्क्रो भुगतान सुरक्षित करता है।"};
+ if(routes.has("harassment"))return {c:"var(--gold)", en:"Grievance + mediation (harassment)", hi:"शिकायत + मध्यस्थता (उत्पीड़न)", note_en:"Recovery agents must follow the RBI Fair Practices Code. We escalate the harassment AND mediate the debt. If in danger, contact the police.", note_hi:"वसूली एजेंटों को RBI फेयर प्रैक्टिसेज़ कोड का पालन करना होगा। हम उत्पीड़न को बढ़ाते हैं और ऋण पर मध्यस्थता करते हैं। खतरे में हों तो पुलिस से संपर्क करें।"};
+ if(routes.has("grievance"))return {c:"var(--gold)", en:"RBI grievance / Ombudsman + mediation", hi:"RBI शिकायत / लोकपाल + मध्यस्थता", note_en:"First complain to the lender's grievance officer; if unresolved in 30 days, escalate free to the RBI Ombudsman (cms.rbi.org.in). Equator mediates in parallel.", note_hi:"पहले ऋणदाता के शिकायत अधिकारी को शिकायत करें; 30 दिनों में हल न हो तो नि:शुल्क RBI लोकपाल (cms.rbi.org.in) तक जाएँ। Equator साथ-साथ मध्यस्थता करता है।"};
+ return {c:"var(--green)", en:"Mediation / conciliation & one-time settlement", hi:"मध्यस्थता / सुलह एवं एकमुश्त समझौता", note_en:"Your matter suits a mediated settlement (OTS) — a negotiated figure, secured by escrow, released against a No-Dues/NOC, enforceable as a decree (s.27).", note_hi:"आपका मामला मध्यस्थ समझौते (OTS) के लिए उपयुक्त है — तय राशि, एस्क्रो द्वारा सुरक्षित, NOC पर जारी, डिक्री के रूप में लागू (धारा 27)।"};}
+function stepSummary(){const r=recommend();const dts=[...state.dtypes];const ots=[...state.relief].some(function(x){return /ots|noc|recover/.test(x);})||dts.some(function(t){return /default|ots/.test(t);});
+ var html='<div class="step"><h1>'+L('sumT')+'</h1><div class="sub">'+L('sumSub')+'</div>';
+ if(dts.indexOf("harass")>=0)html+='<div class="banner b-red"><b>'+L('rightsBanner')+'</b></div>';
+ html+='<div class="sumcard"><h3>'+L('recRoute')+'</h3><span class="badge" style="background:'+r.c+'">'+nmeL(r)+'</span><div style="margin-top:8px"><div class="kv">• '+r['note_'+lang]+'</div></div></div>';
+ html+='<div class="sumcard"><h3>'+L('appLaw')+'</h3>'+(dts.length?dts.map(function(k){var o=DTYPES.find(function(d){return d.k===k;});return '<div class="kv">• <b>'+nmeL(o)+':</b> '+o['law_'+lang]+'</div>';}).join(''):'<div class="muted">—</div>')+'</div>';
+ html+='<div class="sumcard"><h3>'+L('outcomes')+'</h3><div>'+([...state.relief].length?[...state.relief].map(function(k){var o=RELIEF.find(function(d){return d.k===k;});return '<span class="pill">'+nmeL(o)+'</span>';}).join(''):'<span class="muted">'+L('none')+'</span>')+'</div></div>';
+ if(ots)html+='<div class="banner b-gold"><b>'+L('otsBanner')+'</b></div>';
+ html+='<div class="sumcard"><h3>'+L('draftH')+'</h3><div class="muted" style="margin-bottom:8px">'+L('draftSub')+'</div><button class="b primary" onclick="draft(\'grievance\')">'+L('draftG')+'</button> <button class="b ghost" onclick="draft(\'request\')">'+L('draftR')+'</button></div>';
+ html+='<div class="sumcard"><h3>'+L('howH')+'</h3><div class="kv">• '+L('how1')+'</div><div class="kv">• '+L('how2')+'</div><div class="kv">• '+L('how3')+'</div></div>';
+ html+='<a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">'+L('cta')+'</a>';
+ html+='<div class="nav"><button class="b ghost" onclick="go(-1)">'+L('back')+'</button><button class="b ghost" onclick="restart()">'+L('startover')+'</button></div>';
+ html+='<div class="disc">'+L('proto')+'</div></div>';
+ app.innerHTML=html;}
+function restart(){Object.assign(state,{who:null,loan:"",amount:"",dtypes:new Set(),relief:new Set(),facts:"",secured:"no"});step=0;render();}
+function draft(kind){const facts=(state.facts||"").split(/\n|(?<=\.)\s+/).map(function(s){return s.trim();}).filter(Boolean);
+ const dts=[...state.dtypes].map(function(k){return nmeL(DTYPES.find(function(d){return d.k===k;}));});
+ const rel=[...state.relief].map(function(k){return nmeL(RELIEF.find(function(d){return d.k===k;}));});
+ var head=lang==='hi'?'समाधान अनुरोध (मसौदा)':'REQUEST FOR RESOLUTION (DRAFT)';
+ var t=(kind==='grievance'?(lang==='hi'?'शिकायत (मसौदा)':'GRIEVANCE / COMPLAINT (DRAFT)'):head)+"\n"
+  +(lang==='hi'?'(AI-सहायित — भेजने से पहले समीक्षा करें और वकील से अंतिम रूप दिलवाएँ)':'(AI-assisted — review and have counsel settle before sending)')+"\n\n"
+  +(lang==='hi'?'प्रति: ':'To: ')+(kind==='grievance'?(lang==='hi'?'[ऋणदाता] शिकायत अधिकारी':'[Lender] grievance officer'):'Equator Resolution')+"\n\n"
+  +(lang==='hi'?'विवाद की प्रकृति:\n':'NATURE OF THE MATTER:\n')+(dts.length?dts.map(function(x,i){return '('+(i+1)+') '+x;}).join("\n"):(lang==='hi'?'[मुद्दा]':'[issue]'))+"\n\n"
+  +(lang==='hi'?'तथ्य:\n':'FACTS:\n')+(facts.length?facts.map(function(f,i){return (i+1)+'. '+f;}).join("\n"):(lang==='hi'?'1. [तथ्य लिखें]':'1. [state the facts]'))+"\n\n"
+  +(lang==='hi'?'वांछित राहत:\n':'RELIEF SOUGHT:\n')+(rel.length?rel.map(function(x,i){return '('+String.fromCharCode(97+i)+') '+x+';';}).join("\n"):(lang==='hi'?'(क) [राहत];':'(a) [relief];'))+"\n\n"
+  +(kind==='grievance'?(lang==='hi'?'यदि 30 दिनों में समाधान न हो तो मैं RBI लोकपाल (cms.rbi.org.in) तक जाऊँगा/जाऊँगी और Equator में मध्यस्थता चाहूँगा/चाहूँगी।':'If unresolved within 30 days, I intend to escalate to the RBI Ombudsman (cms.rbi.org.in) and seek mediation at Equator.'):(lang==='hi'?'कृपया Equator इसे अपने नियमों के तहत संचालित करे।':'We request Equator to administer this under its Rules.'))+"\n\n_____________________\n"+(lang==='hi'?'[नाम]':'[Name]');
+ document.getElementById('draftBox').innerHTML='<h2>'+(kind==='grievance'?L('draftG'):L('draftR'))+'</h2><div class="muted" style="margin-bottom:8px">'+L('disc')+'</div><textarea style="min-height:340px">'+t.replace(/</g,'&lt;')+'</textarea><div class="nav"><button class="b ghost" onclick="closeModal()">'+L('close')+'</button><button class="b primary" onclick="copyDraft(this)">'+L('copy')+'</button></div>';
+ document.getElementById('draftModal').classList.add('open');}
+function closeModal(){document.getElementById('draftModal').classList.remove('open');}
+function copyDraft(b){const ta=document.querySelector('#draftBox textarea');ta.select();try{document.execCommand('copy');b.textContent=L('copied');}catch(e){}}
+// ---------- AI ----------
+function aiAnswer(q){const s=q.toLowerCase();const r=recommend();const D=L('disc');
+ if(/which|route|forum|कौन|रास्ता|मंच/.test(s))return nmeL(r)+". "+r['note_'+lang]+" "+D;
+ if(/ombudsman|rbi|लोकपाल|शिकायत/.test(s))return lang==='hi'?"पहले ऋणदाता के शिकायत अधिकारी को शिकायत करें। 30 दिनों में हल न हो तो नि:शुल्क RBI एकीकृत लोकपाल (cms.rbi.org.in) तक जाएँ। Equator साथ-साथ पैसे के विवाद पर मध्यस्थता कर सकता है। "+D:"First complain to the lender's grievance officer. If not resolved in 30 days, escalate FREE to the RBI Integrated Ombudsman (cms.rbi.org.in). Equator can mediate the money dispute in parallel. "+D;
+ if(/cheque|138|bounce|चेक|कंपाउंड/.test(s))return lang==='hi'?"हाँ — चेक-बाउंस मामला (धारा 138) निपट सकता है। भुगतान पर (एस्क्रो से सुरक्षित), कंपाउंडिंग (धारा 147) या लोक अदालत में दर्ज कर मामला बंद होता है। जल्दी समझौते से बढ़ती लागत भी बचती है। "+D:"Yes — a cheque-bounce case (s.138) can be settled. On payment (secured via escrow), it closes by compounding (s.147) or in a Lok Adalat. Early settlement also reduces graded costs. "+D;
+ if(/ots|settlement|waiver|एकमुश्त|समझौता|छूट/.test(s))return lang==='hi'?"एकमुश्त समझौता एक तय राशि है — अक्सर मूल राशि और आंशिक ब्याज, दंड शुल्क माफ़ — एकमुश्त या किश्तों में, NOC के बदले। "+D:"A one-time settlement is a negotiated figure — often principal plus part interest, penal charges waived — in one shot or instalments, for a No-Dues/NOC. "+D;
+ if(/harass|agent|threat|उत्पीड़न|एजेंट|धमक/.test(s))return lang==='hi'?"वसूली एजेंटों को RBI फेयर प्रैक्टिसेज़ कोड का पालन करना होगा — कोई धमकी, असामान्य समय या अपमानजनक संपर्क नहीं। हम उत्पीड़न बढ़ाते हैं और ऋण निपटाते हैं। तत्काल खतरे में हों तो पुलिस से संपर्क करें। "+D:"Recovery agents must follow the RBI Fair Practices Code — no threats, odd-hour or abusive contact. We escalate the harassment and mediate the debt. If in immediate danger, contact the police. "+D;
+ if(/credit|cibil|bureau|स्कोर|क्रेडिट/.test(s))return lang==='hi'?"हाँ — समझौते में क्रेडिट-ब्यूरो सुधार शामिल है: बंद होने पर ऋणदाता आपका रिकॉर्ड (CIBIL/CRIF/Experian) ‘समझौता/बंद’ के रूप में अपडेट करता है। "+D:"Yes — the settlement builds in a credit-bureau correction: on closure the lender updates your record (CIBIL/CRIF/Experian) to settled/closed. "+D;
+ if(/confiden|private|गोपन/.test(s))return lang==='hi'?"मध्यस्थता गोपनीय और बिना-पूर्वाग्रह है — कानूनी अपवादों को छोड़कर आपकी बात अदालत में आपके विरुद्ध इस्तेमाल नहीं हो सकती। "+D:"Mediation is confidential and without prejudice — what you say can't be used against you in court, subject to legal exceptions. "+D;
+ if(/time|long|days|समय|कितन/.test(s))return lang==='hi'?"अधिकांश ऋण-समझौते ~45–60 दिनों में पूरे होते हैं; चेक-बाउंस अगली अदालत/लोक-अदालत तिथि पर; लोकपाल मार्ग 30-दिन की अवधि का पालन करता है। "+D:"Most loan settlements complete in ~45–60 days; a cheque-bounce settlement closes on the next court/Lok Adalat date; the Ombudsman route follows the 30-day window. "+D;
+ return lang==='hi'?"मैं सही रास्ता, RBI लोकपाल, चेक-बाउंस समझौता, OTS, उत्पीड़न, क्रेडिट सुधार, गोपनीयता, समय और मसौदे में मदद कर सकता हूँ। नीचे कोई सवाल आज़माएँ। "+D:"I can help with the right route, the RBI Ombudsman, cheque-bounce settlement, OTS, harassment, credit correction, confidentiality, timelines and drafting. Try a question below. "+D;}
+function pushMsg(w,t){const l=document.getElementById('aiLog');const d=document.createElement('div');d.className='msg '+w;d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight;}
+function ask(q){pushMsg('me',q);setTimeout(function(){pushMsg('ai',aiAnswer(q));},150);}
+function askFree(e){e.preventDefault();const i=document.getElementById('aiInput');if(i.value.trim()){ask(i.value.trim());i.value='';}return false;}
+function renderChips(){document.getElementById('aiChips').innerHTML=QUICK[lang].map(function(q){return '<span class="chip" onclick="ask(\''+q.replace(/'/g,"\\'")+'\')">'+q+'</span>';}).join('');}
+function toggleReset(){var log=document.getElementById('aiLog');log.dataset.init='1';pushMsg('ai',L('aiHello')+" "+L('disc'));}
+function toggleAI(){const p=document.getElementById('aiPanel');p.classList.toggle('open');if(p.classList.contains('open')&&!document.getElementById('aiLog').dataset.init){toggleReset();renderChips();}}
+chrome();render();
+</script></body></html>

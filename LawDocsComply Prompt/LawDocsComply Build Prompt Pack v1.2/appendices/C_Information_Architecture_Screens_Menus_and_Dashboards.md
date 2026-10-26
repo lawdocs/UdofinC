@@ -1,0 +1,1831 @@
+# Appendix C — Information Architecture, Screens, Menus and Dashboards (binding)
+
+> LawDocsComply Build Prompt Pack v1.0 · 25 October 2026 · Owner: S12 (P02); consumed by every phase. Menus are **data** (`cfg.nav_items`, P02 FR-P02-60); each leaf maps to a screen ID owned by a phase. Precedence: this appendix governs shells, menus, navigation, Work Inbox, search, palette, dashboards and widget catalogue; phase files govern the content of their own screens.
+
+
+**v1.2 changes (25 October 2026)** *(v1.2)*
+
+- §C.2A (new): wireframe descriptions of the **compliance list** (9 columns + Next Due, Days to Due and RAG chips; D-50) and the **CompID drawer** (tabs Overview, Do, Maker, Checker, Auditor, Conversation, Accountability, History, Links), with responsive and print behaviour (P04 §4R).
+- §C.3: Compliance menu renamed "Compliance list" and gains Starred & collections, Urgent & upcoming, Accountability; Settings gains RAG windows and Export schedules.
+- §C.4: palette commands and keyboard shortcuts for the list and drawer; CompID/alias jump (NN-56).
+- §C.5: Work Inbox ordering uses RAG; digests carry the Urgent & Upcoming radar.
+- §C.6: widgets W-CMP-20 Urgent & Upcoming, W-CMP-21 Starred, W-CMP-22 Accountability, W-CMP-23 RAG heat map (department × month, Board/KMP), W-CMP-24 At risk of slipping; role layouts updated.
+- §C.7: patterns PAT-21 List + record drawer, PAT-22 Typed conversation thread, PAT-23 Grouped export builder; PAT-20 extended.
+- §C.8: **RAG tokens** (§C.8.1A) for Red/Amber/Green/Grey/Blue and the prediction flag — icon + word + colour + pattern, contrast-checked to WCAG 2.2 AA; Excel export fills checked with black text; a contrast defect in `color.danger` on `color.danger.bg` (4.04:1) noted with the fix.
+- §C.11.12 (new): click budgets J-27–J-31 as release gates (open item 1, star 1, ask maker for explanation ≤ 3, export filtered list grouped by department ≤ 4, see urgent items 1) and the v1.2 screen registry (SCR-CMP-20–29).
+
+**v1.1 changes (25 October 2026)** *(v1.1)*
+
+- Menu trees (§C.3) extended for the v1.1 modules: Global entities (P25), Legal & Contracts (P26), ESG & Sustainability (P27), Reports & MIS owned by P28, AI Governance (OV_AI, P12), Vidhi agent workforce, AI assistants (MCP), data residency and access transparency; console, delivery (firm workspace) and public (markets) trees updated.
+- Dashboards (§C.6.2) gain General Counsel, Chief Sustainability Officer, AI Officer, group/global and agent-sponsor layouts and new widgets; tokens (§C.8.3) gain elevation and motion with `prefers-reduced-motion`; copy conventions point to the new brand-voice guide.
+- New §C.11: v1.1 screen registry, click budgets J-01–J-26 as release gates (IMP-101), simple mode (IMP-096), global search targets (IMP-100), density modes (IMP-102), remappable review shortcuts (IMP-103), report-builder and dashboard-copy UX (IMP-070–075), component inventory, design governance, dashboard principles, agent-autonomy controls and partner portal shell.
+- Reference to Equator's appendix standardised as 'Equator v3.1 App AG' (G5 E-15).
+
+---
+
+## C.0 Design principles (R-023, R-028, R-030, R-032, NN-21)
+
+1. **Role-first home.** Every user lands on a dashboard built for their role (C.5) with their next actions on top — no user starts from a blank module list.
+2. **Three-click rule.** Any routine action (submit evidence, approve, assign, open a due item, upload a document, ask Vidhi) is reachable in ≤ 3 interactions from home, the Work Inbox or the command palette; statutory deadlines are visible on home without a click.
+3. **One inbox.** All actionable work (tasks, approvals, mentions, messages, deadlines, requests, alerts) is in the **Work Inbox**; regulatory content is in **Updates** (NN-27). No module keeps a private "to-do" list.
+4. **Automation before forms.** Pre-fill from APIs (PAN/CIN/GSTIN, P01), from Finbyx/Udofin/Tally data (P18, P11), from previous periods (copy last period's evidence description), from HRMS (people), and from documents (Vidhi extraction, P07). Users confirm rather than type.
+5. **Explain everything.** Every module title, menu label, column heading, status and regulatory term has an "i" button (`hlp.<key>`, P23) giving plain-language meaning, an example and a link to the tutorial; the glossary is searchable from the palette.
+6. **Minimal, calm UI.** Clean white surfaces, navy primary, generous spacing (4-pt grid), one primary action per view, no decorative motion; dense tables available as a "Compact" density toggle for power users.
+7. **Accessible by default.** WCAG 2.2 AA is a release gate (NN-21): keyboard paths for every action, visible focus, ≥ 24×24 px targets (SC 2.5.8), drag alternatives (SC 2.5.7), no information by colour alone, captions/transcripts for every video, screen-reader-tested charts with table alternatives, accessible authentication (SC 3.3.8; passkeys/OTP paste allowed), redundant entry avoided (SC 3.3.7).
+8. **Same patterns everywhere.** Lists, detail pages, drawers, approvals, imports and exports use the pattern library (C.7) so a user who learns one module knows all.
+9. **Multi-entity awareness.** The context bar always shows tenant → legal entity (and period where relevant); switching context never loses unsaved work; actions confirm the entity in the confirmation text ("Submit for **ABC Finance Ltd** · Q2 FY26-27").
+10. **Indian-first conventions.** INR with Indian digit grouping (₹ 12,34,567.00), dd-MMM-yyyy dates, financial year notation FY26-27 (April–March), IST with the viewer's zone shown when different (IFSCA and foreign users), Hindi and other Indian-language UI packs (P23).
+
+---
+
+## C.1 Shell catalogue
+
+| Shell | App | Host | Users | Purpose |
+|---|---|---|---|---|
+| `tenant` | `apps/web` | `app.lawdocscomply.com` (or `<tenant>.lawdocscomply.com` / custom domain) | All tenant roles, delivery staff acting in a tenant under grant, external auditors and supervisor view (restricted shell variant `assurance`) | The client workspace |
+| `assurance` | `apps/web` (restricted) | same host, `/assurance` | `ten_external_auditor`, `ten_secretarial_auditor`, `ten_is_auditor`, `ten_supervisor_view` | Read-only scoped workspace with evidence request portal and watermarked exports (D-12) |
+| `board` | `apps/web` (simplified) | same host, `/board` | `ten_board_member`, `ten_committee_member` | Board portal: meetings, packs, resolutions, disclosures, personal compliance (DIN KYC, MBP-1, DIR-8), voting on circular resolutions |
+| `selfservice` | `apps/web` | `/me` | `ten_employee` (HRMS-only users), `coop_member` | Payslips, leave, attendance, declarations, policy acknowledgements, POSH complaint entry (sealed), member services for co-operatives |
+| `console` | `apps/console` | `console.lawdocscomply.com` (IP-restricted, phishing-resistant MFA) | `plt_*` roles | Platform super-admin, content operations, regulatory monitor, pricing, tenants, corrections, security |
+| `delivery` | `apps/delivery` | `delivery.lawdocscomply.com` | `dlv_*` roles | Service Delivery Console for LawDocs RMs and professionals (D-03) |
+| `public` | `apps/public` | `www.lawdocscomply.com` | `anon`, `lead`, `mkp_buyer` | Marketing site, pricing configurator, free health check, public marketplace, academy listings, help centre, blog |
+| `provider` | `apps/public` (authenticated area) | `www…/provider` | `mkp_provider_admin`, `mkp_professional` | Marketplace provider workspace (listings, engagements, payouts) |
+
+CRM, marketing, staff HRMS, payroll and group billing are in the **Infrabyx Operations Hub** (separate app; Appendix X); LDC shells link to it for staff with OH accounts but never embed OH data in tenant shells.
+
+## C.2 Shell anatomy (web)
+
+| Region | Content |
+|---|---|
+| Top bar (56 px) | Logo (tenant brand), **context switcher** (tenant → legal entity; period selector on period-scoped pages), global search (`Ctrl/Cmd+K`), **Ask Vidhi** (`Ctrl/Cmd+J`), Updates bell (regulatory, with count of unacknowledged critical), Notifications/Work Inbox badge, Help ("?" and tutorials), profile (preferences, accessibility, sign out) |
+| Left rail (240 px → 72 px collapsed; remembers state) | Primary navigation (C.3) with icons + text labels (icons never alone), entitlement-aware, terminology-aware; "Explore" section shows unlicensed modules when the tenant enables upsell display |
+| Main area | Page header (title + "i", breadcrumb, primary action, secondary actions menu), filters bar, content; max readable width 1,440 px for forms, full width for tables |
+| Right context panel (400 px, optional, dockable) | Vidhi chat with sources; activity/timeline; related items (circulars, policies, previous period); details drawer |
+| Footer (32 px) | Version, environment badge (sandbox in amber), status page link, accessibility statement, support |
+| Banners | Sandbox mode, support session active (NN-30), trial days left, payment past due, maintenance, "Changes made by LawDocs" (unseen corrections) |
+
+Responsive: ≥ 1,280 px full layout; 768–1,279 px rail collapses and right panel becomes overlay; < 768 px approvals-first mobile layout (Work Inbox, calendar, evidence upload from camera, Vidhi chat, document preview). Native apps are deferred (D-01); the web app is an installable PWA with push notifications.
+
+
+### C.2A Compliance list and CompID drawer — wireframe descriptions *(v1.2; P04 §4R; D-50)*
+
+**List page (SCR-CMP-03), desktop ≥ 1,280 px:**
+
+```
+┌ Page header: "Compliance list" (i) · View: [CCO — Red and Amber ▾] [Save view] · [Export ▸] · [⋯] ─────────────────────────┐
+│ Quick filters: [My items] [Waiting on me] [Due in 7 days] [Overdue] [Red] [Amber] [Starred] [High risk] [Changed 30d] … │
+│ Filter bar: Department = Risk Mgmt ✕ · Status ≠ Complied ✕ · [+ Filter] · ✎ "Describe what you want…" (Vidhi)           │
+│ Toolbar: Sort: RAG ↓, Days to Due ↑ · Group: Department › Function › Sub-function · Columns · Density · ☐ one row per CompID│
+├──┬──────┬─────────────────────┬────────────────────────────┬──────────┬──────────┬───────────────┬──────────┬─────────┬──────┬──────────┬───────┬─────────┤
+│☆ │S.No. │CompID               │Compliance Question / Actionable│Clause/Para│Department│Due & Frequency│Date of Compl.│Status│Risk  │Next Due  │Days   │RAG      │
+├──┼──────┼─────────────────────┼────────────────────────────┼──────────┼──────────┼───────────────┼──────────┼─────────┼──────┼──────────┼───────┼─────────┤
+│▸ Risk Management (42) — ⛔ Red 5 · ▲ Amber 9 · ✓ Green 26 · ◷ Blue 2                                                       │
+│  ▸ Credit Risk (18) …                                                                                                     │
+│★ │1     │RBI-NBFC-GOV25-0042  │Whether the Board-approved …│Para 12.3 │Risk Mgmt │Quarterly · 15d│—         │◔ In prog│▲ High│15-Nov-26 │−3     │⛔ Red · Overdue│
+└──┴──────┴─────────────────────┴────────────────────────────┴──────────┴──────────┴───────────────┴──────────┴─────────┴──────┴──────────┴───────┴─────────┘
+  Footer: 1–50 of 640 · page size · "As of 10:42" · selected 0
+```
+
+- A 4 px left border on each row repeats the RAG colour; the RAG cell always shows icon + word; Days to Due shows a sign and the word "overdue" when negative.
+- The question column takes the remaining width with a two-line clamp; CompID uses tabular monospace digits and is the link that opens the drawer; the star column is the first focusable cell.
+- Group headers are `role="row"` with `aria-expanded`; counts by RAG are text with icons, never colour bars alone.
+- 1,024–1,279 px: Clause/Para and Date of Compliance move into an expandable row detail; < 1,024 px: card layout (CompID · question · status · next due · RAG); < 768 px: drawer opens full screen.
+- Print/PDF: same columns as the export default, A4 landscape, header repeated, RAG as filled cell + icon + word.
+
+**CompID drawer (SCR-CMP-20), right side, 560–720 px, resizable, over the list:**
+
+```
+┌ RBI-NBFC-GOV25-0042 ⧉  ☆ Star  ◉ Watch                                  [◀ Q2 FY26-27 ▾ ▶]  ✕ ┐
+│ ⛔ Red — overdue by 3 days (evidence missing)   ◔ In progress   Next due 15-Nov-2026            │
+│ Accountable: (A) R. Mehta · Responsible: (R) S. Iyer · Question v3 — updated 12-Sep-2026 · Changed │
+│ [Submit] [Ask ▾] [Assign] [⋯]                                                                    │
+├ Overview | Do | Maker | Checker | Auditor | Conversation (2) | Accountability | History | Links ─┤
+│ Tab content (scrolls independently; tab state in URL: /c/RBI-NBFC-GOV25-0042/2026-Q2#history)  │
+└────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+- Focus moves to the drawer title on open and returns to the CompID link on close (`Esc`); tabs follow the ARIA tabs pattern; hidden tabs are omitted, not disabled.
+- The header never scrolls; the action bar shows only permitted actions; "Changed" opens the P05 diff of the previous actionable.
+- `Shift+Enter` or "Open full page" opens SCR-CMP-04 with the same tabs.
+
+---
+
+## C.3 Complete menu trees
+
+Legend: **[E]** shown only if the module is entitled (P20); **[F:x]** shown only for entity families x; **(L)** cannot be hidden; leaf → screen ID (owning phase).
+
+### C.3.1 Tenant shell (`apps/web`) — full tree for `ten_admin`
+
+```
+Home (role dashboard) ............................................. SCR-RPT-01 (P28 runtime; home route hosted by P04; C.5) (L) *(v1.1, X1)*
+Work Inbox ........................................................ SCR-WF-00 (P04) (L)
+Updates (regulatory) .............................................. SCR-CHG-01 (P05) (L)
+  ├ All updates · Critical · By regulator · By entity family · Acknowledgements due
+Calendar .......................................................... SCR-WF-10 (P04)
+  ├ My calendar · Department calendar · Compliance calendar · Meetings · Returns · Subscriptions (ICS / M365 / Google)
+Compliance [E]
+  ├ My compliances ................................................ SCR-CMP-01
+  ├ Compliance list (9 columns + chips; click CompID → drawer) .... SCR-CMP-03 / SCR-CMP-20 *(v1.2: was "Compliance register"; v1.1, X1: SCR-CMP-02 retired; the Work Inbox is SCR-WF-00)*
+  ├ Urgent & upcoming (Overdue · 7 days · 30 days · At risk · Returned) SCR-CMP-27 *(v1.2)*
+  ├ Starred & collections ........................................ SCR-CMP-24 *(v1.2)*
+  ├ Accountability (dashboard · reports) ......................... SCR-CMP-23 / SCR-CMP-22 *(v1.2)*
+  ├ By regulator · By department · By legal entity ............... SCR-CMP-03
+  ├ Instrument catalogue (add / remove directions, regulations) ... SCR-CNT-10 (P03)
+  ├ Question bank & our changes (tenant overlays, audit) ......... SCR-CNT-12 (P03)
+  ├ Upload a direction (AI-drafted questions, tenant only) ....... SCR-CHG-20 (P05)
+  ├ Excel import / export ........................................ SCR-TPL-01 (P03)
+  ├ Attestations & certifications ................................ SCR-CMP-08
+  ├ Exceptions, waivers & not-applicable decisions ............... SCR-CMP-09
+  ├ Compliance reports (Compliance Score; Compliance Health Index where enabled) ... SCR-CMP-10 *(v1.1, X1: score names per App B §B.1.1)*
+  └ Compliance reports ............................................ SCR-CMP-11
+Governance [E]
+  ├ Company & legal entities (profile, CIN, registrations, licences) SCR-GOV-01 (P06)
+  ├ Board & directors · KMP · Shareholding / members ............. SCR-GOV-02..04
+  ├ Committees .................................................... SCR-GOV-05
+  ├ Meetings (board, committee, general, circular resolutions) ... SCR-GOV-06
+  ├ Minutes & minute books ......................................... SCR-GOV-07
+  ├ Resolutions library ............................................ SCR-GOV-08
+  ├ Statutory registers ............................................ SCR-GOV-09
+  ├ MCA / ROC filings ............................................... SCR-GOV-10
+  ├ Listed company (LODR, PIT, SAST, disclosures) [F:SEBI-LISTED, SEBI-REIT-INVIT] SCR-GOV-20
+  ├ Fit & proper, declarations, related parties ................... SCR-GOV-12
+  ├ Board portal settings .......................................... SCR-GOV-15
+  ├ Co-operative affairs [F:COOP-*] (members, general body, elections, office bearers) → P16 SCR-COOP-*
+  └ Global entities [E:ADD-GEM] (group structure, foreign entities, officers, registers, filings, coverage statements) → P25 SCR-GEM-* *(v1.1)*
+Policies [E] ...................................................... SCR-POL-01 (P07)
+  ├ Policy register · Reviews due · Model templates · Acknowledgements · Drafting with Vidhi
+Documents (DMS) ................................................... SCR-DMS-01 (P07)
+  ├ All documents · Evidence vault · Shared with me / by me · Folder intake · Signatures · Translations & type copies · Retention & legal hold
+Risk [E]
+  ├ Risk register · RCSA · KRIs · Incidents & loss events · Issues & actions · Risk appetite · Controls library · Risk reports  (P08)
+Legal & Contracts [E:ADD-LIT] *(v1.1)*
+  ├ Legal matters & litigation · Notices · Regulator inspections & observations · Contracts · Licences & permissions · Ethics registers (conflicts, gifts)  (P26)
+ESG & Sustainability [E:ADD-ESG] *(v1.1)*
+  ├ Data requests · Metrics · GHG inventory · BRSR / BRSR Core · CSR projects & spend · Materiality · Climate risk  (P27)
+Risk Lab [E]
+  ├ Capital & ratios · ICAAP · Stress tests · Scenario library · Liquidity & ALM · Investment limits [F:RBI-NBFC-ICC, …] · Model inventory  (P09)
+Audit [E]
+  ├ Audit universe · Annual plan · Engagements · Workpapers · Findings · Audit reports · Auditor access  (P10)
+Returns & Filings [E]
+  ├ Return calendar · Return Studio runs · Data sources & imports (Tally, Excel, Finbyx, Udofin, other LMS) · CIC submissions · GST & TDS · Filing evidence & acknowledgements  (P11)
+Data Protection & Cyber [E]
+  ├ Data inventory (RoPA) · Notices & consents · Data-principal requests · DPIA · Breaches & cyber incidents · Security controls (ISMS) · Vendors & outsourcing (TPRM) · Cyber returns  (P12)
+People & Labour [E] (also sold standalone; R-014)
+  ├ Employees · Org chart & departments · Attendance · Leave · Payroll · Labour registers · Labour returns · Committees (IC under POSH, works committee, grievance redressal committee, safety) · Employment agreements · Self-service settings  (P13)
+Grievance & Support [E]
+  ├ Support tickets · Grievances · GRO desk · Internal Ombudsman [F:where required] · External forum cases · Website & app widget · Grievance analytics  (P14)
+Vidhi AI
+  ├ Ask Vidhi · Knowledge notebooks · Agent workforce (hire, sponsor, autonomy) · Missions · Control monitoring · Drafts awaiting review · AI usage  (P17) *(v1.1)*
+AI Governance [E:ADD-AIG] *(v1.1)*
+  ├ AI system register · Impact assessments · Validations · AI incidents · Framework map · Board AI report  (P12 OV_AI)
+Reports & MIS
+  ├ One-page summary · Report library · Report builder · MIS packs (L1–L4) · Board pack builder · Inspection MIS file · Dashboards (copy to role) · Scheduled reports · KPI dictionary · Savings & value (P20) · Exports  (P28; board-pack content from P06) *(v1.1)*
+Services & Academy
+  ├ My engagements & retainers · Buy services (marketplace) · Courses (FinLegal Academy)  (P21)
+Integrations [admin]
+  ├ Connected systems (health) · API keys & webhooks · Admin API · AI assistants (MCP) · MCP servers · Agent connections (A2A) · Issue sync (ITSM) · Data sharing (ecosystem consents) · Storage destinations (BYO)  (P18/P19) *(v1.1)*
+Settings (L for admin) ............................................. SCR-CFG-01 (P02)
+  ├ Organisation · Users & roles · Workflow · Data & forms · Notifications · Dashboards · Navigation · Branding · Rules & packs · Billing & plan (P20) · Security · Data export & exit (P19) · Data residency (P25) · Access transparency (P22) · Help & support SLA · Account (Changes made by LawDocs, support access) *(v1.1)*
+Help & Learning (L) ............................................... SCR-HLP-01 (P23)
+  ├ Getting started · Tutorials & videos · Glossary · What's new · Contact support
+```
+
+### C.3.2 Role trimming (tenant shell)
+
+| Role | Sees | Notes |
+|---|---|---|
+| `ten_maker` | Home, Work Inbox, Updates, Calendar, Compliance (My compliances, register read), Documents, modules where assigned, Vidhi, Help, personal Settings | Department scope by default |
+| `ten_checker` | Maker set + review queues, exceptions (read), reports for own departments | — |
+| `ten_dept_head` | Checker set + department dashboards, department settings (delegated), assignment, risk/audit items of department | — |
+| `ten_cco` | All compliance, Updates acknowledgements, policies, governance (read), risk (read), audit findings (read), reports, configuration of compliance workflows | Default tenant legal reviewer |
+| `ten_kmp` (CEO/MD) | Executive dashboard, all modules read, approvals routed to them, board pack | — |
+| `ten_kmp` CFO | Risk Lab capital & ratios, Returns & Filings, GST & TDS, investment limits, Finance department compliance | — |
+| `ten_kmp` CRO | Risk, Risk Lab (full), KRIs, incidents, outsourcing risk, ICAAP | — |
+| `ten_kmp` CCrO (Chief Credit Officer) | Credit-related compliance, credit risk dashboards, concentration, NPA trends (from Finbyx), CIC submissions status | — |
+| `ten_kmp` CS | Governance (full), meetings, minutes, registers, MCA filings, LODR | — |
+| `ten_kmp` CISO / CTO / CIO | Data Protection & Cyber, IT compliance, IS audit findings, incidents | — |
+| `ten_kmp` DPO | Data protection (full), DSR queue, breaches, DPIA | — |
+| `ten_kmp` GRO / PNO / IO | Grievance & Support (full or IO-scoped) | IO sees only escalated items |
+| `ten_hr_admin` | People & Labour (full), POSH IC only if also `ten_ic_member` | Payroll split: `ten_payroll_maker` / `ten_payroll_checker` |
+| `ten_ic_member` | POSH IC sealed workspace only (+ own self-service) | NN-13 |
+| `ten_internal_auditor` | Audit (full), read of all audited modules, evidence | Independent of audited functions |
+| `ten_board_member` / `ten_committee_member` | `board` shell | — |
+| external auditors, `ten_supervisor_view` | `assurance` shell | D-12 |
+| `ten_viewer` | Home (viewer), reports shared with them | — |
+
+### C.3.3 Board shell (`/board`)
+
+```
+Board home (next meeting, packs to read, items to sign/vote, personal compliance) · Meetings (upcoming, past, minutes to approve) · Board packs (secure viewer, annotations private to the director) · Circular resolutions (vote with eSign) · Disclosures (MBP-1, DIR-8, interests, related parties; annual declarations) · My compliance (DIN KYC due date, trainings, independence declarations for IDs) · Committee spaces · Resolutions library (read) · Dissent log · Regulator correspondence (read, where shared) · Help
+```
+
+### C.3.4 Assurance shell (`/assurance`)
+
+```
+Engagement home (scope, validity, contacts) · Evidence requests (PBC list; request, receive, comment) · Read-only registers within scope (compliance register, policies, minutes, registers, risk, audit, returns, grievance stats) · Sampling workspace (P10) · Exception reports · Downloads (watermarked PDF only; export level per grant) · Access log (own)
+```
+
+### C.3.5 Self-service shell (`/me`)
+
+```
+My home · Payslips & tax documents · Leave · Attendance & regularisation · Declarations (investment, nomination) · Policies to acknowledge · Trainings · My documents · Raise a concern (POSH complaint → sealed IC workspace; whistle-blower → sealed vigil mechanism) · Co-operative member services [F:COOP] (my shares, my loans view from Finbyx/Udofin link, general-body notices, elections, complaints)
+```
+
+### C.3.6 Settings menu (tenant; detailed sections)
+
+```
+Organisation: Company profile · Legal entities · Departments & functions · Terminology · Business calendars & holidays · Financial year
+Users & access: Users · Roles & permissions · Delegations · Groups & pools · External access grants · Support access · SSO / SCIM
+Workflow: Workflow designer · Status sets · Waiting-on parties & chase policies · Reason codes · SLA & escalation ladders · Assignment rules · RAG windows & radar (SCR-CMP-25) *(v1.2)* · Delay reason codes *(v1.2)* · Conversation SLAs *(v1.2)*
+Data & forms: Custom fields · Forms · Saved views (official; SCR-CMP-29) · Import mappings · Export defaults & schedules (SCR-CMP-21) *(v1.2)*
+Notifications: Templates · Channel policy & quiet hours · Digests · Updates preferences (separate block)
+Dashboards: Role defaults · Department defaults · Widgets
+Navigation: Menu & landing pages · Shortcuts
+Branding: Logo & colours · Letterhead & PDF · Domains & email sender
+Rules & packs: Setting packs · Rule packs (adopted, pinned, adapted) · Golden cases & sandbox · Configuration health
+Billing & plan (P20): Plan & components · Seats & usage · Invoices & payments · Payment methods · Promo codes applied · Savings & value
+Security: Password & MFA policy · Sessions · IP allow-list · Data residency · Encryption keys (BYOK where entitled) · Audit log viewer
+Data export & exit (P19): Exports · Storage destinations (BYO) · Retention & legal holds · Exit plan
+Integrations (P18): Connected systems · API keys · Webhooks · Ecosystem data sharing
+Account: Changes made by LawDocs · Support access · Close account
+My preferences: Language · Accessibility · Notifications · Quiet hours · Digest time · Calendar sync · Delegation / away
+```
+
+### C.3.7 Console shell (`apps/console`)
+
+```
+Home (platform health, content pipeline, scan freshness, tenants at risk, open corrections, security alerts)
+Tenants: Directory · Tenant 360 (profile, entitlements, settings override → Correction Entry, users count, usage, health score, billing) · Trials · Onboarding pipeline
+Content: Sources & authorities · Jurisdictions & packs (coverage, reviewers of record) *(v1.1)* · Intelligence feeds *(v1.1)* · RBI directions catalogue (D-39) *(v1.1)* · Instruments & versions · Question banks · Excel templates registry (Appendix E) · AI question drafting · Releases (maker/checker/publisher) · Tenant overlay analytics (anonymised counts) · Glossary & help content
+Regulatory monitor (P05): Source health & freshness · Today's scan (20:00 IST) · Triage queue · Published updates · Broadcasts
+Rules & config: Platform settings & bounds · Rule packs · Setting packs · Feature flags · Emergency blocks
+Commercial (P20): Pricing catalogue · Components & add-ons · Plans & comparison table · Discounts & promo codes · Trials policy · Revenue streams (switches) · Tax settings
+Partners (P25/P21) *(v1.1)*: Partner registry · Due diligence · Scorecards · Country commercial switches
+Platform *(v1.1)*: Cells & routing · Cell readiness · AI routes per cell · Agent registry & Agent Cards · Kill switches
+Marketplace (P21): Providers & verification · Services catalogue · Categories · Commercial switches by profession (D-06) · Disputes · Payout batches · Academy links
+Corrections: Requests · Emergency overrides · Log
+Security: Break-glass · Support sessions · Access reviews · Key management · Vulnerabilities & VAPT findings (P24)
+Engineering (P24): Releases & change records · Backups & restore tests · Incidents · Status page
+Assurance: Certification evidence (SOC 2 / ISO / PCI readiness) · Platform audit log · Claims register (NN-19)
+Analytics: Product usage · Funnel (health check → trial → paid) · Content coverage
+```
+
+### C.3.8 Delivery shell (`apps/delivery`)
+
+```
+Home (my clients' risk heat: overdue, due this week, waiting on client, SLA of retainer deliverables)
+My clients (portfolio list with health, plan, retainer status)
+Client workspace (per client; opens the tenant in delivery mode under grant)
+  ├ Overview · Compliance work (as maker) · Returns & filings work · Deliverables · Meetings & minutes support · Messages (secure thread with client) · Shared drive link (OneDrive / SharePoint / Google Drive) · Credential vault (D-04) · Billing & invoices (synced) · Tickets · Engagement terms & SLA
+Agent runs (missions started for clients, outputs awaiting client approval) *(v1.1)*
+Firm workspace [practitioner firms] (cross-client queue, client links, firm dashboards) *(v1.1)*
+Regional teams (follow-the-sun) *(v1.1)*
+Queues (team work by type and SLA) · Calendar (all assigned clients) · Effort log (time per client/engagement) · Templates & precedents · Knowledge (Vidhi notebooks for staff) · Link to Operations Hub (CRM, HR)
+```
+
+### C.3.9 Public shell (`apps/public`)
+
+```
+Mega-menu:
+Product: Compliance management · Regulatory change & updates · Governance & company secretarial · Risk management & Risk Lab (ICAAP, stress testing) · Audit management · Returns & filings · Data protection & cyber · People & labour compliance (HRMS) · Grievance redressal · Vidhi AI · Integrations & API
+Solutions (by entity): NBFCs (by layer & type) · Banks & SFBs · Urban co-operative banks · Credit co-operative societies & other co-operatives · ARCs · IFSCA entities · Listed companies · Mutual funds & AIFs · REITs & InvITs · Insurers & insurance intermediaries · Private & public companies · LLPs · Fintechs & LSPs
+Markets *(v1.1)*: India · UAE · Singapore · UK · EU · US (subfolders; country pages only for PUBLISHED packs, NN-53) · For Indian groups abroad · For MNC subsidiaries in India
+New products *(v1.1)*: Legal matters & contracts · ESG & BRSR · AI governance · Global entity management · Reports & board packs · Vidhi AI agents · Connect your AI assistant (MCP)
+Pricing (configurator) · Free compliance health check (domestic · global variant *(v1.1)*) · Marketplace (services, professionals) · Academy (FinLegal Academy courses) · Resources: Regulatory updates digest · Blog · Glossary · Tutorials & videos · Help centre · Webinars · Templates (gated)
+Company: About · Security & trust · Accessibility statement · Careers · Contact · Partners
+CTA: Start free health check · Start 7-day trial · Log in
+```
+Detailed public page specifications: P23 and Appendix P.
+
+---
+
+
+### C.3.10 Menu additions in v1.2 *(v1.2)*
+
+Tenant shell:
+
+- **Compliance › List** — SCR-CMP-03 (renamed "Compliance list"; 9 columns + Next Due, Days to Due and RAG chips). It holds Saved views, Starred, Urgency radar (SCR-CMP-2x), Export builder and Accountability report.
+- **Any list › click a CompID / RiskID / GovID** opens the drawer: SCR-CMP-20 (`/c/<CompID>[/<PERIOD>]`), SCR-ERM-31 (`/r/<RiskID>`) or SCR-GOV-42 (`/g/<GovID>`). The History tab (SCR-CORE-11) is shared by all three.
+- **Governance › Register** — SCR-GOV-41, with the Requirements/Records toggle. Governance › Reports › Accountability — SCR-GOV-43.
+- **Risk › Register** — SCR-ERM-04 (redefined as a 9-column list). Risk › Register › Import / Export — SCR-ERM-33. Risk › Reports › Accountability — SCR-ERM-32.
+- **Settings › Audit & history › History by ID** — SCR-CORE-11.
+- **Sign-up / onboarding wizard** — the P01 §4H discovery box, profile card with provenance badges, conflict cards and organisation-code step.
+
+Console shell:
+
+- **Content › IDs** — SCR-CORE-10. Content › CompIDs — SCR-TPL-20. Content › Templates › Short codes — SCR-TPL-22. Content › Governance library — SCR-GOV-44. Content › Registers — SCR-INT-29. Website › Health Check Studio — SCR-WEB-50–55 (P23 §4U).
+- **Import wizard › Confirm instrument** — SCR-TPL-21 (legacy v1.0 conversion).
+- **Integrations › Onboarding providers** — SCR-INT-28.
+
+Developer portal:
+
+- **Business IDs** — SCR-INT-30.
+
+Full rows are in §C.13.
+
+## C.4 Global search, command palette and keyboard
+
+### C.4.1 Indexed objects (permission-trimmed; OpenSearch per-tenant aliases; sealed classes never indexed, NN-13)
+
+| Shell | Objects | Fields |
+|---|---|---|
+| tenant | Compliance instances, obligations/questions (base + overlay), instruments, Updates, tasks, documents (title, tags, OCR text where allowed), policies, meetings, minutes, resolutions, registers entries, risks, KRIs, incidents, audit findings, return runs, grievances (ID and category only for non-GRO roles), employees (name, code, department; for HR roles), vendors, users, settings, help articles, glossary | Title, ID, clause ref, regulator, department, status, owner, dates, tags |
+| console | Tenants, instruments, releases, rule packs, settings, corrections, providers, services | — |
+| delivery | Assigned clients and their permitted objects | — |
+| public | Pages, blog, glossary, help, marketplace listings, courses | — |
+
+Query features: typo tolerance, Indian legal abbreviations synonym list (MD = Master Direction, SBR = Scale Based Regulation, LODR, PIT, KMP, DPDP, RBIA, ICAAP), filters chips, "search within this module", results grouped by type with keyboard navigation; natural-language queries can be sent to Vidhi ("/vidhi which returns are due this week?").
+
+### C.4.2 Command palette (`Ctrl/Cmd+K`)
+
+Commands are registered by modules (`cfg.palette_commands`) with permission checks. Seed commands:
+
+| Command | Action |
+|---|---|
+| Go to … (any menu leaf) | Navigation |
+| New task · Assign task to Vidhi · Schedule a recurring task | P04 / P17 |
+| Upload evidence for … (search instance) | P04 |
+| Submit / approve next item | Opens next item in inbox order |
+| Add a direction to my compliance list | P03 catalogue |
+| Upload a new direction (draft questions) | P05 |
+| Start a board meeting · Draft minutes for … · Create circular resolution | P06 |
+| Draft a policy with Vidhi · Start policy review | P07 |
+| Log an incident · Log a loss event · Record KRI value | P08 |
+| Run a stress test · Open ICAAP | P09 |
+| Raise audit finding · Request evidence (PBC) | P10 |
+| Start return run · Import Tally data | P11 |
+| Report a data breach · New DSR request | P12 |
+| Apply leave · Run payroll (payroll makers) | P13 |
+| New grievance · Find grievance by ID | P14 |
+| Rename department · Add custom field · Change reminder cadence · Apply setting pack | P02 |
+| Export … (scope) | P19 |
+| Open help for this page · Search glossary | P23 |
+| Switch legal entity · Switch period | Context |
+| Open RBI-NBFC-GOV25-0042 (or any CompID / legacy alias / RiskID / GovID) *(v1.2)* | Opens the drawer (NN-56 alias redirect) |
+| Star · Watch · Ask maker for explanation · Ask for guidance *(v1.2)* | Acts on the open drawer (P04 FR-P04-218) |
+| Show urgent items · Show my starred items *(v1.2)* | Opens SCR-CMP-27 / Starred filter |
+| Export this view grouped by … *(v1.2)* | Opens the export builder pre-filled (SCR-CMP-21) |
+| Accountability report for … *(v1.2)* | SCR-CMP-22 with scope pre-filled |
+
+### C.4.3 Keyboard shortcuts (documented on `?`; all remappable; none single-key without a modifier unless the user enables "single-key shortcuts", SC 2.1.4)
+
+`Ctrl/Cmd+K` palette · `Ctrl/Cmd+J` Vidhi · `g h` home · `g i` inbox · `g u` updates · `g c` calendar · `g s` settings · `j/k` next/previous row · `Enter` open · `e` edit · `a` approve (opens confirmation, never approves silently) · `r` return/reject (requires reason) · `u` upload · `/` search in page · `?` shortcut help · `Esc` close drawer. *(v1.2)* List and drawer: `j/k` next/previous row (drawer follows), `Enter` open drawer, `Space` quick peek, `Shift+Enter` full page, `s` star, `w` watch, `c` comment, `a` ask (composer), `g` then `h` History tab, `f` then a letter for a quick filter, `Alt+←/→` move a column — single-key forms only when the user enables single-key shortcuts, otherwise `Alt+` + key (SC 2.1.4).
+
+---
+
+## C.5 Work Inbox
+
+### C.5.1 Item kinds
+
+| Kind | Examples in LDC | Actionable |
+|---|---|---|
+| `task` | Upload evidence for an instance; prepare return; draft minutes; review policy; respond to PBC request; remediate finding | Yes |
+| `approval` | Check a compliance submission; approve NA request; approve tenant overlay; approve G config change; approve policy for committee; approve return; approve payroll; approve export of sensitive scope; Correction Entry (console) | Yes |
+| `mention` | "@CFO please confirm the CRAR figure" in a comment | Yes |
+| `message` | Client ↔ RM thread; auditor query; committee member comment | Yes |
+| `deadline` | Statutory clock at warn offsets; licence/registration renewal; DIN KYC; policy review due | Open |
+| `alert` | KRI breach; overdue escalation; integration feed failure (Finbyx data missing); quarantined evidence; trial ending | Yes |
+| `request` | Access request; external auditor evidence request; delegation request; "request change" on a locked setting | Yes |
+
+Updates (regulatory) are **not** inbox items; critical Updates that need acknowledgement create a `task` ("Acknowledge and assess RBI update …") linked to the Update (NN-27).
+
+### C.5.2 Ordering, priority, actions
+
+- Priority P1 (statutory deadline ≤ 24 h or breached; security alert), P2 (SLA amber/red, approval blocking others, due ≤ 3 working days), P3 (normal), P4 (FYI).
+- Default order: `(legal_blocking DESC, sla_state DESC, due_at ASC NULLS LAST, priority ASC, created_at ASC)`; user can sort by newest/source; default returns each visit.
+- Opening an item loads the owning module's decision panel in a drawer (no page change); actions call the owning engine with `If-Match`; stale items reload ("This changed since you opened it").
+- **Bulk:** mark read, snooze, reassign, mark tasks done. **Bulk approve only for `bulk_approvable` sources** (Low-risk T content reviews, leave, attendance regularisations); never for compliance checks of High/Medium risk, G changes, money, privileges, sensitive exports (supersedes the owner's baseline "bulk approve available" for checkers). A **"Review next"** button gives checkers fast sequential review instead.
+- *(v1.2)* Compliance items carry their RAG chip; within a priority band Red sorts before Amber before Blue before Green; a newly Red item enters the Inbox within 15 minutes (P04 FR-P04-234). Unaccepted assignments and open explanation/guidance requests addressed to the user are Inbox items with their SLA.
+- Snooze: not for P1; P2 not past `due_at − 24 h`; max 3 snoozes.
+- Away & delegation: per P02 FR-P02-52; delegated items show "On behalf of {delegator} until {date}".
+- Unassigned approvals escalate to the next authority level.
+
+### C.5.3 Notification centre and digests
+
+Bell shows Notifications (work) and links to Inbox; Updates have their own icon. Channels by priority (P1 immediate in-app/push/email; P2 immediate in-app/push, email digest; P3 in-app, daily digest; P4 in-app only). Daily work digest 08:30 (user time); daily regulatory digest 20:30 IST after the 20:00 scan; weekly management digest Monday 08:30 for KMPs. Quiet hours narrow-only (default 21:00–08:00). De-duplication per object per 15 minutes. *(v1.2)* The 08:30 work digest opens with the **Urgent & Upcoming radar** (Overdue, Due today, Next 7 days, At risk of slipping — each with counts, icons and words and up to 5 CompIDs linking to their drawers); a 16:00 "still open today" nudge covers Red items only; push and WhatsApp/SMS for Red items are opt-in (DLT templates, never recovery or legal notices, X-23); Red-overdue alerts to the Responsible and Accountable users are floors and cannot be muted.
+
+---
+
+## C.6 Dashboards, widget catalogue and next-best action (R-012, R-059, R-030)
+
+### C.6.1 Widget catalogue (`cfg.widget_catalogue`; seed)
+
+Every widget: title + "i" help; server-computed values only; drill-down to the filtered list; export PNG/CSV/XLSX; accessible table alternative ("View as table"); period and legal-entity filters inherit from the context bar; refresh interval shown ("Updated 10:42"). Widgets reading Finbyx/Udofin data show source and as-of date ("Source: Finbyx, as of 24-Oct-2026 23:00") and a stale badge if older than the feed SLA.
+
+| Code | Widget | Module | Typical roles |
+|---|---|---|---|
+| W-CMP-01 | Compliance score ring (0–100; canonical statuses, weighted by risk) with per-regulator segments | cmp | CCO, CEO, MD, Board, dept head |
+| W-CMP-02 | **Overdue statutory items** (count + list, P1 first) | cmp | CCO, dept head, Board, CEO (mandatory) |
+| W-CMP-03 | Due in next 7 / 30 days | cmp | maker, checker, dept head, CCO |
+| W-CMP-04 | My compliances by status (kanban mini) | cmp | maker |
+| W-CMP-05 | Awaiting my check (count, oldest age, SLA) | cmp/wf | checker |
+| W-CMP-06 | Department compliance heatmap (dept × regulator) | cmp | CCO, CEO, Board |
+| W-CMP-07 | Trend: on-time % (30/60/90 days, FY) | cmp | CCO, CEO, Board |
+| W-CMP-08 | Waiting on others (by party type, age) | cmp | dept head, CCO, RM |
+| W-CMP-09 | Exceptions & NA decisions pending | cmp | CCO |
+| W-CMP-10 | Rework rate & returns by checker | cmp | dept head, CCO |
+| W-CMP-11 | Penalty exposure (indicative; from penalty rule packs; "not legal advice") | cmp/bil | CCO, CFO, CEO, Board |
+| W-CMP-20 *(v1.2)* | **Urgent & Upcoming** — tabs Overdue · Due in 7 days · Due in 30 days · At risk · Returned; counts with icon + word; top 5 rows with CompID, short question, next due, RAG; "View all" opens the filtered list (1 click) | cmp | maker, checker, dept head, CCO (mandatory on these homes) |
+| W-CMP-21 *(v1.2)* | **Starred** — my starred CompIDs with personal label, next due and RAG; reminder dates; drag to reorder; empty state "Star items with ☆ to keep them here" | cmp | all working users |
+| W-CMP-22 *(v1.2)* | **Accountability** — overdue and late by Accountable owner and department, average days with maker vs checker, unaccepted assignments, open explanation requests by age, top delay reasons; individual rows only for permitted viewers | cmp | CCO, dept head, KMP; Board (aggregate only) |
+| W-CMP-23 *(v1.2)* | **RAG heat map** — department × month grid; each cell shows Red/Amber/Green counts with icons and a dominant-state pattern; drill to the list; accessible table view; rendered via P28 | cmp/rpt | CCO, CEO, MD, Board, audit committee |
+| W-CMP-24 *(v1.2)* | **At risk of slipping** — predicted items (purple outline, trend-down icon, probability band and top reasons); actions Nudge · Reassign · Add backup; labelled "Prediction — not a status" (NN-58) | cmp | dept head, CCO |
+| W-CHG-01 | **Critical regulatory updates to acknowledge** | chg | CCO (mandatory), dept head |
+| W-CHG-02 | Updates by regulator this week | chg | CCO, CS, CEO |
+| W-CHG-03 | "What changed" — obligations changed vs previous direction | chg | CCO, dept head |
+| W-WF-01 | My tasks (today / week / overdue) | wf | all |
+| W-WF-02 | My calendar (next 7 days) | wf | all |
+| W-WF-03 | Team workload (open items per person, ageing) | wf | dept head |
+| W-WF-04 | Approvals awaiting me | wf | all approvers |
+| W-WF-05 | Escalations raised (L1–L3) | wf | dept head, CCO, CEO |
+| W-GOV-01 | Next board / committee meetings (notice, papers, quorum status) | gov | CS, Board, CEO |
+| W-GOV-02 | Minutes clocks (draft circulation, entry) | gov | CS |
+| W-GOV-03 | MCA / ROC filings due & filed | gov | CS, CFO |
+| W-GOV-04 | Director compliance (DIN KYC, DIR-8, MBP-1, independence declarations) | gov | CS, Board |
+| W-GOV-05 | LODR disclosure clock (events awaiting disclosure; 24 h / 30 min clocks per regulation) [F:listed] | gov | CS, CFO |
+| W-GOV-06 | Board action-taken report (open decisions) | gov | Board, CEO, MD |
+| W-GOV-07 | Related-party transactions awaiting approval | gov | CS, CFO, Audit Committee |
+| W-POL-01 | Policies due for review / overdue | pol | CCO, policy owners, Board |
+| W-POL-02 | Acknowledgement coverage % | pol | HR, CCO |
+| W-RSK-01 | Enterprise risk heatmap (inherent vs residual; 5×5 default) | erm | CRO, CEO, Board, RMC |
+| W-RSK-02 | **KRIs in breach** (red/amber vs appetite) | erm | CRO (mandatory), CEO |
+| W-RSK-03 | Top 10 risks with trend arrows | erm | CRO, Board |
+| W-RSK-04 | RCSA progress by department | erm | CRO, dept head |
+| W-RSK-05 | Incidents & loss events (count, amount, by Basel event type) | erm | CRO, CISO |
+| W-RSK-06 | Risk acceptances expiring | erm | CRO |
+| W-RAL-01 | Capital adequacy (CRAR, Tier 1, vs regulatory minimum and internal buffer) | ral | CFO, CRO, CEO, Board |
+| W-RAL-02 | Liquidity (LCR where applicable; structural liquidity buckets; cumulative mismatch limits) | ral | CFO, CRO, ALCO |
+| W-RAL-03 | Asset quality (GNPA, NNPA, PCR, SMA buckets — sourced from Finbyx/LMS) | ral | CCrO, CRO, CFO, Board |
+| W-RAL-04 | Concentration (single/group borrower, sector, top 20) vs limits | ral | CCrO, CRO |
+| W-RAL-05 | Stress test results (latest; baseline/adverse/severe; capital after stress) | ral | CRO, CFO, Board |
+| W-RAL-06 | ICAAP status and capital planning headroom | ral | CRO, CFO |
+| W-RAL-07 | Investment limits (exposure to capital market, AIF investments, single-entity caps) [F:ICC, investment entities] | ral | CFO, CIO |
+| W-RAL-08 | Financial ratio panel (configurable: ROA, ROE, NIM, cost-to-income, leverage, NOF, debt-equity) | ral/acc | CFO, CEO, Board |
+| W-RAL-09 | ALM gap chart | ral | CFO, ALCO |
+| W-AUD-01 | Audit plan progress | aud | IA, Audit Committee |
+| W-AUD-02 | **Open findings by severity and age** | aud | IA (mandatory), CEO, Audit Committee |
+| W-AUD-03 | Overdue remediation (repeat findings flagged) | aud | IA, dept head |
+| W-AUD-04 | Evidence requests (PBC) status | aud | IA, external auditor, CCO |
+| W-RET-01 | Returns due / prepared / submitted / acknowledged (this period) | ret | CFO, CCO, returns team |
+| W-RET-02 | Data feed health (Finbyx, Udofin, Tally, Excel) | ret/int | CFO, returns team, CTO |
+| W-RET-03 | CIC submission cycles (accepted/rejected records, DQ index) | ret | CCrO, CFO |
+| W-RET-04 | GST & TDS due dates and status | ret | CFO |
+| W-DPC-01 | Data-principal requests (open, SLA) | dpc | DPO |
+| W-DPC-02 | **Incident clocks** (CERT-In 6 h; DPDP Board report; regulator cyber reporting) | dpc | CISO (mandatory), DPO |
+| W-DPC-03 | Control effectiveness (ISMS controls tested, failing) | dpc | CISO |
+| W-DPC-04 | Vendor risk (critical vendors, overdue assessments, outsourcing register gaps) | tpr | CISO, CRO, CCO |
+| W-DPC-05 | VAPT / IS audit open items | dpc/aud | CISO, CTO |
+| W-HR-01 | Headcount and attrition (by department, location) | hr | HR, CEO |
+| W-HR-02 | Labour compliance calendar (registers, returns, contributions) | lab | HR, CCO |
+| W-HR-03 | Payroll run status (maker/checker/disbursal file) | hr | HR, payroll roles, CFO |
+| W-HR-04 | Leave & attendance exceptions | hr | HR, dept head |
+| W-HR-05 | People-risk indicators (key-person dependency, vacancies in KMP roles, training overdue) | hr/erm | HR, CRO |
+| W-HR-06 | POSH IC: count of open cases and clock status only (no details; sealed) | lab | IC presiding officer only |
+| W-GRV-01 | **Grievances breaching / near breach** | grv | GRO (mandatory), PNO, CCO |
+| W-GRV-02 | Grievance volume by category / channel / product | grv | GRO, CEO, Board |
+| W-GRV-03 | External forum cases (Ombudsman, SCORES, Bima Bharosa) | grv | GRO, CCO |
+| W-GRV-04 | Support tickets (open, first response SLA) | grv | support agents |
+| W-AI-01 | Vidhi drafts awaiting review | ai | all |
+| W-AI-02 | Scheduled agent runs & results | ai | admins, CCO |
+| W-BIL-01 | Plan, usage, seats, next invoice | bil | `ten_admin` |
+| W-BIL-02 | Savings & value (hours saved, penalties avoided — indicative, with method) | bil | `ten_admin`, CEO, CFO |
+| W-ADM-01 | Users & roles changes (last 30 days); pending invites | iam | `ten_admin` |
+| W-ADM-02 | Integration health | int | `ten_admin`, CTO |
+| W-ADM-03 | Configuration health | cfg | `ten_admin` |
+| W-ADM-04 | Security alerts (failed logins, new devices, MFA gaps) | iam | `ten_admin`, CISO |
+| W-SUP-01 | Supervisor view: scope summary & what's included (read-only banner) | core | `ten_supervisor_view` (mandatory) |
+| W-DLV-01 | Client portfolio health (per client: overdue, due this week, waiting on client) | sdc | `dlv_rm`, `dlv_lead` |
+| W-DLV-02 | Retainer SLA tracker (deliverables due, hours used vs allowance) | sdc | `dlv_rm`, `dlv_lead` |
+| W-PLT-01 | Scan freshness & failed sources | chg | content team, `plt_super_admin` |
+| W-PLT-02 | Content pipeline (drafting, maker, checker, scheduled) | cnt | content team |
+| W-PLT-03 | Tenants: trials, conversions, at-risk | bil | `plt_super_admin` |
+| W-PLT-04 | Open corrections & emergency overrides | core | `plt_super_admin`, security |
+| W-PLT-05 | Platform SLOs, incidents, backup status | eng | `plt_super_admin`, security |
+| W-AI-05 | Agent workforce acceptance & undo rates *(v1.1, X1)* | ai | `ten_admin`, `ten_cco`, model risk |
+| W-AI-06 | Agent outputs awaiting my review *(v1.1, X1)* | ai | all reviewers |
+| W-AI-07 | Agent KPIs (acceptance, undo, cost per accepted output) *(v1.1, X1)* | ai | `ten_admin`, `ten_cco` |
+| W-AI-08 | Autonomy readiness (per agent, L0–L4 promotion criteria) *(v1.1, X1)* | ai | `ten_admin`, `ten_model_validator` |
+| W-AIG-01 | High-risk AI systems without current assessment *(v1.1, X1)* | aig | AIO, `ten_cco`, `ten_model_validator` |
+| W-AIG-02 | AI incidents (open, by severity) *(v1.1, X1)* | aig | AIO, CISO, `ten_cco` |
+| W-AIG-03 | Validations due *(v1.1, X1)* | aig | `ten_model_validator`, AIO |
+| W-AIG-04 | Kill-switch test status *(v1.1, X1)* | aig | AIO, `ten_admin` |
+| W-ESG-01 | ESG data requests overdue *(v1.1, X1)* | esg | CSO, data owners |
+| W-ESG-02 | BRSR readiness *(v1.1, X1)* | esg | CSO, CS, CFO |
+| W-ESG-03 | GHG trend (Scope 1–2) *(v1.1, X1)* | esg | CSO, Board |
+| W-ESG-04 | CSR spend vs obligation *(v1.1, X1)* | esg | CSR Committee, CFO, CS |
+| W-ESG-05 | Assurance status (BRSR Core) *(v1.1, X1)* | esg | CSO, Audit Committee |
+| W-FRM-01 | Cross-client overdue *(v1.1, X1)* | sdc | `practitioner_admin`, `practitioner_user` |
+| W-FRM-02 | Due this week (all clients) *(v1.1, X1)* | sdc | `practitioner_user` |
+| W-FRM-03 | Client health *(v1.1, X1)* | sdc | `practitioner_admin` |
+| W-FRM-04 | Staff capacity *(v1.1, X1)* | sdc | `practitioner_admin` |
+| W-GEM-01 | Group compliance map *(v1.1, X1)* | gem | `ten_cco`, CS, GC |
+| W-GEM-02 | Foreign filings due (30 days) *(v1.1, X1)* | gem | CS, local entity owners |
+| W-GEM-03 | Coverage freshness by country *(v1.1, X1)* | gem | `ten_cco`, `ten_admin` |
+| W-GEM-04 | Expert queries open *(v1.1, X1)* | gem | CS, GC |
+| W-LIT-01 | Hearings & limitation dates (14 days) *(v1.1, X1)* | lit | GC, `ten_legal_user` |
+| W-LIT-02 | Exposure by forum *(v1.1, X1)* | lit | GC, CFO, Board |
+| W-LIT-03 | Notices awaiting reply *(v1.1, X1)* | lit | GC, `ten_legal_user`, CS |
+| W-LIT-04 | Inspection observations open *(v1.1, X1)* | lit | `ten_cco`, CS, Head IA |
+| W-LIT-05 | Contracts renewing (90 days) *(v1.1, X1)* | lit | GC, COO |
+| W-LIT-06 | Licences expiring *(v1.1, X1)* | lit | COO, CS, `ten_cco` |
+| W-PRT-01 | Pack versions awaiting review *(v1.1, X1)* | prt | `prt_content_reviewer`, `prt_admin` |
+| W-PRT-02 | Query SLA *(v1.1, X1)* | prt | `prt_admin`, `prt_delivery_professional` |
+| W-PRT-03 | Partner scorecard *(v1.1, X1)* | prt | `prt_admin`, `prt_viewer` |
+| W-RSK-07 | Early-warning signals (P08) *(v1.1, X1)* | erm | CRO, RMC |
+| W-RAL-10 | Stress result cards (P09) *(v1.1, X1)* | ral | CRO, Appointed Actuary, ALCO |
+| W-RET-05 | Regulatory returns — prepare-due status (P11) *(v1.1, X1)* | ret | CFO, `ten_cco`, return owners |
+| W-RET-06 | Return data-quality scorecard (P11) *(v1.1, X1)* | ret | CFO, data owners |
+| W-RPT-01 | Reports awaiting approval *(v1.1, X1)* | rpt | approvers |
+| W-RPT-02 | Scheduled reports failed / late *(v1.1, X1)* | rpt | `ten_admin`, report owners |
+| W-RPT-03 | Board / committee packs in preparation *(v1.1, X1)* | rpt | CS, committee secretaries |
+| W-RPT-04 | MIS catalogue compliance *(v1.1, X1)* | rpt | `ten_cco`, Head IA |
+| W-RPT-05 | Alert health (delivery, acknowledgement) *(v1.1, X1)* | rpt | `ten_admin` |
+| W-RPT-06 | AI activity summary *(v1.1, X1)* | rpt | `ten_admin`, AIO |
+| W-GRP-01 | Group entity status *(v1.1, X1)* | gov | CS, `ten_cco`, Board |
+
+### C.6.2 Default layouts per role (row 1 → row 3; **bold** = mandatory, cannot be hidden)
+
+| Role | Row 1 | Row 2 | Row 3 | Quick actions (header) |
+|---|---|---|---|---|
+| Maker (`ten_maker`) | **W-WF-01 My tasks**, W-CMP-03 Due 7 days | W-CMP-04 My compliances by status, W-WF-02 Calendar | W-AI-01 Vidhi drafts, W-CHG-03 What changed (my departments) | + Upload evidence · + New task · Ask Vidhi |
+| Checker (`ten_checker`) | **W-CMP-05 Awaiting my check**, W-WF-04 Approvals | W-CMP-10 Rework & returns, W-CMP-03 Due 7 days | W-WF-02 Calendar | Review next · Ask Vidhi |
+| Department head / VP | **W-CMP-02 Overdue (dept)**, W-WF-03 Team workload | W-CMP-08 Waiting on others, W-WF-05 Escalations | W-RSK-04 RCSA progress, W-AUD-03 Overdue remediation | Assign · Reassign · Dept report |
+| CCO | **W-CMP-02 Overdue**, **W-CHG-01 Critical updates**, W-CMP-01 Score | W-CMP-06 Dept heatmap, W-CMP-07 Trend, W-CMP-11 Penalty exposure | W-CMP-09 Exceptions, W-POL-01 Policies due, W-GRV-01 Grievance breaches | Board compliance report · Acknowledge updates · Ask Vidhi |
+| CEO | W-CMP-01 Score, **W-CMP-02 Overdue**, W-RSK-02 KRIs | W-RAL-01 Capital, W-RAL-03 Asset quality, W-RSK-01 Heatmap | W-GOV-06 Board action-taken, W-AUD-02 Findings, W-GRV-02 Grievance volumes | Executive summary PDF · Ask Vidhi |
+| MD / WTD | As CEO + W-GOV-01 Next meetings | W-RAL-08 Ratio panel | W-HR-05 People risk | — |
+| CFO | **W-RAL-01 Capital**, W-RET-01 Returns, W-RET-04 GST & TDS | W-RAL-08 Ratio panel, W-RAL-02 Liquidity, W-RAL-09 ALM gap | W-RAL-07 Investment limits [F], W-GOV-03 MCA filings, W-HR-03 Payroll | Start return run · Import Tally · Ratio report |
+| CRO | **W-RSK-02 KRIs in breach**, W-RSK-01 Heatmap | W-RAL-05 Stress tests, W-RAL-06 ICAAP, W-RSK-05 Incidents & losses | W-RSK-06 Acceptances expiring, W-DPC-04 Vendor risk, W-HR-05 People risk | Run stress test · Log incident · RMC report |
+| CCrO (Chief Credit Officer) | W-RAL-03 Asset quality, W-RAL-04 Concentration | W-RET-03 CIC submissions, W-CMP-02 Overdue (credit) | W-GRV-02 Grievances (credit products) | Credit risk report |
+| CS | **W-GOV-01 Next meetings**, W-GOV-02 Minutes clocks | W-GOV-03 MCA filings, W-GOV-04 Director compliance | W-GOV-05 LODR clock [F:listed], W-GOV-07 RPTs | Create meeting · Draft minutes · New circular resolution |
+| CISO / CTO / CIO | **W-DPC-02 Incident clocks**, W-DPC-03 Controls | W-DPC-05 VAPT/IS audit, W-DPC-04 Vendor risk | W-RET-02 Data feed health, W-ADM-04 Security alerts | Log incident · Control test |
+| DPO | **W-DPC-01 DSR queue**, **W-DPC-02 Incident clocks** | W-DPC-04 Vendors (processors) | W-POL-02 Acknowledgements (privacy policies) | New DSR · Report breach · DPIA |
+| GRO / PNO | **W-GRV-01 Breaching**, W-GRV-03 External forum | W-GRV-02 Volumes, W-GRV-04 Tickets | W-WF-01 Tasks | New grievance · Find by ID |
+| Internal Ombudsman | **W-GRV-01 (IO-escalated only)** | — | — | Review next |
+| HR admin | W-HR-02 Labour calendar, W-HR-03 Payroll | W-HR-01 Headcount, W-HR-04 Exceptions | W-POL-02 Acknowledgements, W-HR-05 People risk | Run payroll · Add employee · Labour register |
+| Internal auditor | **W-AUD-02 Open findings**, W-AUD-01 Plan progress | W-AUD-03 Overdue remediation, W-AUD-04 PBC status | W-CMP-07 Compliance trend | Raise finding · Request evidence |
+| External / secretarial / IS auditor (assurance) | W-AUD-04 PBC status (own) | Scope summary | Downloads | Request evidence |
+| Board member | **W-CMP-02 Overdue statutory**, W-GOV-01 Next meeting & pack | W-CMP-01 Score, W-RSK-01 Heatmap, W-RAL-01 Capital | W-GOV-04 My director compliance, W-GOV-06 Action-taken | Open board pack · Vote on circular resolution |
+| Supervisor view | **W-SUP-01 Scope summary** | Read-only registers within scope | Access log | — |
+| `ten_admin` | W-ADM-01 Users, W-BIL-01 Plan & usage | W-ADM-03 Config health, W-ADM-02 Integrations | W-BIL-02 Savings, W-ADM-04 Security | Invite user · Apply setting pack · Settings |
+| `plt_super_admin` | W-PLT-03 Tenants, W-PLT-04 Corrections | W-PLT-05 Platform health, W-PLT-01 Scan freshness | W-PLT-02 Content pipeline | Tenant 360 · New correction |
+| Content team (`plt_content_*`) | **W-PLT-01 Scan freshness**, W-PLT-02 Pipeline | Triage queue | Releases scheduled | Triage next · Draft questions |
+| RM (`dlv_rm`) | **W-DLV-01 Portfolio health**, W-DLV-02 Retainer SLA | W-CMP-08 Waiting on client (all clients) | W-WF-02 Calendar (all clients) | Open client · Message client |
+| Employee (self-service) | Payslip, leave balance | Policies to acknowledge, trainings | Holiday calendar | Apply leave · Raise concern |
+| Co-operative office bearer | General body / committee meetings, election calendar | Compliance due (registrar returns, audit) | Member complaints | Notice to members |
+| General Counsel (`ten_kmp` GC) *(v1.1)* | **W-LIT-01 Hearings & limitation dates (14 days)**, W-LIT-02 Exposure by forum | W-LIT-03 Notices awaiting reply, W-LIT-04 Inspection observations open | W-LIT-05 Contracts renewing (90 days), W-LIT-06 Licences expiring | New matter · Log notice · Ask Vidhi |
+| Chief Sustainability Officer (`ten_kmp` CSO) *(v1.1)* | **W-ESG-01 Data requests overdue**, W-ESG-02 BRSR readiness | W-ESG-03 GHG trend (Scope 1–2), W-ESG-04 CSR spend vs obligation | W-ESG-05 Assurance status | Send data request · Draft BRSR |
+| AI Officer (`ten_kmp` AIO) *(v1.1)* | **W-AIG-01 High-risk AI systems without current assessment**, W-AIG-02 AI incidents | W-AIG-03 Validations due, W-AIG-04 Kill-switch test status | W-AI-05 Agent workforce acceptance & undo rates | Register AI system · Board AI report |
+| Group / global head *(v1.1)* | **W-GEM-01 Group compliance map**, W-GEM-02 Foreign filings due (30 days) | W-GEM-03 Coverage freshness by country, W-CMP-01 Score by entity | W-GEM-04 Expert queries open | Add foreign entity · Ask a local expert |
+| Agent sponsor (any role with a hired agent) *(v1.1)* | **W-AI-06 Agent outputs awaiting my review** | W-AI-07 Agent KPIs (acceptance, undo, cost per accepted output) | W-AI-08 Autonomy readiness | Review next · Pause agent |
+| Partner reviewer (`prt_content_reviewer`) *(v1.1)* | **W-PRT-01 Pack versions awaiting review** | W-PRT-02 Query SLA | W-PRT-03 Scorecard | Review next |
+| Practitioner firm (`practitioner_admin`) *(v1.1)* | **W-FRM-01 Cross-client overdue**, W-FRM-02 Due this week | W-FRM-03 Client health | W-FRM-04 Staff capacity | Open client |
+
+Entity-family packs (P02 §4N) swap widgets: e.g., UCB packs replace W-RAL-02 with UCB liquidity widgets; co-operative packs hide W-RAL-01 if not applicable and show registrar-return widgets; listed packs show W-GOV-05.
+
+*(v1.2)* Layout changes: W-CMP-20 **Urgent & Upcoming** is mandatory in row 1 for Maker, Checker, Department head and CCO (replacing W-CMP-03 for makers, which moves into W-CMP-20's "Due in 7 days" tab); W-CMP-21 Starred is added to row 3 for every working role; W-CMP-22 Accountability is added to row 2 for Department head and CCO; W-CMP-23 RAG heat map is added to row 2 for CEO, MD/WTD and the Board shell home (replacing W-CMP-06 Dept heatmap, which it supersedes); W-CMP-24 At risk of slipping is added to row 3 for Department head and CCO.
+
+### C.6.3 Personalisation rules
+
+Users may add, remove (except mandatory), resize (S/M/L/XL grid), reorder, set filters, pin a saved view as a widget, and create up to 5 personal dashboards; tenant admins publish role and department defaults and lock widgets; "Reset to role default" always available. KMPs can choose "Board view" (simplified, larger type) for presenting. Dashboards export to PDF/PPTX-ready images for board packs (P06) with source and as-of footers.
+
+### C.6.4 Next-best action (deterministic; `cfg.nba_rules`)
+
+Rules (never AI-decided) surface one primary suggestion card on home, e.g.: "3 items due tomorrow are not started — Open"; "RBI update needs your acknowledgement — Review"; "Return X data from Finbyx not received — Chase"; "Board meeting in 9 days: notice not issued (7-day rule) — Issue notice"; "Policy Y review overdue by 12 days — Start review"; "KRI 'GNPA %' breached appetite — Raise issue". Vidhi may phrase the explanation, but the trigger and target are rule-based and logged.
+
+---
+
+## C.7 Workflow pattern library (`packages/patterns`)
+
+Every phase cites a pattern ID in its screen table; deviations need an ADR.
+
+| ID | Pattern | Key rules |
+|---|---|---|
+| PAT-01 | Wizard with save-and-resume | ≤ 7 steps, each a URL; autosave ≤ 10 s; "Check your answers"; pre-fill (SC 3.3.7); drafts kept 90 days |
+| PAT-02 | Maker-checker approval | Diff, evidence, citations, preview; maker ≠ checker; reason on reject; step-up where configured; WYSIWYS digest |
+| PAT-03 | Bulk action with preview and undo | Dry run with counts and sample; per-row results CSV; undo window 10 min for reversible actions; irreversible actions use PAT-16 |
+| PAT-04 | SLA queue with "Next" | Deadline-aware ordering; atomic claim; pauses only internal SLA with fixed reasons |
+| PAT-05 | Kanban | Keyboard "Move to…" alternative (SC 2.5.7); stage gates explain what is missing |
+| PAT-06 | Timeline / audit history | Filter by actor, kind, date; corrections shown with "Corrected" chip and both values for authorised viewers |
+| PAT-07 | Calendar and scheduling | Store UTC, show viewer zone + IST; holiday overlays; ICS and M365/Google sync; recurring rules preview |
+| PAT-08 | Document review and annotate | Comments as separate records; approval binds to version hash; redline compare |
+| PAT-09 | eSign ceremony | Pre-sign summary; signer order; reminders; IT Act First Schedule exclusions blocked; signed PDF verification |
+| PAT-10 | Payment and checkout | Price breakdown incl. GST before personal data; hosted checkout; "Paid" only after verified webhook |
+| PAT-11 | Import with mapping preview | Template download → upload → mapping → dry-run → (approval) → commit → reconciliation counts; rollback until dependants exist |
+| PAT-12 | Export request | Scope → layout → destination → redaction profile → preview of folders/counts → approval for sensitive → certificate |
+| PAT-13 | Escalation ladder | L0–L3; level times above floors; L3 mandatory for statutory clocks |
+| PAT-14 | Exception handling | Open → acknowledged → resolved / risk-accepted (expiry ≤ 12 months) → reopened |
+| PAT-15 | Empty, error, loading states | One sentence + one action; skeletons; error code + trace ID; data preserved on error |
+| PAT-16 | Confirmation for irreversible actions | Full confirmation screen stating effect and entity; typed reference for destructive deletes and mass sends; irreversible list (L): sign, pay, publish policy, issue meeting notice, send final grievance reply, approve payroll, record portal submission, erase data, apply Correction Entry |
+| PAT-17 | Evidence capture from anywhere | Upload from device, camera (mobile), email-in address per instance, drag from DMS, pull from connected drive, or "request from colleague/external party" with secure link |
+| PAT-18 | Inline AI assist | "Draft with Vidhi" button next to rich-text fields; draft appears as suggestion with "Accept / Edit / Discard"; label "AI-generated draft — review required"; sources panel |
+| PAT-19 | Period roll-forward | "Copy from last period" for evidence descriptions, control notes and assignees (never copies evidence files or status) |
+| PAT-20 | Saved views and filters | URL-encoded filters; share; official views by admins; *(v1.2)* views store filters + sort (≤ 4 keys) + group-by (≤ 3) + columns + density; scopes personal/role/department/team/tenant; versioned; natural-language filter shown as an editable filter before it runs (NN-47) |
+| PAT-21 *(v1.2)* | List + record drawer | Narrow default list (≤ 9 columns + chips) with column chooser; click the ID → right drawer keeping list scroll and selection; `j/k` with drawer open; deep link per record; tabs hidden not disabled; full-page escape hatch (P04 §4R) |
+| PAT-22 *(v1.2)* | Typed conversation thread | Types Query / Explanation / Guidance / Note / Decision; addressee and SLA shown before send; append-only after 5 minutes (NN-59); outcomes on close; part of the record and its exports |
+| PAT-23 *(v1.2)* | Grouped export builder | Rows = current view; group-by ≤ 3 independent of screen; column set (list / default / full); formats Excel outline or sheet-per-group + Summary, PDF with cover and RAG summary, CSV, Word; count preview; schedule; export is a ledger event per record (extends PAT-12 for list exports) |
+
+---
+
+## C.8 Design tokens and visual identity (from owner's baseline, corrected for WCAG 2.2 AA)
+
+### C.8.1 Colour
+
+| Token | Hex | Use | Contrast on white | Rule |
+|---|---|---|---|---|
+| `color.primary` (Navy) | #0A2540 | Primary text accents, primary buttons, header | 15.5:1 | — |
+| `color.primary.dark` | #050F1F | Hover/pressed | — | — |
+| `color.primary.wash` | #E8EDF2 | Section backgrounds, hover rows | — | Background only |
+| `color.accent` (Gold) | #C9A961 | Premium badges, decorative accents, focus ring on navy | **2.25:1** | **Never for text or meaningful icons on light backgrounds**; allowed on navy (6.9:1) |
+| `color.accent.text` | #8A6D2B | Gold-toned text on light surfaces | 4.9:1 | Use instead of #C9A961 for text |
+| `color.success` | #2D6A4F | Complied, approved | 6.4:1 | Always with icon + label |
+| `color.success.bg` | #D1E7DD | Success background | — | — |
+| `color.warning` (Amber) | #D97706 | Due-soon fills, icons ≥ 3:1 UI | **3.2:1** | **Not for body text**; text variant below |
+| `color.warning.text` | #B45309 | Due-soon text | 5.0:1 | — |
+| `color.warning.bg` | #FEF3C7 | Warning background | — | — |
+| `color.danger` | #C44536 | Overdue, breach | 4.9:1 | With icon + label |
+| `color.danger.bg` | #FEE2E2 | Error background | — | — |
+| `color.info` | #1D4ED8 | Links, info | 6.7:1 | Links underlined in body text |
+| `color.text` | #0F172A | Body text | 17.9:1 | — |
+| `color.text.secondary` | #475569 | Secondary text | 7.6:1 | — |
+| `color.text.placeholder` | #64748B | Placeholders, helper text | ≈ 4.8:1 | Replaces #94A3B8 for any informative text |
+| `color.disabled` | #94A3B8 | Disabled controls only | 2.6:1 | Disabled state exempt; never for active information |
+| `color.border` | #E2E8F0 | Dividers | — | Input borders use #64748B (≥ 3:1, SC 1.4.11) |
+| `color.bg` | #F8FAFC | App background | — | — |
+| `color.surface` | #FFFFFF | Cards, modals | — | — |
+
+Status is never conveyed by colour alone: every status chip has an icon (check-circle, clock, alert-triangle, x-circle, info, pause for waiting) and a text label. Dark and high-contrast themes are generated from the same tokens and validated in CI.
+
+### C.8.1A RAG and prediction tokens *(v1.2; P04 FR-P04-230–234, FR-P04-270; NN-21, NN-58)*
+
+RAG is **never conveyed by colour alone**: every RAG chip, cell, calendar event and heat-map cell shows an **icon + word** and, where the area is filled, a **pattern** for colour-blind users and monochrome print. Ratios computed with the WCAG 2.x relative-luminance formula.
+
+| Token | Text / icon colour | Chip background | Text contrast on chip | Icon (Lucide name) | Word on chip | Pattern (fills, heat map, print) | Export fill (Excel/PDF, black text) |
+|---|---|---|---|---|---|---|---|
+| `rag.red` | #B42318 | #FEE4E2 | 5.45:1 (6.57:1 on white) | `octagon-alert` | "Red" + reason ("Red · Overdue 3 d") | diagonal hatch | #F8696B · 7.22:1 |
+| `rag.amber` | #92400E | #FEF3C7 | 6.37:1 (7.09:1 on white) | `triangle-alert` | "Amber" + reason | dots | #FFC000 · 12.79:1 |
+| `rag.green` | #1E5A3F | #D1E7DD | 6.25:1 (8.11:1 on white) | `circle-check` | "Green" / "On track" | none (solid) | #63BE7B · 9.18:1 |
+| `rag.grey` | #475569 | #F1F5F9 | 6.92:1 | `circle-minus` | "Grey · Not applicable" | horizontal lines | #BFBFBF · 11.42:1 |
+| `rag.blue` | #1D4ED8 | #DBEAFE | 5.49:1 | `hourglass` | "Blue · Awaiting trigger" | vertical lines | #9BC2E6 · 11.25:1 |
+| `predict.slip` | #6D28D9 (2 px outline, not a fill) | transparent | 7.10:1 on white | `trending-down` | "At risk of slipping" | dashed outline | Separate column "Prediction" with the word only |
+
+Rules: (1) chip text is ≥ 12 px semibold; icon ≥ 16 px with `aria-hidden` and the word carries meaning; (2) row left borders (4 px) and calendar chips use the text colour (all ≥ 3:1 against white, SC 1.4.11); (3) the Excel export fills (Red F8696B, Amber FFC000, Green 63BE7B, Grey BFBFBF, Blue 9BC2E6 — Appendix E) are used **only behind black text** in exports (they fail as text on white: 2.91:1, 1.64:1, 2.29:1); (4) screen readers announce "RAG Red, overdue by 3 days"; (5) dark and high-contrast themes derive from these tokens and are checked in CI; (6) `predict.slip` must never be rendered in a RAG colour or position (NN-58). **Defect noted:** existing `color.danger` #C44536 on `color.danger.bg` #FEE2E2 is 4.04:1 (below 4.5:1 for normal text); status chips using that pair must switch to `rag.red` text #B42318 (5.45:1 on #FEE4E2) — fix applied for all RAG/overdue chips in v1.2.
+
+### C.8.2 Typography, spacing, shape
+
+Headings Space Grotesk (500/600/700; H1 32/40, H2 24/32, H3 20/28, H4 16/24); UI Inter (400/500/600/700; 14/20 default, 16/24 emphasis, 12/16 small — minimum 12 px, never for essential information below 14 px); monospace JetBrains Mono 13/18 for IDs and clause references; long-form legal text IBM Plex Serif 16/26; Indic scripts Noto Sans family per script. Spacing scale 4, 8, 12, 16, 24, 32, 48, 64, 96. Radius: inputs/buttons 8, cards/modals 12, chips pill. Elevation: card shadow-sm, popover shadow-md, modal shadow-lg. Icons: Lucide, 24 px default, 1.5 px stroke; regulator marks only where trademark use is permitted [VERIFY permission; default: text chips "RBI", "SEBI" without logos]. Motion 150–250 ms, respects `prefers-reduced-motion`; celebratory animations off by default (T).
+
+### C.8.3 Machine-readable tokens
+
+```json
+{
+  "color": {"primary":"#0A2540","primaryDark":"#050F1F","primaryWash":"#E8EDF2","accent":"#C9A961","accentText":"#8A6D2B",
+            "success":"#2D6A4F","successBg":"#D1E7DD","warning":"#D97706","warningText":"#B45309","warningBg":"#FEF3C7",
+            "danger":"#C44536","dangerBg":"#FEE2E2","info":"#1D4ED8","text":"#0F172A","textSecondary":"#475569",
+            "placeholder":"#64748B","disabled":"#94A3B8","border":"#E2E8F0","inputBorder":"#64748B","bg":"#F8FAFC","surface":"#FFFFFF"},
+  "spacing":[0,4,8,12,16,24,32,48,64,96],
+  "radius":{"sm":4,"md":8,"lg":12,"full":9999},
+  "font":{"heading":"Space Grotesk","body":"Inter","mono":"JetBrains Mono","legal":"IBM Plex Serif"},
+  "size":{"xs":12,"sm":14,"md":16,"lg":18,"xl":20,"2xl":24,"3xl":32},
+  "weight":{"regular":400,"medium":500,"semibold":600,"bold":700},
+  "focus":{"ring":"2px solid #0A2540 + 2px offset #C9A961 (on light); 2px solid #C9A961 (on navy)"},
+  "breakpoints":{"sm":640,"md":768,"lg":1024,"xl":1280,"2xl":1536},
+  "elevation":{"0":"none","1":"0 1px 2px rgba(15,23,42,.08)","2":"0 4px 12px rgba(15,23,42,.10)","3":"0 12px 32px rgba(15,23,42,.14)"},
+  "motion":{"fast":"120ms","base":"200ms","slow":"320ms","easing":"cubic-bezier(.2,0,0,1)","reducedMotion":"durations → 0ms; no parallax; no auto-play"},
+  "density":{"comfortable":{"rowHeight":44},"compact":{"rowHeight":32}}
+}
+```
+
+### C.8.4 Copy conventions
+
+*(v1.1)* The full UI copy and brand-voice guide is §C.11.8. Plain English (grade ≈ 8 where possible), active voice, Indian conventions (INR, dd-MMM-yyyy, FY26-27); regulatory terms keep their official names with "i" explanations; errors say what happened, why and what to do, with code and trace ID; never "Oops"; AI content always labelled; no claims of certification, regulator approval or guaranteed compliance (NN-19).
+
+---
+
+## C.9 Compiled screen inventory
+
+*(Compiled by the pack lead from all streams' `_contrib/*_screens.md`.)*
+
+Screen IDs below are binding. Duplicates found at review (25 Oct 2026) were resolved as follows: P00's console screens keep SCR-CORE-01–09; the shell-level screens are renumbered **SCR-CORE-20** (command palette), **SCR-CORE-21** (global search) and **SCR-CORE-22** (context switcher); P04's Calendar keeps **SCR-WF-01** and the Work Inbox is **SCR-WF-00**. SCR-TPL-01–04 appear twice because P03 (S1) and Appendix E (S2) described the same template screens; they are one screen each — Appendix E §E's descriptions are the content specification, P03's names are the menu labels. Shell-level screens SCR-RPT-01 (role home dashboards), SCR-WF-00 (Work Inbox) and SCR-CORE-21 (global search) are owned by P04 (X-26).
+
+### Screens — stream S11 (P00, P01, P24, App B, Q)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-CORE-01 | Platform home (health) | console › Home | plt_* | P00 |
+| SCR-CORE-02 | Tenants list and detail | console › Tenants | plt_super_admin, plt_support (masked) | P00 |
+| SCR-CORE-03 | Feature flags | console › Platform › Flags | plt_super_admin, approver roles | P00 |
+| SCR-CORE-04 | Audit explorer (platform chain) | console › Audit › Platform chain | plt_auditor, plt_security_officer | P00 |
+| SCR-CORE-05 | Correction Entries (create, approve, apply) | console › Audit › Corrections | plt_super_admin (maker), plt_security_officer/checker | P00 |
+| SCR-CORE-06 | Migration console | console › Platform › Migration | plt_super_admin, plt_content_maker/checker | P00 |
+| SCR-CORE-07 | Outbox and integrations health | console › Platform › Events | plt_super_admin, plt_support | P00 |
+| SCR-CORE-08 | Platform corrections register (tenant) | app › Settings › Audit & history › Platform corrections | ten_admin, ten_cco, auditors | P00 |
+| SCR-CORE-09 | Chain verification (tenant) | app › Settings › Audit & history › Integrity | ten_admin, auditors | P00 |
+| SCR-IAM-01 | Sign in | auth | all | P01 |
+| SCR-IAM-02 | MFA challenge and step-up | auth | all | P01 |
+| SCR-IAM-03 | Enrol second factor / passkey | auth | all | P01 |
+| SCR-IAM-04 | Account recovery | auth | all | P01 |
+| SCR-IAM-05 | Accept invitation | auth/web | invitees | P01 |
+| SCR-IAM-06 | Tenant and capacity switcher | header (web, delivery) | multi-membership users | P01 |
+| SCR-IAM-10 | Onboarding — Account | public→web | new admin | P01 |
+| SCR-IAM-11 | Onboarding — Find your organisation (KYB) | web | new admin | P01 |
+| SCR-IAM-12 | Onboarding — Entity profile and group | web | new admin | P01 |
+| SCR-IAM-13 | Onboarding — Regulatory profile and families | web | new admin | P01 |
+| SCR-IAM-14 | Onboarding — Modules and price | web | new admin | P01 |
+| SCR-IAM-15 | Onboarding — Team and workflows | web | new admin | P01 |
+| SCR-IAM-16 | Onboarding — First value | web | new admin | P01 |
+| SCR-IAM-20 | My account | all apps › Avatar › My account | all | P01 |
+| SCR-IAM-21 | Security (factors, passkeys, recovery codes) | My account › Security | all | P01 |
+| SCR-IAM-22 | Sessions and devices | My account › Sessions | all | P01 |
+| SCR-IAM-23 | Privacy centre | My account › Privacy | all customers | P01 |
+| SCR-IAM-30 | Users | app › Settings › Users & access › Users | ten_admin | P01 |
+| SCR-IAM-31 | User detail | same › <user> | ten_admin | P01 |
+| SCR-IAM-32 | Roles and role templates | Settings › Users & access › Roles | ten_admin | P01 |
+| SCR-IAM-33 | Pending access approvals | Settings › Users & access › Approvals | ten_admin | P01 |
+| SCR-IAM-34 | Bulk import users | Settings › Users & access › Import | ten_admin | P01 |
+| SCR-IAM-35 | SSO and SCIM | Settings › Users & access › Single sign-on | ten_admin | P01 |
+| SCR-IAM-36 | Delivery access (LawDocs staff) | Settings › Users & access › LawDocs access | ten_admin, ten_cco | P01 |
+| SCR-IAM-37 | Auditor access grants | Settings › Users & access › Auditors | ten_admin, ten_cco | P01 |
+| SCR-IAM-38 | Supervisor (regulator) access | Settings › Users & access › Regulator access | ten_cco (maker), MD/CEO/CISO (checker) | P01 |
+| SCR-IAM-39 | Support access and break-glass history | Settings › Users & access › Support access | ten_admin | P01 |
+| SCR-IAM-40 | Access review | Settings › Users & access › Access reviews | ten_admin, dept heads | P01/P24 |
+| SCR-IAM-50 | Staff directory and assignments | delivery › Team | dlv_lead | P01 |
+| SCR-IAM-51 | Request delivery grant | delivery › Clients › <client> › Access | dlv_lead | P01 |
+| SCR-IAM-60 | Platform users and roles | console › Access | plt_super_admin | P01 |
+| SCR-IAM-61 | Break-glass console | console › Access › Break-glass | plt_support, plt_security_officer | P01 |
+| SCR-IAM-62 | Trials and extensions | console › Tenants › Trials | plt_super_admin, plt_finance | P01 |
+| SCR-ENG-01 | Release calendar and rings | console › Engineering › Releases | release manager, CTO, product owner | P24 |
+| SCR-ENG-02 | Release detail | console › Engineering › Releases › <rel> | same | P24 |
+| SCR-ENG-03 | Change records | console › Engineering › Changes | engineering | P24 |
+| SCR-ENG-04 | Migration monitor | console › Engineering › Migrations | SRE, tech lead | P24 |
+| SCR-ENG-05 | Golden export diff viewer | console › Engineering › Export goldens | tech lead, data owner | P24 |
+| SCR-ENG-06 | Backups and restore tests | console › Engineering › Resilience | SRE, security | P24 |
+| SCR-ENG-07 | DR drills | console › Engineering › Resilience › Drills | SRE, CTO | P24 |
+| SCR-ENG-08 | Vulnerabilities | console › Security › Vulnerabilities | security, engineering | P24 |
+| SCR-ENG-09 | VAPT engagements | console › Security › VAPT | security | P24 |
+| SCR-ENG-10 | Control evidence status | console › Assurance › Evidence | security, plt_auditor | P24 |
+| SCR-ENG-11 | Incidents and clocks | console › Security › Incidents | incident commander, security | P24 |
+| SCR-ENG-12 | Go-live checklist | console › Assurance › Go-live | CTO, CISO, CS, product owner | P24 |
+| SCR-ENG-20 | What's new | app › Help › What's new | all tenant users | P24 |
+| SCR-ENG-21 | Release preferences | app › Settings › Platform & releases | ten_admin | P24 |
+| SCR-ENG-22 | Security and trust | app › Settings › Security & trust | ten_admin, ten_kmp:CISO | P24 |
+
+### Screens — stream S12 (P02, App A, C, D, U)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-CFG-01 | Settings home | Settings | all (trimmed) | P02 |
+| SCR-CFG-02 | Settings section page | Settings → {section} | per section | P02 |
+| SCR-CFG-03 | Setting detail & history (drawer) | any setting row | per key | P02 |
+| SCR-CFG-04 | Change request composer | Settings → Requests → New | ten_admin, platform roles | P02 |
+| SCR-CFG-05 | Change request review (inbox decision panel) | Work Inbox | checkers | P02 |
+| SCR-CFG-06 | Rule packs catalogue | Settings → Rules & packs → Rule packs; Console → Rules & config | ten_admin, content roles | P02 |
+| SCR-CFG-07 | Rule-pack editor (ZEN decision tables) | Console → Rules & config → Rule packs → Edit | plt_content_* | P02 |
+| SCR-CFG-08 | Golden cases & sandbox runner | Console / Settings → Rules & packs → Sandbox | content roles, ten_admin | P02 |
+| SCR-CFG-09 | Impact analysis report | linked from change request | approvers | P02 |
+| SCR-CFG-10 | Setting packs | Settings → Rules & packs → Setting packs | ten_admin | P02 |
+| SCR-CFG-11 | Department & function tree (merge/split wizard) | Settings → Organisation → Departments & functions | ten_admin, ten_dept_head | P02 |
+| SCR-CFG-12 | Terminology | Settings → Organisation → Terminology | ten_admin | P02 |
+| SCR-CFG-13 | Status sets | Settings → Workflow → Status sets | ten_admin | P02 |
+| SCR-CFG-14 | Waiting-on parties & chase policies | Settings → Workflow → Waiting-on | ten_admin, ten_cco | P02 |
+| SCR-CFG-15 | Reason-code lists | Settings → Workflow → Reason codes | ten_admin | P02 |
+| SCR-CFG-16 | Custom fields | Settings → Data & forms → Custom fields | ten_admin | P02 |
+| SCR-CFG-17 | Form builder | Settings → Data & forms → Forms | ten_admin | P02 |
+| SCR-CFG-18 | Workflow designer | Settings → Workflow → Workflow designer | ten_admin, ten_cco | P02 |
+| SCR-CFG-19 | SLA policies & escalation ladders | Settings → Workflow → SLA & escalation | ten_admin, ten_cco | P02 |
+| SCR-CFG-20 | Delegations | Settings → My preferences → Delegation / Users & access → Delegations | all / admins | P02 |
+| SCR-CFG-21 | Notification templates & channel policy | Settings → Notifications | ten_admin | P02 |
+| SCR-CFG-22 | Dashboard defaults & builder | Settings → Dashboards; Home → Customise | ten_admin, users | P02 |
+| SCR-CFG-23 | Menu & landing pages | Settings → Navigation | ten_admin | P02 |
+| SCR-CFG-24 | Configuration Health | Settings → Rules & packs → Configuration health | ten_admin, ten_cco, platform | P02 |
+| SCR-CFG-25 | Branding & domains | Settings → Branding | ten_admin | P02 |
+| SCR-CFG-26 | Configuration export / import / compare | Settings → Data export & exit → Configuration | ten_admin | P02 |
+| SCR-CFG-27 | Personal preferences | Settings → My preferences | all | P02 |
+| SCR-CFG-28 | Changes made by LawDocs | Settings → Account → Changes made by LawDocs | ten_admin, ten_cco, auditors | P02 |
+| SCR-CFG-29 | Tenant override console | Console → Tenants → Tenant 360 → Configuration | plt_super_admin | P02 |
+| SCR-CFG-30 | Correction Entry review | Console → Corrections | plt_super_admin, plt_security_officer | P02 |
+| SCR-CFG-31 | Platform settings & bounds | Console → Rules & config → Platform settings | platform roles | P02 |
+| SCR-CFG-32 | Support access sessions | Settings → Account → Support access | ten_admin | P02 |
+| SCR-CORE-20 | Command palette (Ctrl/Cmd+K) | global | all | P02 (framework) / P04 |
+| SCR-CORE-21 | Global search results | global | all | P04 (proposed owner) |
+| SCR-CORE-22 | Context switcher (tenant → legal entity → period) | top bar | all | P01 |
+| SCR-RPT-01 | Role home dashboard | Home | all | P28 (hosted on P04 home route; X-43, v1.1) |
+| SCR-RPT-02 | Personal dashboards (up to 5) | Home → My dashboards | all | P28 (X-43, v1.1) |
+| SCR-WF-00 | Work Inbox (all kinds) | Work Inbox | all | P04 |
+| SCR-BRD-01 | Board shell home | /board | ten_board_member, ten_committee_member | P06 |
+| SCR-ASR-01 | Assurance shell home | /assurance | external auditors, supervisor view | P01/P10 |
+| SCR-ME-01 | Self-service home | /me | ten_employee, coop_member | P13/P16 |
+
+### Screens — stream S1 (P03–P05, App F)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-CNT-01 | Content Library | Console › Content › Library | plt_content_*, plt_super_admin | P03 |
+| SCR-CNT-02 | Instrument workspace | Console › Content › Library › instrument | plt_content_* | P03 |
+| SCR-CNT-03 | Content Studio grid | Instrument › Checkpoints › Edit | plt_content_maker | P03 |
+| SCR-CNT-04 | Release manager | Console › Content › Releases | plt_content_checker, plt_content_publisher | P03 |
+| SCR-TPL-01 | Template Registry | Console › Content › Templates | plt_super_admin, plt_content_maker | P03 |
+| SCR-TPL-02 | Import wizard | Console › Content › Import; Tenant › Compliance › Regulations › Import | importers | P03 |
+| SCR-TPL-03 | Import job detail | Import › Jobs › job | importer, checker | P03 |
+| SCR-TPL-04 | Checker diff review | Work Inbox › Content review | plt_content_checker, ten_cco | P03 |
+| SCR-CNT-10 | Regulation Catalogue | Tenant › Compliance › Regulations | ten_admin, ten_cco (+read) | P03 |
+| SCR-CNT-11 | Instrument (tenant view) | Regulations › instrument | tenant roles | P03 |
+| SCR-CNT-12 | My Questions & Overlays | Regulations › My changes | ten_cco, ten_admin, ten_dept_head | P03 |
+| SCR-CNT-13 | Overlay conflicts | Work Inbox › Rebase conflicts | ten_cco | P03 |
+| SCR-CNT-14 | Departments & functions mapping | Settings › Organisation › Compliance mapping | ten_admin | P03 |
+| SCR-CNT-15 | Checkpoint lineage | Checkpoint › History | read roles | P03 |
+| SCR-CMP-01 | My Day | Home | working users | P04 |
+| SCR-CMP-02 | Work Inbox — retired; use SCR-WF-00 (X-60, v1.1) | Inbox | all | P04 |
+| SCR-CMP-03 | Compliance register | Compliance › Register | tenant roles | P04 |
+| SCR-CMP-04 | Instance detail | Register › instance | scoped | P04 |
+| SCR-CMP-05 | Review queue | Compliance › Review | checkers | P04 |
+| SCR-CMP-06 | Events | Compliance › Events | triggerers, CCO | P04 |
+| SCR-CMP-07 | Exceptions | Compliance › Exceptions | CCO, dept heads, IA, CRO | P04 |
+| SCR-CMP-08 | Certificates | Compliance › Certificates | dept heads, CCO, MD/CEO | P04 |
+| SCR-CMP-09 | Dashboards | Dashboard | role-based | P04 |
+| SCR-CMP-10 | Reports | Reports › Compliance | scoped | P04 |
+| SCR-CMP-11 | Board compliance report | Reports › Board report | CCO, CS | P04 |
+| SCR-WF-01 | Calendar | Calendar | all | P04 |
+| SCR-WF-02 | Tasks | Tasks | all | P04 |
+| SCR-WF-03 | Scheduled tasks | Tasks › Scheduled | all | P04 |
+| SCR-WF-04 | Notifications | Bell icon | all | P04 |
+| SCR-WF-05 | Notification preferences | Profile › Notifications | all | P04 |
+| SCR-WF-06 | Calendar connections | Profile › Calendar; Settings › Calendar policy | all / ten_admin | P04 |
+| SCR-WF-07 | Messages | Messages | all | P04 |
+| SCR-CHG-01 | Change dashboard | Console › Regulatory change › Dashboard | content team | P05 |
+| SCR-CHG-02 | Triage queue | Console › Regulatory change › Triage | plt_content_maker | P05 |
+| SCR-CHG-03 | Change item workspace | Triage › item | content team | P05 |
+| SCR-CHG-04 | Sources | Console › Regulatory change › Sources | plt_super_admin, content lead | P05 |
+| SCR-CHG-05 | Horizon | Console › Regulatory change › Horizon | content team | P05 |
+| SCR-CHG-10 | Updates inbox | Megaphone; Compliance › Updates | tenant users | P05 |
+| SCR-CHG-11 | Update detail | Updates › item | tenant users | P05 |
+| SCR-CHG-12 | Impact assessment | Update › Assess impact | ten_cco, dlv_rm | P05 |
+| SCR-CHG-13 | Change implementation tracker | Compliance › Regulatory changes | ten_cco, dept heads, IA, Board | P05 |
+| SCR-CHG-14 | Change history | Checkpoint/instrument › Change history | tenant roles | P05 |
+| SCR-CHG-15 | Update preferences | Profile › Updates; Settings › Updates | users / ten_admin | P05 |
+| SCR-AIS-01 | AI Question Authoring Studio | Console › Content › AI Studio; Tenant › Regulations › Create questions with Vidhi | plt_content_maker; ten_admin, ten_cco, dlv_rm | P05 |
+| SCR-AIS-02 | Draft review grid | AI Studio › run | same | P05 |
+| SCR-AIS-03 | Methodology & prompts | Console › Content › AI Studio › Methodology | plt_super_admin, content lead | P05 |
+| SCR-AIS-04 | Evaluation | Console › Content › AI Studio › Evaluation | content lead | P05 |
+
+### Screens — stream S2 (App E, templates)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-TPL-01 | Template catalogue (download family templates, version, status, changelog) | Console → Content Studio → Templates; Tenant → Compliance Library → Templates | plt_content_maker, plt_content_checker, ten_admin, ten_cco | P03 |
+| SCR-TPL-02 | Import wizard (choose scope, family, instrument version; upload) | Content Studio → Import Question Sheet; Compliance Library → My Instruments → Import | plt_content_maker, ten_admin | P03 |
+| SCR-TPL-03 | Import preview and issues (row grid, issue filters, diff view, download issues workbook) | (from SCR-TPL-02) | plt_content_maker, plt_content_checker, ten_admin, ten_cco | P03 |
+| SCR-TPL-04 | Re-upload diff and change classification (Editorial / Substantive / Correction) | Content Studio → Instrument → Change set | plt_content_maker, plt_content_checker | P05 |
+| SCR-TPL-05 | Family and vocabulary editor (C/D axes, values, aliases, canonical codes, taxonomy mapping, build & validate) | Console → Content Studio → Families | plt_content_maker, plt_content_checker | P03 |
+| SCR-TPL-06 | Tenant vocabulary extensions (department names, internal compliance types) | Tenant → Settings → Compliance vocabulary | ten_admin | P02/P03 |
+| SCR-TPL-07 | AI authoring run (para map approval, batch progress, download draft workbook) | Content Studio / My Instruments → Draft with Vidhi | plt_content_maker, ten_admin | P05 |
+
+### Screens — stream S3 (P06–P07)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-GOV-01 | CS Dashboard | Governance › Home | see phase §3 | P06 |
+| SCR-GOV-02 | Governance Blueprint | Governance › Blueprint | see phase §3 | P06 |
+| SCR-GOV-03 | Entity Master | Governance › Entities › {entity} | see phase §3 | P06 |
+| SCR-GOV-04 | Group Structure | Governance › Entities › Group tree | see phase §3 | P06 |
+| SCR-GOV-05 | People — Directors & KMP | Governance › People | see phase §3 | P06 |
+| SCR-GOV-06 | Person Governance Profile | Governance › People › {person} | see phase §3 | P06 |
+| SCR-GOV-07 | Committees | Governance › Committees | see phase §3 | P06 |
+| SCR-GOV-08 | Committee Page | Governance › Committees › {committee} | see phase §3 | P06 |
+| SCR-GOV-09 | Annual Planner | Governance › Meetings › Planner | see phase §3 | P06 |
+| SCR-GOV-10 | Meeting Workspace | Governance › Meetings › {meeting} | see phase §3 | P06 |
+| SCR-GOV-11 | Agenda Builder | inside SCR-GOV-10 | see phase §3 | P06 |
+| SCR-GOV-12 | Board Pack Builder | inside SCR-GOV-10 | see phase §3 | P06 |
+| SCR-GOV-13 | Director Portal Home | Board Portal (separate shell for directors) | see phase §3 | P06 |
+| SCR-GOV-14 | Board Book Reader | Board Portal › Meeting › Book | see phase §3 | P06 |
+| SCR-GOV-15 | Meeting Conduct Console | Meeting › Conduct | see phase §3 | P06 |
+| SCR-GOV-16 | Minutes Editor | Meeting › Minutes | see phase §3 | P06 |
+| SCR-GOV-17 | Circular Resolution | Governance › Circular resolutions | see phase §3 | P06 |
+| SCR-GOV-18 | General Meeting Builder | Governance › General meetings | see phase §3 | P06 |
+| SCR-GOV-19 | Resolutions Library | Governance › Library | see phase §3 | P06 |
+| SCR-GOV-20 | Decisions & Actions | Governance › Decisions | see phase §3 | P06 |
+| SCR-GOV-21 | Statutory Registers | Governance › Registers | see phase §3 | P06 |
+| SCR-GOV-22 | Register Entry Review | Registers › Pending | see phase §3 | P06 |
+| SCR-GOV-23 | ROC Filings | Governance › Filings | see phase §3 | P06 |
+| SCR-GOV-24 | Declarations & Fit-and-Proper | Governance › Declarations | see phase §3 | P06 |
+| SCR-GOV-25 | Regulator Approvals | Governance › Approvals | see phase §3 | P06 |
+| SCR-GOV-26 | LODR Calendar | Governance › Listed › Calendar | see phase §3 | P06 |
+| SCR-GOV-27 | Disclosure Cases (Reg 30) | Governance › Listed › Disclosures | see phase §3 | P06 |
+| SCR-GOV-28 | RPT Monitor | Governance › Listed › RPT | see phase §3 | P06 |
+| SCR-GOV-29 | Insider Trading | Governance › Listed › PIT | see phase §3 | P06 |
+| SCR-GOV-30 | Annual Report Builder | Governance › Annual report | see phase §3 | P06 |
+| SCR-GOV-31 | Secretarial Audit Workspace | Auditor shell | see phase §3 | P06 |
+| SCR-GOV-32 | LLP Governance | Governance › LLP | see phase §3 | P06 |
+| SCR-POL-01 | Policy Register | Policies › Register | see phase §3 | P07 |
+| SCR-POL-02 | Required Policies | Policies › Required | see phase §3 | P07 |
+| SCR-POL-03 | Policy Page | Policies › {policy} | see phase §3 | P07 |
+| SCR-POL-04 | Draft with Vidhi | inside SCR-POL-03 | see phase §3 | P07 |
+| SCR-POL-05 | Review Workspace | Policies › Reviews (my queue) | see phase §3 | P07 |
+| SCR-POL-06 | Approval Evidence | inside SCR-POL-03 | see phase §3 | P07 |
+| SCR-POL-07 | Attestation Campaigns | Policies › Attestations | see phase §3 | P07 |
+| SCR-POL-08 | My Policies | Personal › My policies | see phase §3 | P07 |
+| SCR-POL-09 | Review Calendar | Policies › Calendar | see phase §3 | P07 |
+| SCR-POL-10 | Model Template Studio (platform) | Console › Content › Model templates | see phase §3 | P07 |
+| SCR-POL-11 | Tenant Templates | Policies › Templates | see phase §3 | P07 |
+| SCR-DMS-01 | Documents Home | Documents | see phase §3 | P07 |
+| SCR-DMS-02 | Browser | Documents › Browse | see phase §3 | P07 |
+| SCR-DMS-03 | Document Page | Documents › {doc} | see phase §3 | P07 |
+| SCR-DMS-04 | Type Copy Workbench | inside SCR-DMS-03 | see phase §3 | P07 |
+| SCR-DMS-05 | Translation View | inside SCR-DMS-03 | see phase §3 | P07 |
+| SCR-DMS-06 | Search | global search bar + Documents › Search | see phase §3 | P07 |
+| SCR-DMS-07 | Share Pack Builder | Documents › Share › New | see phase §3 | P07 |
+| SCR-DMS-08 | Shares & Access Log | Documents › Shares | see phase §3 | P07 |
+| SCR-DMS-09 | eSign Envelope Builder | Sign › New envelope | see phase §3 | P07 |
+| SCR-DMS-10 | My Signatures | Sign › Inbox | see phase §3 | P07 |
+| SCR-DMS-11 | Folder Intake | Documents › Import | see phase §3 | P07 |
+| SCR-DMS-12 | Retention & Holds | Documents › Retention | see phase §3 | P07 |
+| SCR-DMS-13 | E-mail-in Addresses | Documents › Settings › E-mail-in | see phase §3 | P07 |
+| SCR-DMS-14 | External Viewer | external shell (no app chrome) | see phase §3 | P07 |
+| SCR-DMS-15 | Redaction Tool | inside SCR-DMS-03 | see phase §3 | P07 |
+
+### Screens — stream S4 (P08–P09, App H)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-ERM-01 | CRO Home | Risk › Home | ten_kmp(CRO), ten_maker(risk officer) | P08 |
+| SCR-ERM-02 | Framework & applicability | Risk › Framework | CRO, ten_admin (read), ten_internal_auditor (read) | P08 |
+| SCR-ERM-03 | Risk appetite (RAS) | Risk › Appetite | CRO (edit), CFO/CCO (concur), RMC, Board (approve) | P08 |
+| SCR-ERM-04 | Risk register | Risk › Register | CRO office, risk owners (own scope), IA (read) | P08 |
+| SCR-ERM-05 | Risk detail | Risk › Register › [risk] | as above | P08 |
+| SCR-ERM-06 | Controls | Risk › Controls | CRO office, control owners, IA | P08 |
+| SCR-ERM-07 | RCSA campaigns | Risk › RCSA | CRO office | P08 |
+| SCR-ERM-08 | RCSA response | Risk › RCSA › My assessments | ten_dept_head, ten_maker (respondents) | P08 |
+| SCR-ERM-09 | RCSA challenge queue | Risk › RCSA › Review | ten_checker (second line), CRO | P08 |
+| SCR-ERM-10 | KRI library | Risk › KRIs | CRO office | P08 |
+| SCR-ERM-11 | KRI monitor | Risk › KRIs › Monitor | CRO, KRI owners, RMC (read) | P08 |
+| SCR-ERM-12 | Breach episode | Risk › KRIs › [episode] | KRI owner, CRO, CCO | P08 |
+| SCR-ERM-13 | Loss events | Risk › Loss events | ORM team; any employee (quick form) | P08 |
+| SCR-ERM-14 | Issues & actions | Risk › Issues | owners, second line | P08 |
+| SCR-ERM-15 | Risk acceptances | Risk › Acceptances | CRO, RMC, Board | P08 |
+| SCR-ERM-16 | Emerging risks | Risk › Emerging | CRO office | P08 |
+| SCR-ERM-17 | Committees & packs | Risk › Committees | CRO, CS, committee members | P08 |
+| SCR-ERM-18 | Risk disclosures | Risk › Disclosures | CRO, CFO, CS | P08 |
+| SCR-ERM-19 | Risk governance | Risk › Governance | CRO, CS, CCO | P08 |
+| SCR-ERM-20 | Model inventory | Risk › Models | CRO, model owners, IA | P08 |
+| SCR-ERM-21 | Data feeds | Risk › Data feeds | CRO office, integration admin | P08 |
+| SCR-ERM-22 | Quick RCSA | Risk › Quick assessment | ten_admin / risk owner (small tenants) | P08 |
+| SCR-ERM-23 | Risk owner home | Home | ten_dept_head | P08 |
+| SCR-ERM-24 | Board risk view | Board › Risk | ten_board_member | P08 |
+| SCR-RAL-01 | Lab home | Risk Lab › Home | CRO, CFO, analysts | P09 |
+| SCR-RAL-02 | Data & snapshots | Risk Lab › Data | analysts, data stewards | P09 |
+| SCR-RAL-03 | Data quality | Risk Lab › Data › Quality | data stewards | P09 |
+| SCR-RAL-04 | Capital runs | Risk Lab › Capital | CFO office, CRO | P09 |
+| SCR-RAL-05 | Capital drill-down | Risk Lab › Capital › Drill-down | CFO, CRO, IA | P09 |
+| SCR-RAL-06 | What-if & capital plan | Risk Lab › Capital › Planning | CFO, CRO | P09 |
+| SCR-RAL-07 | Ratio library | Risk Lab › Metrics | data stewards, metric owners | P09 |
+| SCR-RAL-08 | ALM & liquidity | Risk Lab › Liquidity | Treasury, CFO, CRO, ALCO | P09 |
+| SCR-RAL-09 | Interest-rate risk | Risk Lab › IRRBB | Treasury, CRO | P09 |
+| SCR-RAL-10 | Concentration | Risk Lab › Concentration | CRO, CCrO | P09 |
+| SCR-RAL-11 | Investments | Risk Lab › Investments | CFO, investment committee | P09 |
+| SCR-RAL-12 | Scenario library | Risk Lab › Stress › Scenarios | CRO office | P09 |
+| SCR-RAL-13 | Stress run builder | Risk Lab › Stress › New run | analysts | P09 |
+| SCR-RAL-14 | Stress results | Risk Lab › Stress › Results | CRO, RMC, ALCO | P09 |
+| SCR-RAL-15 | ICAAP cycles | Risk Lab › ICAAP | risk function, CRO, CS, RMC, Board | P09 |
+| SCR-RAL-16 | PCA monitor | Risk Lab › PCA | CS, CRO, CFO, MD/CEO, Board | P09 |
+| SCR-RAL-17 | KMP dashboards | Dashboards › My dashboard | all KMP roles | P09 |
+| SCR-RAL-18 | Certification queue | Dashboards › Sign-off | data stewards, checkers, metric owners, CS | P09 |
+| SCR-RAL-19 | Lab model registry | Risk Lab › Models | CRO, validators | P09 |
+| SCR-RAL-20 | Schedule III ratios | Risk Lab › Financial ratios | CFO (company/LLP/listed) | P09 |
+| SCR-RAL-21 | Co-operative indicators | Risk Lab › Society indicators | coop_office_bearer (Secretary/Treasurer) | P09 |
+| SCR-RAL-22 | Insurer solvency | Risk Lab › Solvency | Insurer CFO, Appointed Actuary (read) | P09 |
+
+### Screens — stream S5 (P10–P11, App I–J)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-AUD-01 | Audit home | Audit › Home | All audit roles | P10 |
+| SCR-AUD-02 | Universe | Audit › Universe | HIA, IA (edit); ACB (read) | P10 |
+| SCR-AUD-03 | Risk assessment | Audit › Risk assessment | IA, HIA | P10 |
+| SCR-AUD-04 | Plan builder | Audit › Plan | HIA (edit), ACB (approve) | P10 |
+| SCR-AUD-05 | Methodology | Audit › Methodology | HIA, ACB | P10 |
+| SCR-AUD-06 | Engagements | Audit › Engagements | IA team; HIA | P10 |
+| SCR-AUD-07 | Engagement detail | Audit › Engagements › {id} | Team, HIA | P10 |
+| SCR-AUD-08 | Workpaper editor | … › Workpapers › {ref} | Preparer, reviewer | P10 |
+| SCR-AUD-09 | Sampling | … › Samples | IA | P10 |
+| SCR-AUD-10 | Analytics (CAAT) library | Audit › Analytics | IA, IS auditors | P10 |
+| SCR-AUD-11 | Evidence vault | Audit › Evidence | IA; external via room | P10 |
+| SCR-AUD-12 | Findings | Audit › Findings | IA, owners (own items), ACB (read) | P10 |
+| SCR-AUD-13 | Retest queue | Audit › Findings › Retest | Retesters | P10 |
+| SCR-AUD-14 | ATR | Audit › ATR | HIA, CS; ACB read | P10 |
+| SCR-AUD-15 | ACB pack builder | Audit › Committee packs | HIA, CS | P10 |
+| SCR-AUD-16 | HIA and QAIP | Audit › Function | HIA, CS, ACB chair | P10 |
+| SCR-AUD-17 | Statutory auditors | Audit › Statutory › Auditors | CFO office, CS, ACB | P10 |
+| SCR-AUD-18 | PBC tracker | Audit › Statutory › PBC | CFO office; auditors (room) | P10 |
+| SCR-AUD-19 | Auditor's Report Directions & CARO | Audit › Statutory › Checklists | Auditors, CFO, CCO | P10 |
+| SCR-AUD-20 | Branch coverage | Audit › Statutory › Branch coverage | CFO, auditors | P10 |
+| SCR-AUD-21 | Secretarial audit | Audit › Secretarial | CS, secretarial auditor | P10 |
+| SCR-AUD-22 | IS audit & ITGC | Audit › IS & IT | IS auditors, CISO (read) | P10 |
+| SCR-AUD-23 | VAPT | Audit › VAPT | CISO office, IA | P10 |
+| SCR-AUD-24 | Concurrent audit | Audit › Concurrent | Concurrent auditors | P10 |
+| SCR-AUD-25 | Inspections | Audit › Inspections | CCO, HIA | P10 |
+| SCR-AUD-26 | Stock audit | Audit › Stock audit | Credit/risk, auditors | P10 |
+| SCR-AUD-27 | External access (audit) | Audit › External access | CCO, CISO, CFO | P10 |
+| SCR-AUD-28 | Auditor room | `apps/web` external landing | External auditors | P10 |
+| SCR-AUD-29 | Inspection room | `apps/web` external landing | `ten_supervisor_view` | P10 |
+| SCR-AUD-30 | Report studio | … › Report | Lead, HIA | P10 |
+| SCR-RET-01 | Reporting home | Returns › Home | Makers, checkers, CFO, CCO | P11 |
+| SCR-RET-02 | Return calendar | Returns › Calendar | All reporting roles | P11 |
+| SCR-RET-03 | Applicability matrix | Returns › Applicability | CCO, auditors | P11 |
+| SCR-RET-04 | Return instance | Returns › {code} › {period} | Per matrix | P11 |
+| SCR-RET-05 | Lineage explorer | … › Lineage | Makers, checkers, auditors | P11 |
+| SCR-RET-06 | Guided upload | … › File | Filer | P11 |
+| SCR-RET-07 | Data Room | Returns › Data Room | Makers, data owners | P11 |
+| SCR-RET-08 | Batch detail | … › Batch {id} | Makers | P11 |
+| SCR-RET-09 | Mapping studio | Returns › Mapping | Makers, checkers | P11 |
+| SCR-RET-10 | Reconciliations | Returns › Reconciliations | Makers, checkers, CFO | P11 |
+| SCR-RET-11 | Revisions & queries | Returns › Revisions | CCO, makers | P11 |
+| SCR-RET-12 | Credit bureau | Returns › Credit bureau | Bureau ops, nodal officer | P11 |
+| SCR-RET-13 | GST | Returns › GST | Finance, tax | P11 |
+| SCR-RET-14 | TDS/TCS | Returns › Income-tax | Finance, tax | P11 |
+| SCR-RET-15 | MCA filings data | Returns › MCA | CS, CFO | P11 |
+| SCR-RET-16 | Accounting bridge | Finance › Statements | CFO office | P11 |
+| SCR-RET-17 | Ratio data | Finance › Data for ratios | CFO, CRO | P11 |
+| SCR-RET-18 | Vidhi data-prep | Side panel on SCR-RET-07/09/10/04 | Makers | P11 |
+| SCR-RET-19 | Registry (platform) | Console › Returns registry | plt_content_* | P11 |
+
+### Screens — stream S6 (P12–P14, App T)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-DPC-01 | Privacy home (DPO dashboard) | Data & Cyber › Privacy | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-02 | Processing activities | › Privacy › Activities | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-03 | Activity detail | (drill) | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-04 | ROPA export | › Privacy › ROPA | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-05 | Notice designer | › Privacy › Notices | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-06 | Consent ledger | › Privacy › Consent | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-07 | Rights desk | › Privacy › Requests | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-08 | Request detail | (drill) | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-09 | Assessments | › Privacy › Assessments | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-10 | Incident register | › Data & Cyber › Incidents | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-11 | Incident war-room | (drill) | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-12 | CISO dashboard | › Cyber & IT | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-13 | Asset register | › Cyber & IT › Assets | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-14 | Control library | › Cyber & IT › Controls | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-15 | Statement of Applicability | › Cyber & IT › SoA | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-16 | VAPT & vulnerabilities | › Cyber & IT › VAPT | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-17 | BCP / DR | › Cyber & IT › Resilience | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-TPR-01 | Third-party home | › Third Parties | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-TPR-02 | Vendor profile | (drill) | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-TPR-03 | Outsourcing registers | › Third Parties › Registers | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-TPR-04 | DDQ builder & reviews | › Third Parties › Due diligence | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-TPR-05 | Contract checklist | (drill) | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-TPR-06 | Vendor portal | `/vendor` | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-18 | AI systems | › AI Governance | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-DPC-19 | Data & cyber reports | › Reports | DPO, CISO, CRO, CCO, makers/checkers, auditors, vendor (portal) | P12 |
+| SCR-HR-01 | People home | People | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-02 | Employee directory | People › Employees | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-03 | Employee profile | (drill) | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-04 | Organisation designer | People › Organisation | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-05 | Default structure picker | Onboarding / Organisation | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-06 | Positions & regulated roles | People › Organisation › Positions | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-07 | Lifecycle board | People › Lifecycle | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-08 | Offer & agreement composer | (drill) | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-09 | Attendance | People › Time | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-10 | Leave console | People › Leave | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-11 | Payroll cockpit | People › Payroll | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-12 | Variance review | (drill) | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-13 | Statutory outputs | People › Payroll › Statutory | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-14 | Labour compliance home | People › Labour Compliance | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-15 | Register viewer | (drill) | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-16 | Committees (HR) | People › Committees | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-POSH-01 | IC workspace | People › POSH | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-POSH-02 | Case file | (drill, sealed) | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-17 | Policies & training | People › Policies & Training | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-HR-18 | People-risk KRIs | People › Reports › People risk | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-SS-01..08 | Self-service screens | My Work › … | HR admin, payroll maker/checker, CFO, dept heads, employees (self-service), IC members (POSH) | P13 |
+| SCR-GRV-01 | Agent inbox | › Inbox | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-02 | Ticket workspace | (drill) | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-03 | GRO desk | › GRO Desk | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-04 | IO desk | › IO Desk | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-05 | Ladder designer | › Settings › Ladders | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-06 | Categories & mapping | › Settings › Categories | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-07 | Widget & portal builder | › Settings › Channels | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-08 | Knowledge base | › Knowledge Base | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-09 | MIS dashboard | › Reports & MIS | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-10 | Regulatory reports | › Reports & MIS › Regulatory | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-11 | Board/CSC pack | › Reports & MIS › Packs | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-PUB-01 | Public complaint form | `/grievance` | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+| SCR-GRV-PUB-02 | Status tracker | `/grievance/track` | Support agents, GRO, PNO, IO, CCO, complainants (public) | P14 |
+
+### Screens — stream S7 (P15–P16, App G, S)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-PACK-01 | Entity profile | Settings › Organisation › Entity profile | ten_admin, ten_cco, ten_kmp (CFO, CS); read: auditors, ten_supervisor_view | P15 |
+| SCR-PACK-02 | Profile activation wizard | Onboarding › Step 3 Regulatory profile | ten_admin, ten_cco | P15 |
+| SCR-PACK-03 | Applicability explorer | Compliance › Applicability | ten_cco, ten_dept_head, ten_admin; read: auditors | P15 |
+| SCR-PACK-04 | What-if simulator | Compliance › Applicability › Simulate | ten_cco, ten_admin, ten_kmp | P15 |
+| SCR-PACK-05 | Profile change queue | Compliance › Profile changes | ten_cco, ten_kmp (CFO/CS) | P15 |
+| SCR-PACK-06 | Exemptions register | Compliance › Exemptions | ten_cco, ten_checker; read: auditors | P15 |
+| SCR-PACK-07 | Sector pack overview | Settings › Sector pack | ten_admin, ten_cco | P15 |
+| SCR-PACK-08 | Investment compliance | Risk › Investments | ten_kmp (CFO, CRO), ten_cco | P15 |
+| SCR-PACK-09 | ARC trusts and clocks | Compliance › ARC › Trusts | ten_cco, ten_kmp | P15 |
+| SCR-PACK-10 | Listed-company event register | Governance › Listed company › Events | ten_kmp (CS), ten_cco | P15 |
+| SCR-PACK-11 | Group structure | Settings › Organisation › Group | ten_admin, ten_kmp (CS, CFO) | P15 |
+| SCR-CNT-PK-01 | Taxonomy studio | Console › Content › Taxonomy | plt_content_maker/checker/publisher | P15 |
+| SCR-CNT-PK-02 | Applicability rule editor | Console › Content › Applicability rules | plt_content_maker/checker | P15 |
+| SCR-CNT-PK-03 | Jurisdiction packs | Console › Content › Jurisdictions | plt_content_publisher | P15 |
+| SCR-COOP-01 | Society home | Home | coop_office_bearer, ten_kmp, ten_admin | P16 |
+| SCR-COOP-02 | Society master and legal profile | Settings › Society | ten_admin | P16 |
+| SCR-COOP-03 | Bye-laws | Governance › Bye-laws | secretary (maker), chairperson (checker) | P16 |
+| SCR-COOP-04 | Members register | Members › Register | ten_maker, ten_checker, coop_office_bearer | P16 |
+| SCR-COOP-05 | Member 360 | Members › Register › Member | ten_maker, ten_checker | P16 |
+| SCR-COOP-06 | Shares register | Members › Shares | ten_maker, ten_checker | P16 |
+| SCR-COOP-07 | Board and office bearers | Governance › Board | coop_office_bearer, ten_admin | P16 |
+| SCR-COOP-08 | General body meetings | Governance › General Body | secretary, chairperson | P16 |
+| SCR-COOP-09 | Elections | Governance › Elections | secretary, chairperson | P16 |
+| SCR-COOP-10 | Statutory registers | Records › Registers | ten_maker; read: auditors, Registrar view | P16 |
+| SCR-COOP-11 | Appropriation | Finance › Appropriation | treasurer, board | P16 |
+| SCR-COOP-12 | Audit and rectification | Audit › Statutory audit | secretary; ten_external_auditor | P16 |
+| SCR-COOP-13 | Registrar returns | Returns › Registrar / CRCS | CEO, secretary | P16 |
+| SCR-COOP-14 | Inspections and inquiries | Compliance › Registrar matters | secretary, chairperson | P16 |
+| SCR-COOP-15 | Credit-society monitors | Risk › Prudential | board, CEO, auditors | P16 |
+| SCR-COOP-16 | Member portal | Member › My membership | coop_member | P16 |
+| SCR-COOP-17 | Returning-officer view | Elections › Officer | coop_returning_officer (time-boxed) | P16 |
+
+### Screens — stream S8 (P17–P19, App K–M)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-AI-01 | Vidhi panel (dock) | Global — `Ctrl/Cmd+J`; top bar "Ask Vidhi" | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-02 | Vidhi full page | Vidhi → Chat | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-03 | Output Card / review | Work Inbox → item | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-04 | Plan approval | Work Inbox → item | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-05 | Action approval | Work Inbox → item | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-06 | Vidhi tasks board | Vidhi → My Vidhi work | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-07 | Schedules | Vidhi → Schedules | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-08 | Notebooks home | Vidhi → Notebooks | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-09 | Notebook workspace | Vidhi → Notebooks → [notebook] | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-10 | Type Copy editor | DMS → document → Type copy | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-11 | Translation view | DMS → document → Translate | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-12 | WhatsApp/email importer | DMS → Import → Chat or email | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-13 | Drafting Studio | Opened from P06/P07/P09/P10 actions | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-14 | What Vidhi remembers | Settings → Vidhi AI → Memory | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-15 | Tenant AI settings | Settings → Vidhi AI | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-16 | AI usage and budgets | Settings → Billing → AI usage | all tenant users; admin for settings; platform for console | P17 |
+| SCR-AI-17 | AI run ledger | Settings → Vidhi AI → Activity log (admin, auditor) | all tenant users; admin for settings; platform for console | P17 |
+| SCR-CON-AI-01 | Model registry | Console → AI → Models | all tenant users; admin for settings; platform for console | P17 |
+| SCR-CON-AI-02 | Skill and prompt registry | Console → AI → Skills | all tenant users; admin for settings; platform for console | P17 |
+| SCR-CON-AI-03 | Evaluation dashboard | Console → AI → Evaluations | all tenant users; admin for settings; platform for console | P17 |
+| SCR-CON-AI-04 | Platform notebook curation | Console → Content → Notebooks | all tenant users; admin for settings; platform for console | P17 |
+| SCR-CON-AI-05 | AI kill switches | Console → AI → Controls | all tenant users; admin for settings; platform for console | P17 |
+| SCR-INT-01 | Integrations home (catalogue) | Settings → Integrations | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-02 | Connector setup wizard | Settings → Integrations → [connector] → Connect | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-03 | Connector detail and health | Settings → Integrations → [instance] | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-04 | Ecosystem links | Settings → Integrations → Infrabyx ecosystem | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-05 | API clients | Settings → Integrations → API clients | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-06 | Webhooks | Settings → Integrations → Webhooks | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-07 | Mapping packs | Settings → Integrations → Mappings | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-08 | On-premises agents | Settings → Integrations → Agents | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-09 | Workplace and SSO | Settings → Security → Single sign-on & provisioning | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-10 | My calendar connection | User menu → Calendar sync | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-11 | Channels | Settings → Communications | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-12 | Website and app embeds | Settings → Grievance & help → Embeds | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-13 | eSign providers | Settings → Documents → eSign | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-INT-14 | Integration monitor (tenant) | Settings → Integrations → Monitor | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-CON-INT-01 | Platform connector catalogue | Console → Integrations → Catalogue | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-CON-INT-02 | Platform integration monitor | Console → Integrations → Monitor | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-CON-INT-03 | Certification workbench | Console → Integrations → Certification | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-DEV-01…08 | Developer portal | developers.lawdocscomply.com | ten_admin / ten_integration_admin; users (own calendar); platform for console | P18 |
+| SCR-XPT-01 | Data & exports home | Settings → Data & exports | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-02 | New export wizard | Settings → Data & exports → New export | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-03 | Export job detail | Settings → Data & exports → History → [job] | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-04 | Storage targets | Settings → Data & exports → Storage targets | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-05 | Scheduled copies | Settings → Data & exports → Scheduled copies | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-06 | Folder policy | Settings → Data & exports → Folder naming | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-07 | Import folders | DMS → Import → Folder / Settings → Data & exports → Import | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-08 | Intake review queue | DMS → Import → Review queue | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-09 | Exit & deletion | Settings → Data & exports → Exit | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-10 | Download as folder (contextual) | Any list/record → ⋯ → Download as folder | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-XPT-11 | Package viewer (offline, inside export) | `00 Start Here/Open me - Viewer.html` | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-CON-XPT-01 | Platform export operations | Console → Data → Exports | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+| SCR-CON-XPT-02 | Folder profile registry | Console → Data → Folder profiles | ten_admin; scoped roles for scoped exports; DPO for restricted | P19 |
+
+### Screens — stream S9 (P20–P22, App N, O, X)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-BIL-01 | Pricing page | `/pricing` | anon, lead, ten_admin | P20 |
+| SCR-BIL-02 | Configurator | `/pricing/build` (also embedded) | anon, lead, ten_admin | P20 |
+| SCR-BIL-03 | Saved configuration | `/pricing/c/{token}` | anon, lead, ten_admin | P20 |
+| SCR-BIL-04 | Compare packages (full) | `/pricing/compare` | anon, lead, ten_admin | P20 |
+| SCR-BIL-05 | Add-on detail | `/pricing/add-ons/{slug}` | anon, lead, ten_admin | P20 |
+| SCR-BIL-06 | Start trial | `/start` | anon, lead, ten_admin | P20 |
+| SCR-BIL-07 | Organisation fetch | `/start/organisation` | anon, lead, ten_admin | P20 |
+| SCR-BIL-08 | Choose sections | `/start/sections` | anon, lead, ten_admin | P20 |
+| SCR-BIL-09 | Terms acceptance | `/start/terms` | anon, lead, ten_admin | P20 |
+| SCR-BIL-10 | Checkout return | `/billing/checkout/return` | anon, lead, ten_admin | P20 |
+| SCR-BIL-11 | Overview | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-12 | Plan & components | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-13 | Usage & limits | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-14 | Users & seats | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-15 | Legal entities | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-16 | Vidhi AI credits | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-17 | Invoices & documents | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-18 | Payments & mandates | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-19 | Billing profile | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-20 | Tax documents | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-21 | Promotions & credits | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-22 | Renewals & notices | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-23 | Purchase approvals | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-24 | Marketplace orders & retainers | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-25 | Cancel & exit | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-26 | Billing history (audit) | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-27 | Savings & Value | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-28 | Notification preferences (billing) | Settings › Billing & Membership | ten_admin (read: ten_cco, CFO) | P20 |
+| SCR-BIL-40 | Pricing Studio home | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-41 | Package & component editor | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-42 | Feature rows & comparison editor | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-43 | Configurator rules editor | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-44 | Promotions | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-45 | Trial policies | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-46 | Preview & publish | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-47 | Tenant commercial panel | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-48 | Stream switches | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-49 | Reconciliation | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-BIL-50 | Savings methodology registry | apps/console | plt_super_admin, plt_finance | P20 |
+| SCR-MKP-01 | Marketplace home | `/marketplace` | anon+ — category tiles, "Popular for NBFCs/UCBs/listed companies/co-operatives…" (segment presets, not popularity claims unless evidenced), search bar, "Buy services without a subscription" explainer | P21 |
+| SCR-MKP-02 | Category page | `/marketplace/{category}` | anon+ — filters, ranking-parameters disclosure link | P21 |
+| SCR-MKP-03 | Offering page | `/marketplace/s/{slug}` | anon+ | P21 |
+| SCR-MKP-04 | Compare offerings | `/marketplace/compare` | anon+ | P21 |
+| SCR-MKP-05 | Provider page (permitted modes only) | `/marketplace/p/{slug}` | anon+ | P21 |
+| SCR-MKP-06 | Legal professionals directory (Rule 36 mode) | `/marketplace/directory/advocates` | anon+ — disclaimer, random/alphabetical order, Schedule fields only (only if enabled) | P21 |
+| SCR-MKP-07 | Trainings (Academy) | `/marketplace/trainings` | anon+ | P21 |
+| SCR-MKP-08 | Request / quote form | modal | anon → buyer | P21 |
+| SCR-MKP-09 | Buyer sign-up & organisation | `/marketplace/account` | buyer | P21 |
+| SCR-MKP-10 | Checkout (first-party fixed price) | P20 components | buyer, tenant | P21 |
+| SCR-MKP-11 | My engagements | `/services` (in-app) and `/marketplace/my` | buyer, tenant | P21 |
+| SCR-MKP-12 | Engagement Room | `/services/{engagement}` | buyer, provider | P21 |
+| SCR-MKP-13 | Retainer dashboard | `/services/retainers/{id}` | buyer/tenant | P21 |
+| SCR-MKP-14 | Monthly service reports archive | tab in SCR-MKP-13 | buyer/tenant | P21 |
+| SCR-MKP-15 | Disputes & complaints | `/services/{engagement}/dispute` | buyer | P21 |
+| SCR-MKP-20 | Offering studio (first-party) | `apps/delivery` › Marketplace › Offerings | `dlv_lead` | P21 |
+| SCR-MKP-21 | Proposal builder | `apps/delivery` › Engagements › Proposal | `dlv_professional`, `dlv_lead` | P21 |
+| SCR-MKP-22 | Engagement pipeline (kanban by state) | `apps/delivery` › Engagements | delivery roles | P21 |
+| SCR-MKP-23 | Delivery workbench | `apps/delivery` › Engagement › Work | delivery roles | P21 |
+| SCR-MKP-24 | Provider portal (external) | `providers.lawdocscomply.com` (flagged) | `mkp_provider_admin` | P21 |
+| SCR-MKP-30 | Marketplace administration | `apps/console` › Marketplace (categories, profession modes, guard-rails, streams, moderation queue, provider review, grievance queue) | `plt_super_admin`, `plt_content_checker`, grievance officer | P21 |
+| SCR-MKP-31 | Academy feed monitor | `apps/console` › Marketplace › Academy | `plt_super_admin` | P21 |
+| SCR-SDC-01 | Portfolio home | Home | all delivery | P22 |
+| SCR-SDC-02 | Work Inbox (cross-tenant, federated) | Home › My work | all delivery | P22 |
+| SCR-SDC-03 | Client list | Clients | all delivery (scoped) | P22 |
+| SCR-SDC-04 | Client › Overview | Clients › {client} | assigned | P22 |
+| SCR-SDC-05 | Client › Work | Clients › {client} › Work | assigned | P22 |
+| SCR-SDC-06 | Client › Calendar | … › Calendar | assigned | P22 |
+| SCR-SDC-07 | Client › Act in tenant (launcher + grant details) | … › Act in tenant | grantees | P22 |
+| SCR-SDC-08 | Client › Credentials (available to me; request; reveal) | … › Credentials | grantees | P22 |
+| SCR-SDC-09 | Client › Messages | … › Messages | assigned | P22 |
+| SCR-SDC-10 | Client › Files & drive | … › Files | assigned | P22 |
+| SCR-SDC-11 | Client › Deliverables | … › Deliverables | assigned | P22 |
+| SCR-SDC-12 | Client › Billing (read-only) & proposals | … › Billing | assigned | P22 |
+| SCR-SDC-13 | Client › SLA & reports | … › SLA | assigned | P22 |
+| SCR-SDC-14 | Client › Health | … › Health | assigned, `dlv_lead` | P22 |
+| SCR-SDC-15 | Client › Notes | … › Notes | assigned | P22 |
+| SCR-SDC-16 | Client › Activity | … › Activity | assigned, `dlv_lead` | P22 |
+| SCR-SDC-17 | Grants board (all grants, expiring, pending) | Access › Grants | `dlv_lead`, RM (own) | P22 |
+| SCR-SDC-18 | Access review | Access › Reviews | `dlv_lead` | P22 |
+| SCR-SDC-19 | Engagements pipeline (P21) | Marketplace › Engagements | delivery | P22 |
+| SCR-SDC-20 | Offering studio (P21) | Marketplace › Offerings | `dlv_lead` | P22 |
+| SCR-SDC-21 | Team & assignments | Team | `dlv_lead` | P22 |
+| SCR-SDC-22 | My time | Me › Time | all delivery | P22 |
+| SCR-SDC-23 | My metrics | Me › Performance | all delivery | P22 |
+| SCR-SDC-24 | Portfolio reports | Reports | `dlv_lead` | P22 |
+| SCR-SDC-25 | Product switcher (deep links to Finbyx/Udofin/Equator/OH) | top bar | per roles | P22 |
+| SCR-SDC-30 | Settings › Delivery team | apps/web › Settings › Delivery team | ten_admin (33: ten_admin, ten_cco) | P22 |
+| SCR-SDC-31 | Settings › Credential Vault | apps/web › Settings › Credential Vault | ten_admin (33: ten_admin, ten_cco) | P22 |
+| SCR-SDC-32 | Messages › LawDocs team | apps/web › Messages › LawDocs team | ten_admin (33: ten_admin, ten_cco) | P22 |
+| SCR-SDC-33 | Delivery activity log | apps/web › Delivery activity log | ten_admin (33: ten_admin, ten_cco) | P22 |
+| SCR-SDC-34 | Approve delivery grant | apps/web › Approve delivery grant | ten_admin (33: ten_admin, ten_cco) | P22 |
+
+### Screens — stream S10 (P23, App P, R)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-WEB-01 | Home | `/` | anon, lead | P23 |
+| SCR-WEB-02 | Solution (family) | `/solutions/<family>` | anon, lead | P23 |
+| SCR-WEB-03 | Module | `/platform/<module>` | anon, lead | P23 |
+| SCR-WEB-04 | Pricing | `/pricing` | anon, lead | P23 |
+| SCR-WEB-05 | Marketplace entry | `/marketplace`, `/marketplace/<category>`, `/marketplace/<service>` | anon, lead | P23 |
+| SCR-WEB-06 | Academy | `/academy` | anon, lead | P23 |
+| SCR-WEB-07 | Regulatory updates index | `/regulatory-updates` | anon, lead | P23 |
+| SCR-WEB-08 | Regulatory update item | `/regulatory-updates/<regulator>/<yyyy>/<slug>` | anon, lead | P23 |
+| SCR-WEB-09 | Glossary index | `/glossary` | anon, lead | P23 |
+| SCR-WEB-10 | Glossary term | `/glossary/<slug>` | anon, lead | P23 |
+| SCR-WEB-11 | Insights / blog | `/insights`, `/insights/<slug>` | anon, lead | P23 |
+| SCR-WEB-12 | Guides & checklists | `/guides/<slug>` | anon, lead | P23 |
+| SCR-WEB-13 | Webinars | `/webinars`, `/webinars/<slug>` | anon, lead | P23 |
+| SCR-WEB-14 | Case studies | `/customers/<slug>` | anon, lead | P23 |
+| SCR-WEB-15 | Trust Centre | `/trust` | anon, lead | P23 |
+| SCR-WEB-16 | Accessibility statement & ACR | `/accessibility`, `/accessibility/acr` | anon, lead | P23 |
+| SCR-WEB-17 | About / Company | `/about` | anon, lead | P23 |
+| SCR-WEB-18 | Contact & book demo | `/contact`, `/book-demo` | anon, lead | P23 |
+| SCR-WEB-19 | Legal pages | `/privacy`, `/terms`, `/cookies`, `/refund-policy`, `/grievance-officer`, `/dpa` | anon, lead | P23 |
+| SCR-WEB-20 | Campaign landing | `/lp/<slug>` | anon, lead | P23 |
+| SCR-WEB-21 | Health check — start | `/health-check` | anon, lead | P23 |
+| SCR-WEB-22 | Health check — organisation lookup | `/health-check/organisation` | anon, lead | P23 |
+| SCR-WEB-23 | Health check — profile | `/health-check/profile` | anon, lead | P23 |
+| SCR-WEB-24 | Health check — segment | `/health-check/s/<n>` | anon, lead | P23 |
+| SCR-WEB-25 | Health check — review & consent | `/health-check/review` | anon, lead | P23 |
+| SCR-WEB-26 | Health check — result | `/health-check/result/<id>` | anon, lead | P23 |
+| SCR-WEB-27 | Health check — shared report | `/hc/r/<token>` | anon, lead | P23 |
+| SCR-WEB-28 | Lead portal | `/my/reports` (magic link) | anon, lead | P23 |
+| SCR-WEB-29 | Status page | `status.lawdocscomply.com` | anon, lead | P23 |
+| SCR-WEB-30 | Console — CMS pages | `apps/console` → Website → Pages | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-WEB-31 | Console — page editor | Website → Pages → Edit | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-WEB-32 | Console — Claims Register | Website → Claims | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-WEB-33 | Console — Health-check studio | Website → Health check | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-WEB-34 | Console — Redirects & SEO | Website → SEO | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-WEB-35 | Console — Experiments | Website → Experiments | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-HLP-01 | Help panel (in-app) | `?` from any screen | all ten_*, anon (public help) | P23 |
+| SCR-HLP-02 | Help centre home | `help.lawdocscomply.com` | all ten_*, anon (public help) | P23 |
+| SCR-HLP-03 | Article | `/articles/<slug>` | all ten_*, anon (public help) | P23 |
+| SCR-HLP-04 | Tutorials library | `/tutorials` | all ten_*, anon (public help) | P23 |
+| SCR-HLP-05 | Tutorial player | `/tutorials/<slug>` | all ten_*, anon (public help) | P23 |
+| SCR-HLP-06 | Learning paths | `/learn/<path>` | all ten_*, anon (public help) | P23 |
+| SCR-HLP-07 | Release notes | `/releases` | all ten_*, anon (public help) | P23 |
+| SCR-HLP-08 | Accessibility & display preferences | Profile → Accessibility and display | all users | P23 |
+| SCR-HLP-09 | Report an accessibility problem | Footer / Help panel | all ten_*, anon (public help) | P23 |
+| SCR-HLP-10 | Console — Glossary studio | Console → Help → Glossary | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-HLP-11 | Console — Help articles | Console → Help → Articles | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-HLP-12 | Console — Tutorials | Console → Help → Tutorials | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-HLP-13 | Console — Tours | Console → Help → Tours | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-HLP-14 | Console — Accessibility | Console → Quality → Accessibility | plt_content_maker, plt_content_checker, plt_content_publisher | P23 |
+| SCR-HLP-15 | Tenant — help notes | Settings → Help & guidance | ten_admin | P23 |
+
+
+## C.10 Sources (accessed 25 October 2026)
+
+Owner's LawDocs Comply Architecture Part 1 (Visual Identity, Component Library, Layout & Navigation, Key Screens, Interaction Patterns, Design Tokens); W3C WCAG 2.2 (SC 1.4.3, 1.4.11, 2.1.4, 2.4.11, 2.5.7, 2.5.8, 3.3.7, 3.3.8) — https://dequeuniversity.com/resources/wcag-2.2 ; contrast ratios computed with the WCAG relative-luminance formula; Equator v3.1 App AG (navigation, Work Inbox, palette, pattern library) as internal pattern reference; ServiceNow IRM and MetricStream public product documentation (benchmarks) — https://www.metricstream.com/blog/grc-low-code-no-code.html.
+
+## C.11 v1.1 additions *(v1.1)*
+
+### C.11.1 Screen registry additions
+
+New screens are registered in their phase files and compiled into §C.9 at integration; summary of v1.1 IDs: SCR-GEM-01–08, SCR-GPK-01–05, SCR-CELL-01–03, SCR-PRT-01–04, SCR-QRY-01 (P25); SCR-AI-18–26, SCR-CON-AI-06 (P17); SCR-AIG-01–09 (P12 OV_AI); SCR-INT-20–27 (P18); SCR-XPT-20–22 (P19); SCR-BIL-60–66 (P20); SCR-MKP-40–45 (P21); SCR-SDC-40–45 (P22); SCR-WEB-40–45 (P23); P26–P28 screen IDs as declared in those phases (`SCR-LIT-*`, `SCR-ESG-*`, `SCR-RPT-*`).
+
+### C.11.2 Click budgets as release gates (IMP-101; Appendix Z §Z.5)
+
+Journeys J-01–J-20 of Appendix Z §Z.5 are binding targets. v1.1 adds:
+
+| # | Journey | Start | Target clicks | Target time |
+|---|---|---|---|---|
+| J-21 | Hire a role agent and set its autonomy | Vidhi → Agent workforce | ≤ 5 | ≤ 3 min |
+| J-22 | Approve an agent-prepared draft | Work Inbox | ≤ 2 | ≤ 60 s |
+| J-23 | Connect an AI assistant (MCP) for my organisation | Settings → Integrations → AI assistants | ≤ 5 | ≤ 5 min (excl. external admin consent) |
+| J-24 | Add a foreign subsidiary with its pack | Governance → Global entities | ≤ 8 | ≤ 20 min |
+| J-25 | Log a court hearing outcome and next date | Legal matter page | ≤ 3 | ≤ 1 min |
+| J-26 | Generate a one-page compliance summary | Reports → One-page summary | ≤ 2 | ≤ 10 s |
+
+Each journey emits `journey.start`/`journey.complete` analytics (aggregated, no PII); a regression of more than 20% at p50 blocks release of the screen (P24).
+
+### C.11.3 Simple mode (IMP-096)
+
+A per-user/role toggle (`ui.simple_mode`, T) showing only: My Day (due items), Submit (with camera/scan upload on mobile), Calendar, Messages and Help. Advanced menus are hidden, not removed (permissions unchanged). Default ON for `ten_employee`, co-operative office bearers and branch makers; OFF for others.
+
+### C.11.4 Global search targets (IMP-100)
+
+Search spans checkpoints, instances, documents (titles and permitted content), meetings, minutes, policies, people, legal matters, contracts, licences, ESG metrics, reports, settings and help; facets by module, entity, period, status, owner; p95 < 800 ms for tenants up to 2 million indexed objects; permission-trimmed in the index (sealed classes never indexed, NN-13); cross-cell group search returns metadata hits only and routes to the home cell on open.
+
+### C.11.5 Density, shortcuts and accessibility (IMP-102, IMP-103)
+
+- Density modes comfortable/compact (tokens `density.*`), remembered per user.
+- Review shortcuts: `A` approve, `R` return, `N` next, `E` open evidence, `?` help — single-key only when the user enables single-key shortcuts; all remappable (WCAG 2.2 SC 2.1.4).
+- Arabic RTL support follows Appendix Y §Y.9.3 when `ar-AE` is enabled; charts mirror where axes imply direction.
+
+### C.11.6 Reporting UX (IMP-070–IMP-075; owned by P28)
+
+- One-page compliance summary per entity/period (score, overdue, high-risk open, next 30 days) in ≤ 5 seconds.
+- Report builder for business users: fields, filters, groupings, charts, CEL formula columns, save and share templates.
+- Every run stores parameters and data-snapshot hash; "re-run as at" reproduces it (NN-22).
+- Board pack generator (DOCX/PPTX/PDF) from saved templates; linked numbers in narratives update from lineage before approval only (NN-37).
+- "Copy dashboard to role/department" and a tenant dashboard library.
+
+### C.11.7 Component inventory (G5 TM-015/016)
+
+Foundation: button, icon button, input, select, combobox, date picker (statutory vs internal date variants), table/grid (inline edit, bulk select with undo, NN-49), tabs, drawer, modal (typed confirmation for irreversible actions), toast, banner, empty state, skeleton, stepper, breadcrumb, file drop zone, avatar, badge, tooltip/"i" popover, chart wrappers (accessible data tables behind every chart).
+Compliance-specific: status pill (14 canonical statuses + overdue flag), citation card (authority, instrument, para, version, source link, official-language toggle), evidence chip (hash, uploader, date, sufficiency note), due-date badge (statutory date vs internal target; act date per NN-48), maker-checker stepper, risk heat cell, coverage-statement card (pack tier, reviewer, freshness), Vidhi draft banner (agent, autonomy level, sponsor, "draft — needs approval"), agent run timeline, residency badge (cell), access-transparency row.
+Each component documents states (default, hover, focus, disabled, error, loading), keyboard behaviour, ARIA pattern and RTL behaviour.
+
+### C.11.8 UI copy and brand-voice guide (G5 TM-043)
+
+Tone: plain, respectful, precise, never blaming the user. Terminology fixed: "checkpoint", "compliance instance", "Updates" (regulatory), "Notifications" (work), "Correction Entry", "agent", "sponsor", "autonomy level", "home region". Error pattern: what happened → why → what to do → code and trace ID. Empty states say what the area is for and offer the first action. AI text is always labelled with agent name and "draft". Regulatory claims follow NN-19. Hindi style notes: use commonly understood Hindi with English regulatory terms in brackets on first use; no transliterated jargon in headings.
+
+### C.11.9 Design governance (G5 TM-045) and dashboard principles (TM-149)
+
+- Owner: design-system lead; contribution via RFC with accessibility sign-off; semantic versioning of `packages/ui` and `packages/tokens/tokens.json` (single source for web and generated PDFs/DOCX styles); visual-regression tests on every component.
+- Dashboard principles: answer one question per widget; show statutory exposure before internal metrics; every number has a definition in the KPI dictionary (P28) and a drill-down; colour never the only signal; mandatory widgets (bold in §C.6.2) cannot be hidden; group dashboards use aggregates only across cells.
+
+### C.11.10 Agent-autonomy controls UI (Appendix AA §AA.3; NN-50, NN-51)
+
+Settings → Vidhi AI → Autonomy shows a matrix of agents × action classes (READ, DRAFT, PROPOSE, INTERNAL_WRITE_LOW, INTERNAL_WRITE, EXTERNAL_SEND, PROHIBITED) with the effective level (lowest of platform, tenant, skill and user settings) and where each limit comes from; changes above L1 require the agent's sponsor and a checker; a red "Pause all agents" control (tenant kill switch) is always visible to admins and the AIO and takes effect within 60 seconds.
+
+### C.11.11 Partner portal shell (`apps/public` authenticated `partner` route group)
+
+```
+Home (pack versions awaiting review, queries due, scorecard)
+Packs (P25): Jurisdictions · Source register · Checkpoints (INTL-GEN template) · Translations (official text + reviewed English) · Change notices · Submit for review
+Queries: Ask-a-local-expert queue with SLA clocks
+Engagements (P21/P22): Delivery grants by client and entity (delivery partners only)
+Profile & compliance: Licences, PI cover, agreements, DPA, scorecard
+```
+Partner users never see other jurisdictions or other partners' content; access follows the partner agreement scope.
+
+
+### C.11.12 v1.2 list, drawer and radar journeys and screen registry *(v1.2)*
+
+Click budgets (release gates, measured as in §C.11.2; a click = pointer activation or one keyboard command):
+
+| # | Journey | Start | Target clicks | Target time |
+|---|---|---|---|---|
+| J-27 | Open an item's detail from the list | Compliance list | 1 (click CompID) | drawer ≤ 800 ms cold, ≤ 300 ms cached |
+| J-28 | Star an item | Compliance list row or drawer | 1 | ≤ 2 s |
+| J-29 | Ask the maker for an explanation | Compliance list | ≤ 3 (CompID → Ask › Explanation → Send; addressee and SLA pre-filled) | ≤ 45 s |
+| J-30 | Export the filtered list grouped by department | Compliance list with filters applied | ≤ 4 (Export → Group by Department → Excel/PDF → Generate) | ≤ 20 s for 10,000 rows |
+| J-31 | See urgent items | Home | 1 (Urgent & Upcoming tab; widget visible on load) | ≤ 2 s |
+
+v1.2 screen registry (owned by P04; compiled into §C.12 at integration): SCR-CMP-03 (redefined: Compliance list), SCR-CMP-20 CompID drawer, SCR-CMP-21 Export builder, SCR-CMP-22 Non-compliance accountability report, SCR-CMP-23 Accountability dashboard, SCR-CMP-24 Starred and collections, SCR-CMP-25 RAG windows and radar settings, SCR-CMP-26 Request composer (Ask), SCR-CMP-27 Urgent & Upcoming, SCR-CMP-28 RAG heat map, SCR-CMP-29 Saved views manager.
+
+## C.12 Compiled v1.1 screen inventory
+
+*(v1.1)* Ownership: SCR-RPT-01/02 → P28 (X-43); Work Inbox SCR-WF-00 (X-60); tracker import SCR-CNT-16 with alias SCR-IAM-69 (X-54).
+
+#### Screens — v1.1 G1 (P25, App Y)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-GEM-01 | Group structure chart | Organisation › Group structure | ten_admin, ten_cco, ten_kmp, ten_board_member | P25 |
+| SCR-GEM-02 | Entity list (global) | Organisation › Entities | ten_admin, group roles | P25 |
+| SCR-GEM-03 | Foreign entity wizard | Organisation › Entities › Add foreign entity | ten_admin | P25 |
+| SCR-GEM-04 | Entity record (foreign) | Organisation › Entities › <entity> | entity roles | P25 |
+| SCR-GEM-05 | Officers across group | Organisation › People › Officers | ten_cco, ten_kmp (CS) | P25 |
+| SCR-GEM-06 | Registers (jurisdiction format) | Entity › Registers | ten_kmp (CS), auditors | P25 |
+| SCR-GEM-07 | India linkage panel | Entity › India link | ten_kmp (CS, CFO) | P25 |
+| SCR-GEM-08 | Group compliance map | Dashboards › Group compliance | group roles, ten_board_member | P25 |
+| SCR-GPK-01 | Jurisdiction pack catalogue (tenant) | Compliance › Regulation catalogue › Jurisdictions | ten_admin, ten_cco | P25 |
+| SCR-GPK-02 | Coverage statement | Pack › Coverage | all tenant roles; public for published packs | P25 |
+| SCR-GPK-03 | Jurisdiction packs (platform) | Console › Content › Jurisdictions | plt_content_* | P25 |
+| SCR-GPK-04 | Bilingual clause view | Checkpoint › Source | all | P25 |
+| SCR-GPK-05 | Pack production plan | Console › Content › Jurisdictions › Plan | plt_content_*, plt_super_admin | P25 |
+| SCR-CELL-01 | Data residency panel | Settings › Data residency | ten_admin, ten_kmp (DPO) | P25 |
+| SCR-CELL-02 | Cells console | Console › Platform › Cells | plt_super_admin, plt_security_officer | P25 |
+| SCR-CELL-03 | Home-cell migration | Settings › Data residency › Move entity | ten_admin, platform | P25 |
+| SCR-PRT-01 | Partner portal home | Provider › Home | prt_admin, prt_content_author, prt_content_reviewer, prt_delivery_professional | P25 |
+| SCR-PRT-02 | Pack workspace | Provider › Packs | prt_content_author, prt_content_reviewer | P25 |
+| SCR-PRT-03 | Query desk | Provider › Queries | prt_delivery_professional | P25 |
+| SCR-PRT-04 | Partner registry | Console › Partners | plt_super_admin | P25 |
+| SCR-QRY-01 | Ask a local expert | Checkpoint › Ask an expert | tenant users (entitled) | P25 |
+
+#### Screens — v1.1 G3 (P17, App AA, K)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-AI-18 | Agent workforce | Settings → Vidhi AI → Workforce | ten_admin, sponsors | P17 |
+| SCR-AI-19 | Agent card detail | Workforce → [agent] | ten_admin, sponsor | P17 |
+| SCR-AI-20 | Autonomy Readiness | Workforce → [agent] → Autonomy | sponsor, ten_admin, ten_cco | P17 |
+| SCR-AI-21 | Agent Review (monthly) | Work Inbox; Workforce → [agent] → Reviews | sponsor | P17 |
+| SCR-AI-22 | Missions | Vidhi → Missions | all users with missions entitlement | P17 |
+| SCR-AI-23 | Mission detail | Missions → [mission] | mission owner, participants | P17 |
+| SCR-AI-24 | External AI access (MCP server) | Settings → Integrations → AI assistants | ten_admin, ten_integration_admin | P17/P18 |
+| SCR-AI-25 | External MCP servers (client) | Settings → Integrations → MCP servers | ten_admin, ten_integration_admin | P17/P18 |
+| SCR-AI-26 | Control monitoring | Compliance → Control monitoring | ten_cco, control owners, internal audit | P17/P04 |
+| SCR-CON-AI-06 | Agent Registry and Agent Cards | Console → AI → Agents | plt_super_admin, plt_security_officer | P17 |
+| SCR-AIG-01 | AI Governance dashboard | Risk → AI Governance | AIO/CRO/CCO, board (widget) | P12 |
+| SCR-AIG-02 | AI system register | Risk → AI Governance → Systems | AIO, system owners | P12 |
+| SCR-AIG-03 | AI system detail | Systems → [system] | AIO, owners, validators | P12 |
+| SCR-AIG-04 | Impact assessment editor | AI system → Assessments | AIO, DPO | P12 |
+| SCR-AIG-05 | Validation workspace | AI system → Validations | ten_model_validator | P12 |
+| SCR-AIG-06 | Kill-switch test record | AI system → Controls | AIO, system owner | P12 |
+| SCR-AIG-07 | AI incident | Risk → AI Governance → Incidents | AIO, CISO | P12 |
+| SCR-AIG-08 | Board AI report builder | AI Governance → Reports | AIO, CS | P12 |
+| SCR-AIG-09 | Cross-framework map | AI Governance → Framework map | AIO, internal audit | P12 |
+
+#### Screens — v1.1 F1 (P00–P02, P24, App A, B, D, Q, U)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-IAM-63 | Organisation profile (≤ 12 questions) with live applicability panel | Onboarding | ten_admin, ten_cco | P01 |
+| SCR-IAM-64 | Applicability explanation card and challenge dialog | Any checkpoint / pack | ten_admin, ten_cco, ten_dept_head | P01 |
+| SCR-IAM-65 | Home region selection and residency explanation | Onboarding | ten_admin | P01 |
+| SCR-IAM-66 | Policy starter set picker | Onboarding | ten_admin, ten_cco, ten_kmp (CS) | P01 |
+| SCR-IAM-67 | Approval matrix with SoD preview | Onboarding | ten_admin, ten_cco | P01 |
+| SCR-IAM-68 | 90-day calendar confirmation with bulk owner assignment | Onboarding | ten_admin, ten_cco | P01 |
+| SCR-IAM-69 | Tracker import — upload, mapping review, reconciliation, undo | Onboarding / Settings › Import | ten_admin, ten_cco | P01 |
+| SCR-IAM-70 | Baseline set-up assessment (Set-up Readiness Score) | Home | ten_admin, ten_cco | P01 |
+| SCR-IAM-71 | First-value checklist card | Home | ten_admin | P01 |
+| SCR-IAM-72 | Group set-up: bulk entity add, shared settings and packs | Settings › Organisation › Group | ten_admin | P01 |
+| SCR-IAM-73 | Agent delegation grants | Account › My agents | users with Vidhi; sponsors | P01 |
+| SCR-IAM-74 | Practitioner workspace — client list and grant requests | practitioner shell | practitioner_admin, practitioner_user | P01 |
+| SCR-CON-30 | Onboarding funnel metrics | Console › Growth | plt_super_admin, plt_support | P01 |
+| SCR-CFG-33 | Custom Registers builder and list | Settings › Registers | ten_admin | P02 |
+| SCR-CFG-34 | Workflow / approval-chain simulation report | Settings › Workflows › Simulate | ten_admin, ten_cco | P02 |
+| SCR-CFG-35 | Preview as role | Settings › Menus | ten_admin | P02 |
+| SCR-CFG-36 | Configuration templates | Settings › Templates | ten_admin; dlv_lead (offer) | P02 |
+| SCR-CFG-37 | Configuration sandbox | Settings › Sandbox | ten_admin | P02 |
+| SCR-CFG-38 | AI autonomy levels and promotion requests | Settings › AI › Autonomy | ten_admin, ten_kmp (AIO) | P02 |
+| SCR-CFG-39 | Kill switches and drills | Settings › AI › Kill switches | ten_admin, ten_kmp (AIO) | P02 |
+| SCR-CFG-40 | Automations (all) | Settings › Automations | ten_admin | P02 |
+| SCR-CFG-41 | Locale, calendars and fiscal year per legal entity | Settings › Organisation › Locale | ten_admin | P02 |
+| SCR-CFG-42 | Explain my configuration | Settings › Health | ten_admin; auditors (read) | P02 |
+| SCR-ENG-23 | SLO catalogue and error budgets | Console › Engineering › SLOs | eng_*, plt_super_admin | P24 |
+| SCR-ENG-24 | FinOps dashboards | Console › Engineering › Cost | plt_super_admin, plt_finance | P24 |
+| SCR-ENG-25 | Region cells | Console › Engineering › Cells | plt_super_admin, eng_sre | P24 |
+| SCR-ENG-26 | AI changes, model registry, evaluation results | Console › Engineering › AI | eng_ai_lead, plt_security_officer | P24 |
+| SCR-ENG-27 | Idea portal admin and public roadmap | Console › Product › Ideas | plt_super_admin | P24 |
+| SCR-IDEA-01 | Ideas and roadmap (tenant view) | Help › Ideas | all tenant users | P24 |
+
+#### Screens — v1.1 F2 (P03–P05, App E, F)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-CNT-16 | Tracker import (AI) — upload, sheet classification, column mapping, CompID matching, plan, approve, undo | Tenant › Compliance › Regulations › Import my tracker | ten_admin, ten_cco, ten_integration_admin; dlv_rm draft | P03 |
+| SCR-CNT-17 | Controls library (common control layer) | Tenant › Compliance › Controls | ten_cco, ten_dept_head; auditors read | P03 |
+| SCR-CNT-18 | Equivalent obligations (overlaps across instruments/licences) | Tenant › Compliance › Regulations › Overlaps | ten_cco | P03 |
+| SCR-CNT-19 | Where did my old circular go? (concordance search) | Tenant › Compliance › Regulations › Concordance | all tenant roles (read) | P03 |
+| SCR-CNT-20 | RBI catalogue seed console (diff, reference-basis queue) | Console › Content › Catalogue seed | plt_content_* | P03 |
+| SCR-TPL-05 | Import batches and undo | Import › Batches | importer, ten_admin, plt_content_lead | P03 |
+| SCR-WF-00 | Work Inbox (ID aligned with App C §C.9; was SCR-CMP-02 in P04 v1.0) | Top bar › Inbox | all | P04 |
+| SCR-CMP-12 | Request lists (internal and external requestees) | Compliance › Requests | makers, checkers, auditors, CCO | P04 |
+| SCR-CMP-13 | Continuous checks (PASS/FAIL/NO_DATA/INVALID) | Compliance › Automated checks | CCO, dept heads, ten_integration_admin | P04 |
+| SCR-CMP-14 | Compliance testing (plan, cycles, sampling, results, retest) | Compliance › Testing | CCO, testers | P04 |
+| SCR-CMP-15 | Workload heatmap and reassignment | Compliance › Workload | dept heads, CCO | P04 |
+| SCR-CMP-16 | Remediation library | Compliance › Exceptions › Library | CCO, owners | P04 |
+| SCR-CMP-17 | One-page compliance summary (also PDF) | Dashboard › Summary | KMP, board, CCO | P04 |
+| SCR-CMP-18 | Evidence inbox (e-mail-in) | Compliance › Evidence inbox | makers, CCO | P04 |
+| SCR-CMP-19 | Log event (event bundles) | Top bar › Log event; command palette | authorised triggerers | P04 |
+| SCR-WF-08 | Alert health (notification budget) | Settings › Notifications › Alert health | ten_admin, CCO | P04 |
+| SCR-CHG-06 | RBI category monitor (23 pages; Updated-as-on changes, new/missing rows) | Console › Regulatory change › RBI directions | content team | P05 |
+| SCR-CHG-07 | Content incidents (blast radius, rollback, notices) | Console › Regulatory change › Incidents | content lead, super admin | P05 |
+| SCR-CHG-08 | Enforcement corpus | Console › Regulatory change › Enforcement | content team | P05 |
+| SCR-CHG-09 | Push composer (targeting, audience preview, second approval) | Console › Updates › New notice | super admin (+ approver) | P05 |
+
+Notes: App E needs no new screen IDs (TRACKER mode uses SCR-CNT-16; import undo uses SCR-TPL-05). App F's catalogue-drift exceptions surface on the existing content Radar and SCR-CHG-06.
+
+#### Screens — v1.1 F3 (P06, P07, P10, P26, P27, App J)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-GOV-33 | Board-Pack Templates | Governance › Settings › Pack templates | CS | P06 |
+| SCR-GOV-34 | Minute-Template Library | Governance › Library › Minutes | CS | P06 |
+| SCR-GOV-35 | Director Question Prompts Review | Meeting › Pack › Prompts | CS | P06 |
+| SCR-GOV-36 | Investor Services | Governance › Members › Requests | CS, RTA liaison | P06 |
+| SCR-GOV-37 | Dividends & IEPF | Governance › Members › Dividends | CS, CFO | P06 |
+| SCR-GOV-38 | Inspection & Copies Requests | Governance › Registers › Requests | CS, checker | P06 |
+| SCR-GOV-39 | Annual Report Critical Path | Governance › Annual report › Timeline | CS, CFO | P06 |
+| SCR-GOV-40 | Group & Foreign Subsidiaries Calendar | Governance › Entities › Group calendar | Group CS | P06 |
+| SCR-POL-12 | Review Baton Board | Policies › In review | CCO, owners | P07 |
+| SCR-POL-13 | Drift Items | Policies › Drift | Policy owners, CCO | P07 |
+| SCR-POL-14 | Attestation Campaign Builder | Policies › Attestations › New | CCO, HR | P07 |
+| SCR-POL-15 | Upload Extraction Review | Policies › Import | Policy owners | P07 |
+| SCR-POL-16 | Forms & Model Templates | Policies › Forms library | CCO, content | P07 |
+| SCR-DMS-16 | Smart Folders | DMS › left rail | All | P07 |
+| SCR-DMS-17 | Save to LDC (add-in pane) | Outlook/Gmail/SharePoint pane | All | P07 |
+| SCR-AUD-31 | Share scope wizard | Audit › Engagement › Share | HIA, CFO | P10 |
+| SCR-AUD-32 | Request list & chase board | Audit › Engagement › Requests | HIA, owners, external auditor | P10 |
+| SCR-AUD-33 | Testing universe & plan | Compliance › Testing › Universe | CCO, testers | P10 |
+| SCR-AUD-34 | Test workspace (5 phases) | Compliance › Testing › {test} | Testers | P10 |
+| SCR-AUD-35 | CCM results | Audit › Continuous monitoring | HIA, CCO, CRO | P10 |
+| SCR-AUD-36 | Coverage map | Audit › Assurance map | HIA, CCO, ACB | P10 |
+| SCR-AUD-37 | ACB cross-engagement summary | Audit › ACB › Summary | HIA, ACB | P10 |
+| SCR-LIT-01 – SCR-LIT-24 | Legal module (dashboard, notices, matters, hearings, deadlines, orders, counsel, counsel portal, spend, provisions, regulator engagements, war room, observations, proceedings, contracts, intake, licences, ethics, my declarations, delegation matrix, reports) | Legal › … ; My Work › Declarations | GC, legal users, CS, CCO, CFO, employees, ext_counsel | P26 |
+| SCR-ESG-01 – SCR-ESG-15 | Sustainability module (dashboard, applicability, metric console, unit form, materiality, GHG, factors, BRSR builder, assurance, value chain, partner form, CSR, climate, ratings & finance, framework index) | Sustainability › … ; My Work › ESG data | CSO, CFO, CS, unit owners, ext_assurer, partners | P27 |
+
+#### Screens — v1.1 F4 (P08, P09, P11, P28, App H, I)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-ERM-25 | Risk–control–obligation graph | Risk › Controls › Coverage graph | CRO, risk officer, CCO, IA | P08 |
+| SCR-ERM-26 | Early-warning console | Risk › Early warnings | CRO, risk owners | P08 |
+| SCR-ERM-27 | Starter kit installer | Risk › Framework › Starter kit | CRO, `ten_admin` | P08 |
+| SCR-ERM-28 | Group risk view | Risk › Group | Group CRO | P08 |
+| SCR-ERM-29 | Methodology versions | Risk › Framework › Methodologies | CRO | P08 |
+| SCR-ERM-30 | AI suggestions inbox | Risk › Suggestions | Risk owners, CRO | P08 |
+| SCR-RAL-23 | What-if sandbox | Risk Lab › Sandbox | CRO, CFO | P09 |
+| SCR-RAL-24 | Result cards | Risk Lab › Runs › [run] › Cards | CRO, CFO, CS | P09 |
+| SCR-RAL-25 | Internal metric builder | Risk Lab › Metrics › New internal metric | CFO, CRO, data steward | P09 |
+| SCR-RAL-26 | Group capital view | Risk Lab › Group | Group CFO/CRO | P09 |
+| SCR-RET-20 | Prepare due returns | Returns › Prepare | Returns makers, Head of Reporting | P11 |
+| SCR-RET-21 | Mapping memory and new codes | Returns › Data Room › Mappings | Returns makers | P11 |
+| SCR-RET-22 | Group returns view | Returns › Group | Group CFO, CCO | P11 |
+| SCR-RET-23 | Variance commentary library | Returns › Variances | Makers, CFO | P11 |
+| SCR-RET-24 | Acknowledgement inbox | Returns › Acknowledgements | Makers | P11 |
+| SCR-RPT-01 | Role home dashboard (ownership moves to P28) | Home | all | P28 |
+| SCR-RPT-02 | Personal dashboards | Home › My dashboards | all | P28 |
+| SCR-RPT-03 | Dashboard editor and library | Reports › Dashboards | report authors, `ten_admin` | P28 |
+| SCR-RPT-04 | Report catalogue | Reports › Catalogue | all with `rpt.reports.view` | P28 |
+| SCR-RPT-05 | Run a report | Reports › Run | all with `rpt.reports.run` | P28 |
+| SCR-RPT-06 | Report builder | Reports › Builder | `rpt.reports.build` | P28 |
+| SCR-RPT-07 | My reports | Reports › My reports | authors | P28 |
+| SCR-RPT-08 | Scheduled reports | Reports › Scheduled | authors | P28 |
+| SCR-RPT-09 | Report and pack approvals | Reports › Approvals | approvers | P28 |
+| SCR-RPT-10 | Pack studio | Reports › Packs | composers, KMPs, CS | P28 |
+| SCR-RPT-11 | Pack viewer and freeze | Reports › Packs › [pack] | approvers, CS | P28 |
+| SCR-RPT-12 | MIS catalogue | Reports › MIS catalogue | CCO, category owners | P28 |
+| SCR-RPT-13 | KPI dictionary | Reports › KPI dictionary | all (read), content team (edit) | P28 |
+| SCR-RPT-14 | Snapshots and re-runs | Reports › Snapshots | authors, auditors | P28 |
+| SCR-RPT-15 | Subscriptions | Profile › Subscriptions | all | P28 |
+| SCR-RPT-16 | Embedding and feeds | Settings › Reporting › Embedding and feeds | `ten_admin`, CISO | P28 |
+| SCR-RPT-17 | Group view | Reports › Group | group roles | P28 |
+| SCR-RPT-18 | Ask for a report | Reports › Ask Vidhi | authors | P28 |
+| SCR-RPT-19 | Due-diligence snapshot | Reports › Due-diligence | CCO, CFO, `ten_admin` | P28 |
+| SCR-RPT-20 | Inspection MIS file | Reports › Inspection file | CCO | P28 |
+| SCR-RPT-21 | Reporting settings | Settings › Reporting | `ten_admin` | P28 |
+
+#### Screens — v1.1 F5 (P12–P16, App G, S, T)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-AIG-01 | AI Governance dashboard | Data & Cyber › AI Governance | AIO, CRO, CCO, board (widget) | P12 |
+| SCR-AIG-02 | AI system register (with discovery proposals) | › AI Governance › Systems | AIO, system owners | P12 |
+| SCR-AIG-03 | AI system detail | (drill) | AIO, owners, validators, auditors (read) | P12 |
+| SCR-AIG-04 | Impact assessment editor | (drill) | AIO, DPO | P12 |
+| SCR-AIG-05 | Validation workspace | › AI Governance › Validations | ten_model_validator | P12 |
+| SCR-AIG-06 | Kill-switch test record | (drill) | kill-switch owner, AIO | P12 |
+| SCR-AIG-07 | AI incident | › Incidents (AI filter) | CISO, DPO, AIO | P12 |
+| SCR-AIG-08 | Board AI report builder | › AI Governance › Reports | AIO, CS | P12/P28 |
+| SCR-AIG-09 | Cross-framework map | › AI Governance › Frameworks | AIO, auditors | P12 |
+| SCR-DPC-20 | DPDP Schedules reference | › Privacy › Reference | DPO, all (read) | P12 |
+| SCR-DPC-21 | Data-compliance tree and diff review | › Privacy › Tree | DPO | P12 |
+| SCR-DPC-22 | RACI editor | › Privacy › Settings | DPO | P12 |
+| SCR-TPR-07 | Questionnaire extraction review | › Third Parties › Questionnaires | vendor-risk owner | P12 |
+| SCR-TPR-08 | Inbound DDQ workspace and answer library | › Third Parties › Answer library | CCO, CISO, DPO | P12 |
+| SCR-TPR-09 | One-screen vendor onboarding | › Third Parties › New vendor | vendor owner | P12 |
+| SCR-HR-19 | Leave quick-apply | Me › Leave | ten_employee | P13 |
+| SCR-HR-20 | Approval cards | Work Inbox / e-mail / Teams | managers | P13 |
+| SCR-HR-21 | Payroll what-if simulator | People › Payroll › Simulator | payroll maker, CHRO, CFO | P13 |
+| SCR-HR-22 | Contractor portal | Contractor (external) | ext_contractor | P13 |
+| SCR-HR-23 | Letters on demand | Me › Letters | ten_employee, HR | P13 |
+| SCR-HR-24 | Labour penalty exposure | People › Labour compliance | CHRO, CCO, CFO | P13 |
+| SCR-HR-25 | Apprentices | People › Apprentices | HR admin | P13 |
+| SCR-GRV-12 | Triage chips panel | (inside case) | support agents, GRO | P14 |
+| SCR-GRV-13 | Omnichannel thread | (inside case) | support agents, GRO | P14 |
+| SCR-GRV-14 | Taxonomy and regulator mapping | Settings › Grievance › Taxonomy | GRO | P14 |
+| SCR-GRV-15 | One-click MIS | Grievance › Reports | GRO, PNO, CCO | P14 |
+| SCR-PACK-12 | Applicability questionnaire | Onboarding › Step 3 / Settings › Entity profile | ten_admin, CCO | P15 |
+| SCR-PACK-13 | 'Why it applies' card | popover | all | P15 |
+| SCR-PACK-14 | Family 'what you get' | Catalogue › Family | ten_admin, CCO | P15 |
+| SCR-PACK-15 | Licences and de-duplication | Settings › Organisation › Licences | CCO, CS | P15 |
+| SCR-PACK-16 | Group set-up importer | Settings › Organisation › Group › Import | ten_admin | P15 |
+| SCR-COOP-18 | Member portal | Self-service › Society | coop_member | P16 |
+| SCR-COOP-19 | Office-bearer workbench | Home (role-based) | coop_office_bearer | P16 |
+| SCR-COOP-20 | Audit para tracker and rectification report | Audit › Rectification | secretary | P16 |
+| SCR-COOP-21 | Registrar inspections and inquiries | Compliance › Registrar | secretary, president | P16 |
+| SCR-COOP-22 | Register inspection requests | Members › Inspection requests | secretary | P16 |
+
+#### Screens — v1.1 F6 (P18–P23, App C, L, M, N, O, P, X)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-AI-24 | External AI access (MCP server) | Settings → Integrations → AI assistants | see phase | P18 |
+| SCR-AI-25 | External MCP servers (client) | Settings → Integrations → MCP servers | see phase | P18 |
+| SCR-INT-20 | A2A peers and Agent Cards | Settings → Integrations → Agent connections | see phase | P18 |
+| SCR-INT-21 | Issue sync (ITSM) | Settings → Integrations → Jira / ServiceNow / Freshservice | see phase | P18 |
+| SCR-INT-22 | Admin API keys | Settings → Integrations → Admin API | see phase | P18 |
+| SCR-INT-23 | Licensed intelligence providers | Console → Content → Intelligence feeds | see phase | P18 |
+| SCR-INT-24 | Court and notice data | Settings → Integrations → Litigation data | see phase | P18 |
+| SCR-INT-25 | ESG data sources | Settings → Integrations → ESG data | see phase | P18 |
+| SCR-INT-26 | Contract repositories | Settings → Integrations → Contracts | see phase | P18 |
+| SCR-INT-27 | Cell and routing (platform) | Console → Platform → Cells → Routing | see phase | P18 |
+| SCR-XPT-20 | Group export (multi-cell) | Settings → Data → Export → Group | see phase | P19 |
+| SCR-XPT-21 | Exit plan | Settings → Data → Exit plan | see phase | P19 |
+| SCR-XPT-22 | Intake undo | Settings → Data → Intake history | see phase | P19 |
+| SCR-CELL-03 | Home-cell migration (P25 owner; P19 workflow) | Settings → Data residency → Move entity | see phase | P19 |
+| SCR-BIL-60 | Market and currency selector | Public pricing page header; checkout | see phase | P20 |
+| SCR-BIL-61 | Tax details and preview | Checkout → Billing details | see phase | P20 |
+| SCR-BIL-62 | AI usage and budgets | Settings → Billing → AI usage | see phase | P20 |
+| SCR-BIL-63 | Agent seats | Settings → Billing → Agent seats | see phase | P20 |
+| SCR-BIL-64 | Cancel subscription | Settings → Billing → Plan → Cancel | see phase | P20 |
+| SCR-BIL-65 | Auditor engagement seats | Settings → Users → Auditor seats | see phase | P20 |
+| SCR-BIL-66 | Withholding tax documents | Settings → Billing → Tax documents | see phase | P20 |
+| SCR-MKP-40 | Jurisdiction browse | Marketplace → By country | see phase | P21 |
+| SCR-MKP-41 | Partner onboarding (foreign) | Provider → Apply → Partner programme | see phase | P21 |
+| SCR-MKP-42 | Partner scorecard | Console → Marketplace → Partners → Scorecard | see phase | P21 |
+| SCR-MKP-43 | Country commercial switches | Console → Marketplace → Rules → Countries | see phase | P21 |
+| SCR-MKP-44 | Practitioner plan sign-up | Marketplace → For firms | see phase | P21 |
+| SCR-MKP-45 | Service suggestion card | In-workspace (gap context) | see phase | P21 |
+| SCR-SDC-40 | Firm workspace home | Delivery (firm) → Home | see phase | P22 |
+| SCR-SDC-41 | Client links (firm) | Delivery (firm) → Clients | see phase | P22 |
+| SCR-SDC-42 | Access transparency (tenant) | Settings → Security → Access transparency | see phase | P22 |
+| SCR-SDC-43 | Help & support | Settings → Help & support | see phase | P22 |
+| SCR-SDC-44 | Regional delivery teams | Delivery → Teams → Regions | see phase | P22 |
+| SCR-SDC-45 | Agent runs (delivery) | Delivery → Client → Agents | see phase | P22 |
+| SCR-WEB-40 | Market selector and market home | Public header → Market | see phase | P23 |
+| SCR-WEB-41 | Country solution page | `/<market>/solutions/<country>-compliance` | see phase | P23 |
+| SCR-WEB-42 | Global health check — start | `/health-check/global` | see phase | P23 |
+| SCR-WEB-43 | Global health check — report | `/health-check/global/report/<id>` | see phase | P23 |
+| SCR-WEB-44 | Vidhi agents page | `/vidhi-ai-agents` | see phase | P23 |
+| SCR-WEB-45 | Connect your AI assistant | `/connect-your-ai-assistant` | see phase | P23 |
+
+#### Screens — v1.1 V1 explicit rows for P26 and P27 (replacing the range entries SCR-LIT-01–24 and SCR-ESG-01–15)
+
+| Screen ID | Name | Menu path | Key content | Phase |
+|---|---|---|---|---|
+| SCR-LIT-01 | GC Dashboard | Legal › Home | Widgets FR-P26-51; each opens a filtered list; keyboard `g l` | P26 |
+| SCR-LIT-02 | Notice Inbox | Legal › Notices | Unclassified notices with AI proposals; side-by-side original and proposed fields; `a` accept field, `Enter` confirm all, triage owner picker | P26 |
+| SCR-LIT-03 | Notice Workspace | Legal › Notices › {notice} | Stepper of 10 stages; reply editor (template + draft); approval panel per delegation; dispatch and proof upload | P26 |
+| SCR-LIT-04 | Matters Register | Legal › Matters | Grid with forum, stage, next date, exposure, provision class, risk score, owner; saved views; bulk assign | P26 |
+| SCR-LIT-05 | Matter Workspace | Legal › Matters › {matter} | Tabs: Overview, Docket, Hearings, Orders & directions, Documents (privilege badges), Counsel & costs, Assessment, Settlement, Related | P26 |
+| SCR-LIT-06 | Hearings Diary | Legal › Hearings | Week/month view across matters; outcome-capture form; missing outcomes highlighted | P26 |
+| SCR-LIT-07 | Limitation & Deadlines | Legal › Deadlines | All clocks with last date, buffer, owner, verification status badge (advisory if unverified) | P26 |
+| SCR-LIT-08 | Order Digest Review | Matter › Orders › {order} | AI-proposed outcome and directions; convert directions to tasks in one confirmation | P26 |
+| SCR-LIT-09 | Counsel Directory | Legal › Counsel | Empanelled firms; rate cards; scorecards; conflict declarations; empanelment review | P26 |
+| SCR-LIT-10 | Counsel Portal (external) | `apps/web` external shell | Assigned matters only; post hearing update; upload; queries; invoices | P26 |
+| SCR-LIT-11 | Legal Spend | Legal › Spend | Invoices queue with validation results; budgets vs actuals; accruals; approvals | P26 |
+| SCR-LIT-12 | Provision Schedule | Legal › Provisions | Quarter view; assessments by matter; movement schedule; freeze; export to P11 | P26 |
+| SCR-LIT-13 | Regulator Engagements | Legal › Regulators | Engagements list; status; owner; next due | P26 |
+| SCR-LIT-14 | Inspection War Room | Legal › Regulators › {engagement} › Live | RFIs due today/overdue/submitted; pack builder; submission log; daily digest | P26 |
+| SCR-LIT-15 | Observations & MAP | Legal › Regulators › {engagement} › Observations | Observation cards with action plans, evidence, verification status (P10) | P26 |
+| SCR-LIT-16 | Regulator Proceedings | Legal › Regulators › Proceedings | SCNs, adjudication, compounding, penalties, appeals with clocks | P26 |
+| SCR-LIT-17 | Contracts Repository | Legal › Contracts | Grid with type, counterparty, value, expiry, auto-renew risk, outsourcing/RPT/DPDP flags | P26 |
+| SCR-LIT-18 | Contract Workspace | Legal › Contracts › {contract} | Stages; versions and redlines; approval route; signature; obligations (confirm grid); renewals | P26 |
+| SCR-LIT-19 | Contract Intake (self-service) | My Work › Request a contract | Type-specific form; attachments; routing preview | P26 |
+| SCR-LIT-20 | Licences Register | Legal › Licences | By entity and location; expiry heat strip; renewal tasks; conditions | P26 |
+| SCR-LIT-21 | Ethics Declarations | Legal › Ethics | Campaigns; completion; conflicts review queue; gifts register | P26 |
+| SCR-LIT-22 | My Declarations | My Work › Declarations | Pending declarations; gift pre-clearance request; history | P26 |
+| SCR-LIT-23 | Delegation Matrix | Legal › Settings › Delegations | Matrix editor (Governed); preview who approves what; effective dates | P26 |
+| SCR-LIT-24 | Legal Reports | Legal › Reports | LIT/REG/CLM/LIC/ETH report definitions (rendered by P28) | P26 |
+
+| Screen ID | Name | Menu path | Key content | Phase |
+|---|---|---|---|---|
+| SCR-ESG-01 | ESG Dashboard | Sustainability › Home | Widgets FR-P27-36 | P27 |
+| SCR-ESG-02 | Applicability | Sustainability › Applicability | Obligations with "why it applies" and first-applicable year; rank history | P27 |
+| SCR-ESG-03 | Metric Console | Sustainability › Metrics | Unit × metric × period grid; completeness heat map; bulk assign; approve queue | P27 |
+| SCR-ESG-04 | Data Entry (unit form) | My Work › ESG data | Only assigned metrics; unit conversion; evidence drop zone; save-as-you-go | P27 |
+| SCR-ESG-05 | Materiality Workspace | Sustainability › Materiality | Topic universe; scoring; survey results; matrix; Board approval link | P27 |
+| SCR-ESG-06 | GHG Inventory | Sustainability › GHG | Sources by facility; scope totals; factor stamps; restatement assessments; targets | P27 |
+| SCR-ESG-07 | Emission-Factor Library | Sustainability › Settings › Factors | Versions, sources, tenant factors with evidence | P27 |
+| SCR-ESG-08 | BRSR Builder | Sustainability › BRSR | Sections A/B/C with checklist state; narrative drafts; Core view; freeze | P27 |
+| SCR-ESG-09 | Assurance Workspace | Sustainability › Assurance | Engagement, scope grant, request list, findings, report | P27 |
+| SCR-ESG-10 | Value-Chain Partners | Sustainability › Value chain | Threshold computation, coverage, requests, responses | P27 |
+| SCR-ESG-11 | Partner Form (external) | external shell | OTP; requested fields only; evidence upload | P27 |
+| SCR-ESG-12 | CSR Engine | Sustainability › CSR | Obligation computation; action plan; projects; agencies; unspent clocks; CSR-2 data | P27 |
+| SCR-ESG-13 | Climate & Transition | Sustainability › Climate | Risk links (P08), scenarios (to P09), targets, transition plan | P27 |
+| SCR-ESG-14 | Ratings & Green Finance | Sustainability › Ratings & finance | Ratings register; use-of-proceeds; green deposits | P27 |
+| SCR-ESG-15 | Framework Index | Sustainability › Frameworks | ISSB/GRI/TCFD/ESRS index views from the same data | P27 |
+
+## C.13 Compiled v1.2 screen inventory *(v1.2)*
+
+*(v1.2)* Compiled by the pack lead from the v1.2 editors' registers (T1 templates and Appendix E; T3 P04 list, RAG, conversations and accountability; T4 P03 CompID generation, P05, P23; T5 business-ID registry, P01 onboarding, P06, P08, P09, P18). Where a v1.2 entry amends an earlier code, the v1.2 entry prevails.
+
+Integration renumbering: P03's new screens SCR-TPL-06–08 became **SCR-TPL-20–22** (06 and 07 were already allocated in §C.9). Screens marked *(redefined)* or *(amended)* replace the earlier row of the same ID.
+
+#### T3 — Screens (v1.2; P04, Appendix C)
+
+| Screen ID | Name | Menu path | Roles | Phase | Pattern |
+|---|---|---|---|---|---|
+| SCR-CMP-03 *(redefined)* | Compliance list (9 columns + Next Due, Days to Due, RAG chips) | Compliance › List | tenant roles (scoped) | P04 | PAT-20, PAT-21 |
+| SCR-CMP-20 | CompID drawer (pop-up) — tabs Overview, Do, Maker, Checker, Auditor, Conversation, Accountability, History, Links; deep link `/c/<CompID>[/<PERIOD>]` | Click CompID in any list | scoped | P04 | PAT-21, PAT-06 |
+| SCR-CMP-21 | Export builder (filter + group-by ≤ 3 + columns + format + schedule) | List › Export | scoped; sensitive scope approval | P04 | PAT-23 (extends PAT-12) |
+| SCR-CMP-22 | Non-compliance accountability report | Drawer › Accountability › Report; Compliance › Accountability | Accountable owner, dept head, CCO, IA, Board secretary | P04 | — |
+| SCR-CMP-23 | Accountability dashboard | Dashboard › Accountability | CCO, dept heads, KMP; Board aggregate | P04 | — |
+| SCR-CMP-24 | Starred and collections | Compliance › Starred | all | P04 | — |
+| SCR-CMP-25 | RAG windows and radar settings | Settings › Workflow › RAG windows | `ten_cco` (edit), `ten_admin` (view) | P04 | PAT-03 (impact preview) |
+| SCR-CMP-26 | Request composer (Ask: Query / Explanation / Guidance / Note / Decision) | Drawer › Ask | per P04 FR-P04-241 | P04 | PAT-22 |
+| SCR-CMP-27 | Urgent & Upcoming (widget W-CMP-20 + full page) | Home; Compliance › Urgent & upcoming | all working users | P04 | — |
+| SCR-CMP-28 | RAG heat map (department × month; widget W-CMP-23) | Dashboard (CCO, CEO/MD, Board) | CCO, KMP, Board | P04 (rendered by P28) | — |
+| SCR-CMP-29 | Saved views manager | List › Views › Manage; Settings › Data & forms › Saved views | all (own); `ten_admin` (role defaults) | P04 | PAT-20 |
+
+Widgets added to `cfg.widget_catalogue`: W-CMP-20 Urgent & Upcoming, W-CMP-21 Starred, W-CMP-22 Accountability, W-CMP-23 RAG heat map, W-CMP-24 At risk of slipping (Appendix C §C.6.1).
+Patterns added: PAT-21 List + record drawer, PAT-22 Typed conversation thread, PAT-23 Grouped export builder (Appendix C §C.7).
+Click budgets: J-27–J-31 (Appendix C §C.11.12).
+
+#### T4 — Screens (v1.2; P03, P05, P23)
+
+| Screen ID | Name | Menu path | Roles | Phase |
+|---|---|---|---|---|
+| SCR-TPL-20 | CompID registry and lineage (state, aliases, split/merge/move graph, sequence usage per scope) | Console › Content › CompIDs | `plt_content_*`, `plt_super_admin` | P03 |
+| SCR-TPL-21 | Legacy v1.0 conversion (column map preview, Confirm instrument, Z-column warnings, Download as v2.0) | Import wizard › Confirm instrument | `plt_content_maker`, tenant importers | P03 |
+| SCR-TPL-22 | Instrument short codes (`<SUBJECT><YY>`, override before freeze, collisions, v1.1 aliases) | Console › Content › Templates › Short codes | `plt_content_lead` | P03 |
+| SCR-CNT-21 | CompID History and versions (question versions, Change Status, Actionable Last Updated On, previous vs new actionable, ledger incl. aliases/predecessors) — shared with P04 drawer History tab | Any CompID › History | all with read | P03 (P04 renders in drawer) |
+| SCR-CNT-03 *(amended)* | Content Studio grid — v2.0 column groups, reserved-CompID badge, split/merge/retire | Instrument workspace › Checkpoints › Edit | `plt_content_maker` | P03 |
+| SCR-AIS-02 *(amended)* | Draft review grid — v2.0 groups, reserved CompIDs, locked deterministic fields, checker/audit guidance | AI Studio › *run* | content team; tenant authors | P05 |
+| SCR-AIS-05 | Diff by CompID (class, version from→to, grouped field changes, previous vs new actionable, update-vs-new decisions, export) | AI Studio › *run* › Diff; Change item › Impacted CompIDs | content team; tenant authors (own runs) | P05 |
+| SCR-AIS-06 | Suggested RiskID/GovID links review | AI Studio › *run* › Links | content team; tenant authors | P05 |
+| SCR-WEB-50 | Health Check Studio — sets | Console › Website › Health Check Studio | `plt_super_admin`, `plt_content_maker` (`web.hc_studio`) | P23 |
+| SCR-WEB-51 | Health-check set editor (sections, counts, weights, order, wording, options, scoring, branching, bindings) | Studio › *set* › *version* | same | P23 |
+| SCR-WEB-52 | Library picker by CompID (search + filters family/authority/instrument/section/department/function/compliance type/risk; multi-bind) | Set editor › Add questions | same | P23 |
+| SCR-WEB-53 | Preview as sample entity + scoring test harness | Set editor › Preview | same | P23 |
+| SCR-WEB-54 | Set version diff and approval | Work Inbox › Health-check review | `plt_content_checker`, `plt_content_publisher` | P23 |
+| SCR-WEB-55 | Experiments and drop-off analytics | Studio › Analytics | `plt_super_admin`, growth squad (read) | P23 |
+
+#### T5 — Screens (v1.2; P00, P01, P06, P08, P18; for Appendix C)
+
+| Screen ID | Name | Menu path | Roles | Phase | Notes |
+|---|---|---|---|---|---|
+| SCR-CORE-10 | Business-ID registry | console › Content › IDs | plt_content_maker (maker), plt_content_checker (checker), plt_super_admin, plt_auditor (read) | P00 | Search by ID/alias; series view; instrument-code and tenant-code queues; retire/merge/split/alias wizards; integrity-check results |
+| SCR-CORE-11 | History tab (shared `<HistoryTimeline bizId>`) | Any drawer › History; Settings › Audit & history › History by ID | per Appendix D §D.19.2 | P00 | Category chips, actor filter, include periods, include lineage, diff, verify, export (optional s.63 certificate) |
+| (P01 §4H screens) | Discovery box, profile card with provenance badges, conflict cards, compliance universe, organisation-code step | Sign-up / onboarding wizard | anon, ten_admin, dlv_rm (assisted) | P01 | FR-P01-54 to FR-P01-76 |
+| SCR-GOV-41 | Governance register (nine-column list; Requirements/Records toggle) | Governance › Register | ten_cs, ten_compliance_officer, ten_dept_head (own), directors (Board items), auditors (read) | P06 | `<RegisterList>` from P04 |
+| SCR-GOV-42 | GovID drawer; deep link `/g/<GovID>` | Governance › Register › [GovID] | as above | P06 | Tabs Overview, Do, Records, Workflow, Conversation, History, Links, Accountability |
+| SCR-GOV-43 | Governance accountability report | Governance › Reports › Accountability | ten_cs, ten_cco, Audit Committee chair, auditors | P06 | Late notices, minutes, filings, declarations; additional-fee exposure |
+| SCR-GOV-44 | Governance library studio (platform) | console › Content › Governance library | plt_content_maker, plt_content_checker | P06 | GOVL authoring through `LDC-TPL-GOV-v2.0` |
+| SCR-ERM-31 | RiskID drawer; deep link `/r/<RiskID>` | Risk › Register › [RiskID] | per Appendix D §D.19.2 | P08 | Tabs Overview, Assessment, Controls, KRIs, Treatment, Review, Conversation, History, Links, Accountability |
+| SCR-ERM-32 | Risk accountability report | Risk › Reports › Accountability | ten_cro, ten_cco, dept heads (d), IA | P08 | Overdue reviews, actions, breach plans |
+| SCR-ERM-33 | Register import/export (`LDC-TPL-RISK-v2.0`) | Risk › Register › Import / Export | ten_cro, ten_dept_head (d) | P08 | Dry-run diff, alias capture, undo, export builder |
+| SCR-ERM-04 *(redefined)* | Risk register — nine-column list view + Trend, Next Review, RAG chips | Risk › Register | as v1.0 | P08 | FR-P08-70 |
+| SCR-INT-28 | Onboarding providers and quality (platform) | Console › Integrations › Onboarding providers | plt_super_admin (+ plt_security_officer approval) | P18 | Provider order, circuit state, agreement rate, cost |
+| SCR-INT-29 | Register snapshots (platform) | Console › Content › Registers | plt_content_maker, plt_content_checker | P18 | Held snapshots and diff sign-off |
+| SCR-INT-30 | API and webhooks by ID (developer portal) | Developer portal › Business IDs | developers | P18 | Resolver playground, webhook topics with ID filters, MCP tools |

@@ -1,0 +1,116 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Workplace & HR AI Dispute Explorer (Prototype)</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8}
+ *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:16px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:18px}header .tag{color:#CADCEA;font-size:12.5px;font-style:italic}
+ .wrap{max-width:920px;margin:0 auto;padding:22px 18px 90px}
+ .prog{height:8px;background:#dfe7ea;border-radius:6px;overflow:hidden;margin:6px 0 20px}.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:20%;transition:.3s}
+ .step{background:#fff;border:1px solid #e2e8eb;border-radius:14px;padding:24px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ h1{font-size:22px;margin:.1em 0 .2em;color:var(--navy)}.sub{color:var(--grey);font-size:14px;margin-bottom:16px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+ .opt{border:1.5px solid #d7e0e4;border-radius:10px;padding:14px;cursor:pointer;background:#fff;font-size:14.5px}.opt:hover{border-color:var(--teal);background:#f7fbfc}.opt.sel{border-color:var(--teal);background:var(--ltteal);box-shadow:inset 0 0 0 1px var(--teal)}
+ .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:9px 15px;margin:5px 6px 0 0;cursor:pointer;font-size:14px;background:#fff}.chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+ label.f{display:block;font-size:12.5px;color:var(--navy);font-weight:600;margin:12px 0 4px}select,input[type=number],textarea{padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px;font-family:inherit}select,input{min-width:180px}textarea{width:100%;min-height:80px}
+ .nav{display:flex;justify-content:space-between;margin-top:22px}button{border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}.primary{background:var(--teal);color:#fff}.ghost{background:#eaf0f2;color:var(--navy)}
+ .banner{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:14px}.b-red{background:#F6E0E4;border-left:5px solid var(--red)}.b-gold{background:var(--lgold);border-left:5px solid var(--gold)}.b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}.b-green{background:#DCEEE4;border-left:5px solid var(--green)}
+ .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:16px 18px;margin:12px 0;background:#fff}.sumcard h3{margin:.1em 0 .5em;color:var(--navy);font-size:16px}
+ .kv{font-size:14px;margin:4px 0}.kv b{color:var(--navy)}.muted{color:var(--grey);font-size:12.5px}.pill{display:inline-block;background:var(--ltteal);color:var(--navy);border-radius:20px;padding:4px 11px;margin:3px 4px 0 0;font-size:12.5px}
+ .badge{display:inline-block;border-radius:20px;padding:5px 13px;font-size:13px;font-weight:700;color:#fff}
+ a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700;margin-top:8px}.disc{font-size:11.5px;color:var(--grey);margin-top:18px;line-height:1.5}
+ #aiBtn{position:fixed;right:20px;bottom:20px;background:var(--gold);color:#20303a;border-radius:30px;padding:13px 20px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:40}
+ #aiPanel{position:fixed;right:20px;bottom:78px;width:min(420px,92vw);max-height:72vh;background:#fff;border:1px solid #d7e0e4;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:none;flex-direction:column;z-index:41;overflow:hidden}#aiPanel.open{display:flex}
+ #aiPanel .hd{background:var(--navy);color:#fff;padding:12px 16px;font-weight:700;display:flex;justify-content:space-between}#aiLog{padding:12px 14px;overflow:auto;flex:1;font-size:14px}
+ .msg{margin:8px 0;padding:10px 12px;border-radius:10px;line-height:1.45}.msg.ai{background:var(--ltteal)}.msg.me{background:#eef3f5;text-align:right}
+ #aiChips{padding:6px 12px;border-top:1px solid #eee;max-height:120px;overflow:auto}#aiForm{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #eee}#aiForm input{flex:1}
+ .modal{position:fixed;inset:0;background:rgba(10,25,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.modal.open{display:flex}.modal .box{background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:20px}
+</style></head><body>
+<header><span class="brand">EQUATOR RESOLUTION</span><span class="tag">Workplace & HR AI Dispute Explorer — the right route, your rights, a fair outcome</span></header>
+<div class="wrap"><div class="prog"><i id="bar"></i></div><div id="app"></div></div>
+<button id="aiBtn" onclick="toggleAI()">💬 Ask Equator AI</button>
+<div id="aiPanel"><div class="hd"><span>Equator AI assistant</span><span style="cursor:pointer" onclick="toggleAI()">✕</span></div><div id="aiLog"></div><div id="aiChips"></div><form id="aiForm" onsubmit="return askFree(event)"><input id="aiInput" placeholder="Type a question…" autocomplete="off"/><button class="primary" type="submit">Ask</button></form></div>
+<div class="modal" id="draftModal"><div class="box" id="draftBox"></div></div>
+<script>
+const DTYPES={
+ "Wage / salary dues":{route:"mediation",law:"Code on Wages, 2019; Mediation Act"},
+ "Full & final (F&F)":{route:"mediation",law:"Mediation Act; Code on Social Security"},
+ "Wrongful / unfair termination":{route:"mediation",law:"IR Code, 2020; Mediation Act"},
+ "Notice period / bond":{route:"mediation",law:"Contract; s.27 restraint limits"},
+ "Gratuity / PF / ESI / benefits":{route:"mediation",law:"Code on Social Security, 2020"},
+ "Sexual harassment (POSH)":{route:"posh",law:"POSH Act, 2013"},
+ "Workplace harassment (non-POSH)":{route:"mediation",law:"IR Code; service rules"},
+ "Discrimination":{route:"mediation",law:"Code on Wages (equal pay)"},
+ "General grievance":{route:"grievance",law:"IR Code Grievance Redressal Committee"},
+ "Retrenchment / layoff":{route:"statutory",law:"IR Code, 2020"}
+};
+const RELIEF=["Payment of dues","Reinstatement","Relieving & experience letter","Correction of record","Notice-pay waiver","Compensation","Return of documents / assets","Apology / corrective action","Reference / clearance"];
+const state={who:null,est:"",dtypes:new Set(),relief:new Set(),facts:""};
+let step=0;const STEPS=4;const app=document.getElementById('app'),bar=document.getElementById('bar');
+const DISC="This is general information about your options and the law, not legal advice. Please consult a lawyer before deciding.";
+function render(){bar.style.width=Math.round(((step+1)/STEPS)*100)+"%";[stepWho,stepDispute,stepRelief,stepSummary][step]();}
+function nav(l="Continue →",ok=true){return `<div class="nav"><button class="ghost" onclick="go(-1)" ${step===0?'style=\"visibility:hidden\"':''}>← Back</button><button class="primary" onclick="next()" ${ok?'':'disabled style=\"opacity:.5\"'}>${l}</button></div>`;}
+function go(d){step=Math.max(0,Math.min(STEPS-1,step+d));render();window.scrollTo(0,0);}function next(){if(step<STEPS-1){step++;render();window.scrollTo(0,0);}}
+function toggle(set,v){const s=state[set];s.has(v)?s.delete(v):s.add(v);render();}
+function stepWho(){app.innerHTML=`<div class="step"><h1>Are you the employee or the employer?</h1><div class="sub">Either can start. Nothing is stored on this page.</div>
+ <div class="grid">${["Employee / ex-employee","Employer / HR","Contractor / gig worker"].map(o=>`<div class="opt ${state.who===o?'sel':''}" onclick="state.who='${o}';render()">${o}</div>`).join('')}</div>
+ <label class="f">Establishment size</label><select onchange="state.est=this.value"><option value="">Select…</option>${["<10","10–49","50–99","100–299","300+"].map(l=>`<option ${state.est===l?'selected':''}>${l}</option>`).join('')}</select>
+ ${nav('Continue →',!!state.who)}</div>`;}
+function stepDispute(){app.innerHTML=`<div class="step"><h1>What is the dispute about?</h1><div class="sub">Choose all that apply.</div>
+ <div>${Object.keys(DTYPES).map(t=>`<span class="chip ${state.dtypes.has(t)?'sel':''}" onclick="toggle('dtypes','${t.replace(/'/g,"\\'")}')">${t}</span>`).join('')}</div>
+ ${state.dtypes.has("Sexual harassment (POSH)")?`<div class="banner b-red" style="margin-top:14px"><b>A sexual-harassment complaint is handled by your organisation's Internal Committee</b> under the POSH Act — confidentially, and never on a money basis. Equator supports the Committee. If you are in danger, contact the police.</div>`:''}
+ ${nav('Continue →',state.dtypes.size>0)}</div>`;}
+function stepRelief(){app.innerHTML=`<div class="step"><h1>What outcome do you want?</h1><div class="sub">Select any that fit.</div>
+ <div>${RELIEF.map(r=>`<span class="chip ${state.relief.has(r)?'sel':''}" onclick="toggle('relief','${r.replace(/'/g,"\\'")}')">${r}</span>`).join('')}</div>
+ <label class="f">Briefly, what happened? (optional — helps the AI draft)</label><textarea oninput="state.facts=this.value" placeholder="e.g. I resigned last month and my full-and-final and relieving letter are still pending…">${state.facts}</textarea>${nav('See my summary →')}</div>`;}
+function recommend(){const dts=[...state.dtypes];const routes=new Set(dts.map(t=>DTYPES[t]&&DTYPES[t].route));
+ if(routes.has("posh")){return {r:"POSH — Internal Committee",c:"var(--red)",n:["A sexual-harassment complaint goes to your organisation's Internal Committee (with an external member). It is confidential (s.16); conciliation is possible only at your request and never on a monetary basis; otherwise an inquiry is completed within 90 days. Equator supports the Committee and provides trained external members. If the conduct is criminal or you are in danger, you may also go to the police."]};}
+ if(routes.has("statutory")){return {r:"Statutory / IR-Code process (+ mediation where lawful)",c:"var(--gold)",n:["Retrenchment/layoff follows the Industrial Relations Code, 2020 (compensation, notice, thresholds). Equator can mediate a settlement around it where lawful."]};}
+ if(routes.has("grievance")){return {r:"Grievance Redressal Committee + mediation",c:"var(--gold)",n:["Raise the grievance with your establishment's Grievance Redressal Committee (IR Code, 2020); if unresolved, Equator can mediate a neutral, confidential settlement."]};}
+ return {r:"Mediation / conciliation & settlement",c:"var(--green)",n:["Your matter is well-suited to a mediated settlement — a fair figure (F&F, dues, compensation), secured by escrow and released against your relieving and clearance, enforceable as a decree (s.27). Statutory dues are paid, not waived."]};
+}
+function stepSummary(){const r=recommend();const dts=[...state.dtypes];const posh=dts.includes("Sexual harassment (POSH)");const money=[...state.relief].some(x=>/dues|compensation|waiver/i.test(x))||dts.some(t=>/wage|final|gratuity|termination/i.test(t));
+ app.innerHTML=`<div class="step"><h1>Your options at a glance</h1><div class="sub">General guidance, not legal advice — but this is how Equator would approach your matter.</div>
+ ${posh?`<div class="banner b-red"><b>POSH matters are handled with special care.</b> Your complaint stays with the Internal Committee, is confidential, and is never based on money. If you are in immediate danger, contact the police.</div>`:''}
+ <div class="sumcard"><h3>Recommended route</h3><span class="badge" style="background:${r.c}">${r.r}</span>
+  <div style="margin-top:8px">${r.n.map(n=>`<div class="kv">• ${n}</div>`).join('')}</div></div>
+ <div class="sumcard"><h3>Applicable law</h3>${dts.map(t=>`<div class="kv">• <b>${t}:</b> ${DTYPES[t]?DTYPES[t].law:''}</div>`).join('')||'<div class="muted">Select your dispute type.</div>'}</div>
+ <div class="sumcard"><h3>Outcomes you're seeking</h3><div>${[...state.relief].map(x=>`<span class="pill">${x}</span>`).join('')||'<span class="muted">None selected.</span>'}</div></div>
+ ${money&&!posh?`<div class="banner b-gold"><b>Money is secured by escrow.</b> A fair figure (F&F/dues/compensation) is held in escrow and released against your relieving letter and clearance. Statutory dues (gratuity/PF) are paid, not waived.</div>`:''}
+ <div class="sumcard"><h3>Draft with AI</h3><div class="muted" style="margin-bottom:8px">Generate a first draft from your inputs — review it, then have counsel settle it.</div>
+  <button class="primary" onclick="draft('${posh?'posh':'grievance'}')">${posh?'Draft a POSH complaint':'Draft a grievance / complaint'}</button>
+  <button class="ghost" onclick="draft('request')" style="margin-left:8px">Draft a request for resolution</button></div>
+ <div class="sumcard"><h3>How it runs — fully online</h3>
+  <div class="kv">• A neutral mediator/conciliator; fast, confidential; both sides protected from coercion.</div>
+  <div class="kv">• File & sign with <b>Aadhaar e-Sign</b>; settlement <b>e-stamped</b>; escrow releases against relieving & clearance.</div>
+  <div class="kv">• Enforceable as a decree (MSA s.27); statutory dues paid, not waived.</div></div>
+ <a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">Start confidentially with Equator →</a>
+ <div class="nav"><button class="ghost" onclick="go(-1)">← Back</button><button class="ghost" onclick="restart()">Start over</button></div>
+ <div class="disc"><b>Prototype.</b> Demonstration of the AI-assisted workplace intake only; stores no data; illustrative AI; not legal advice. Equator supports employers' Internal Committees (POSH) and complements the grievance machinery and the courts.</div></div>`;}
+function restart(){Object.assign(state,{who:null,est:"",dtypes:new Set(),relief:new Set(),facts:""});step=0;render();}
+function draft(kind){const facts=(state.facts||"").split(/\n|(?<=\.)\s+/).map(s=>s.trim()).filter(Boolean);const dts=[...state.dtypes],rel=[...state.relief];let t="";
+ if(kind==='posh'){t=`COMPLAINT TO THE INTERNAL COMMITTEE (DRAFT)\n(POSH Act, 2013 — confidential. Review before submitting; support is available.)\n\nTo: The Presiding Officer, Internal Committee, [Organisation]\n\n1. Complainant: [name] · [designation/ID] · [department]\n2. Respondent: [name] · [designation]\n3. Complaint of sexual harassment at the workplace:\n`+(facts.length?facts.map((f,i)=>`   ${i+1}. ${f}`).join("\n"):"   1. [Describe what happened — date, place, conduct, witnesses.]")+`\n\n4. I request: [inquiry by the Internal Committee] / [interim relief — transfer, leave, stop-contact]`+(rel.length?` / [${rel.join('; ')}]`:'')+`.\n5. (Optional) I request conciliation under s.10 — this is my own request, and I understand it will not be based on any monetary settlement.\n\nI understand these proceedings are confidential (s.16).\n\n_____________________\nComplainant · Date`;}
+ else if(kind==='grievance'){t=`GRIEVANCE / COMPLAINT (DRAFT)\n(AI-assisted — review and have counsel settle before sending)\n\nTo: [HR / Grievance Redressal Committee], [Organisation]\nFrom: [${state.who||'Employee'}] · Employee ID: [____]\n\nNATURE OF GRIEVANCE\n`+(dts.length?dts.map((x,i)=>`(${i+1}) ${x}`).join("\n"):"[issue]")+`\n\nFACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts and dates.]")+`\n\nRELIEF SOUGHT\n`+(rel.length?rel.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [relief];")+`\n\nI request resolution through the Grievance Redressal Committee, and I am willing to mediate at Equator Resolution.\n\n_____________________\nEmployee · Date`;}
+ else{t=`REQUEST FOR RESOLUTION (DRAFT)\n(AI-assisted — review and have counsel settle before filing)\n\nTo: Equator Resolution\n\n1. PARTIES\nApplicant: [${state.who||'party'}] · Other party: [employer/employee].\nEstablishment size: ${state.est||'[size]'}.\n\n2. THE DISPUTE\n`+(dts.length?dts.map((x,i)=>`(${i+1}) ${x}`).join("\n"):"[dispute type]")+`\n\n3. FACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts.]")+`\n\n4. RELIEF SOUGHT\n`+(rel.length?rel.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [relief];")+`\n\nWe request Equator to administer the resolution under its Rules.\n\n_____________________\nApplicant`;}
+ document.getElementById('draftBox').innerHTML=`<h2>Draft</h2><div class="muted" style="margin-bottom:8px">AI-generated from your inputs. Not legal advice — edit and have counsel settle.${kind==='posh'?' A POSH complaint is confidential; support is available to help you file.':''}</div><textarea style="min-height:340px">${t.replace(/</g,'&lt;')}</textarea><div class="nav"><button class="ghost" onclick="closeModal()">Close</button><button class="primary" onclick="copyDraft(this)">Copy draft</button></div>`;
+ document.getElementById('draftModal').classList.add('open');}
+function closeModal(){document.getElementById('draftModal').classList.remove('open');}
+function copyDraft(b){const ta=document.querySelector('#draftBox textarea');ta.select();try{document.execCommand('copy');b.textContent='Copied ✓';}catch(e){b.textContent='Select & copy';}}
+const QUICK=["Which route should I use?","My full & final is pending","How does POSH conciliation work?","Can my gratuity be waived?","What is the notice-pay rule?","Is it confidential?","How long does it take?","What are my rights on exit?"];
+function aiAnswer(q){const s=q.toLowerCase();const r=recommend();
+ if(/which|route|should i|best/.test(s))return `Based on your inputs: ${r.r}. ${r.n.join(" ")} `+DISC;
+ if(/posh|harassment|conciliation|internal committee/.test(s))return "A sexual-harassment complaint goes to your organisation's Internal Committee (which must include an external member). It is confidential (s.16). Conciliation under s.10 is possible only at the complainant's request and never on a monetary basis; otherwise the Committee completes an inquiry within 90 days, reports within 10 days, and the employer acts within 60 days. Equator supports the Committee — it does not replace it. If the conduct is criminal or you are in danger, contact the police. "+DISC;
+ if(/gratuity|pf|statutory|waive/.test(s))return "Statutory dues — gratuity, PF, ESI — must be paid; they cannot be settled away. A settlement records their proper payment. Gratuity is generally (15 × last wages × completed years) / 26, usually after 5 years' service. "+DISC;
+ if(/f&f|full and final|dues|salary|wage/.test(s))return "Wage and full-and-final disputes are well-suited to mediation: we compute the dues transparently (salary, leave encashment, gratuity, bonus, less any notice shortfall), secure the money in escrow, and release it against your relieving letter and clearance. "+DISC;
+ if(/notice|bond|non.?compete/.test(s))return "Notice-pay in lieu is usually (monthly salary / 30) × the notice days not served. Employment bonds and non-competes are read narrowly — post-employment restraints are generally void under s.27 of the Contract Act; reasonable, limited clauses may hold. "+DISC;
+ if(/terminat|dismiss|reinstat/.test(s))return "A contested termination can be mediated to a separation settlement — reinstatement or compensation, a fair reference, and a clean exit — enforceable as a decree. Retrenchment follows the Industrial Relations Code (compensation and thresholds). "+DISC;
+ if(/confiden|private/.test(s))return "Mediation is confidential and without prejudice; POSH matters are additionally protected under s.16 of the POSH Act. "+DISC;
+ if(/time|long|days|how fast/.test(s))return "Most wage/F&F and separation matters settle in weeks; POSH inquiries follow the statutory 90-day clock run by the Internal Committee. "+DISC;
+ if(/right|exit|relieving/.test(s))return "On exit you are entitled to your statutory dues (gratuity/PF), your earned wages and leave encashment, and — on settlement — relieving and experience letters and return of your documents. "+DISC;
+ return "I can help with the right route, POSH, full-and-final, gratuity, notice pay, termination, confidentiality, timelines and your rights on exit. Try a question below. "+DISC;}
+function pushMsg(w,t){const l=document.getElementById('aiLog');const d=document.createElement('div');d.className='msg '+w;d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight;}
+function ask(q){pushMsg('me',q);setTimeout(()=>pushMsg('ai',aiAnswer(q)),150);}
+function askFree(e){e.preventDefault();const i=document.getElementById('aiInput');if(i.value.trim()){ask(i.value.trim());i.value='';}return false;}
+function toggleAI(){const p=document.getElementById('aiPanel');p.classList.toggle('open');if(p.classList.contains('open')&&!document.getElementById('aiLog').dataset.init){document.getElementById('aiLog').dataset.init='1';pushMsg('ai',"Hello — I'm the Equator AI assistant for workplace & HR disputes. I can recommend the right route, explain your rights, and draft your grievance, POSH complaint or request. "+DISC);document.getElementById('aiChips').innerHTML=QUICK.map(q=>`<span class="chip" onclick="ask('${q.replace(/'/g,"\\'")}')">${q}</span>`).join('');}}
+render();
+</script></body></html>

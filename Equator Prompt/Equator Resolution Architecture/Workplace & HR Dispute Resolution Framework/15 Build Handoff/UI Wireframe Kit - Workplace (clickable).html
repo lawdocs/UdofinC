@@ -1,0 +1,206 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Workplace Platform UI Wireframe Kit</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--line:#C4D0D6;--bg:#F2F6F8;--card:#fff}
+ *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:14px 24px}header h1{margin:0;font-size:18px}header p{margin:4px 0 0;color:#CADCEA;font-size:12.5px}
+ .shell{display:flex;max-width:1240px;margin:0 auto;gap:18px;padding:18px}
+ nav{width:238px;flex:none}
+ nav button{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--navy)}
+ nav button.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+ nav button.posh{border-color:var(--red);color:var(--red)}nav button.posh.on{background:var(--red);color:#fff}
+ nav .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--grey);margin:12px 0 6px}
+ main{flex:1;min-width:0}.screen{display:none}.screen.on{display:block}
+ .note{background:#FDF6E3;border-left:4px solid var(--gold);padding:10px 13px;border-radius:6px;font-size:12.5px;margin-bottom:14px}
+ .note.red{background:#F6E0E4;border-left-color:var(--red)}
+ .win{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(18,59,79,.07)}
+ .win h2{margin:0;font-size:13px;background:#EAF0F2;color:var(--navy);padding:9px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+ .win h2 span{color:var(--grey);font-weight:400;font-size:11px}
+ .win.sealed h2{background:#F6E0E4;color:var(--red)}
+ .body{padding:16px}
+ .bar{height:36px;background:var(--navy);border-radius:6px;display:flex;align-items:center;padding:0 12px;color:#fff;font-size:12px;justify-content:space-between;margin-bottom:12px}
+ .bar.red{background:var(--red)}
+ .pill{background:var(--teal);color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;display:inline-block}
+ .pill.g{background:var(--green)}.pill.gold{background:var(--gold);color:#20303a}.pill.r{background:var(--red)}.pill.gr{background:var(--grey)}
+ .cols{display:flex;gap:14px;flex-wrap:wrap}.col{flex:1;min-width:210px}
+ .field{border:1px solid var(--line);border-radius:6px;height:30px;margin:7px 0;background:#FAFCFD;display:flex;align-items:center;padding:0 9px;color:var(--grey);font-size:12px}
+ .lbl{font-size:11px;color:var(--navy);font-weight:600;margin-top:9px}
+ .btn{background:var(--teal);color:#fff;border-radius:6px;padding:9px 12px;text-align:center;font-size:12px;font-weight:600;margin-top:10px;cursor:pointer;border:0;font-family:inherit}
+ .btn.gold{background:var(--gold);color:#20303a}.btn.ghost{background:#EAF0F2;color:var(--navy)}.btn.red{background:var(--red);color:#fff}
+ .btn[disabled]{opacity:.45;cursor:not-allowed}
+ table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}th{background:#EAF0F2;color:var(--navy)}
+ .kpi{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}.kpi>div{flex:1;min-width:110px;border:1px solid var(--line);border-radius:8px;padding:9px;text-align:center;background:#FAFCFD}
+ .kpi b{display:block;font-size:18px;color:var(--navy)}.kpi small{font-size:10px;color:var(--grey)}
+ .sealed-box{background:#F6E0E4;border:1px dashed var(--red);border-radius:8px;padding:11px;font-size:11.5px}
+ .track{display:flex;align-items:center;gap:5px;margin:10px 0}.dot{width:14px;height:14px;border-radius:50%;background:var(--line)}.dot.on{background:var(--green)}.dot.r{background:var(--red)}.seg{flex:1;height:3px;background:var(--line)}.seg.on{background:var(--green)}
+ .cap{font-size:11px;color:var(--grey);margin-top:9px;font-style:italic}
+</style></head><body>
+<header><h1>Equator Resolution — Workplace &amp; HR Platform UI Wireframe Kit</h1><p>Clickable low-fidelity reference · structure only, not final visual design</p></header>
+<div class="shell">
+ <nav>
+  <div class="grp">Party</div>
+  <button class="on" onclick="show('s1',this)">1 · Employee portal</button>
+  <button onclick="show('s2',this)">2 · Route triage</button>
+  <button onclick="show('s3',this)">3 · F&amp;F calculator</button>
+  <button onclick="show('s4',this)">4 · Settlement &amp; escrow</button>
+  <div class="grp">Staff</div>
+  <button onclick="show('s5',this)">5 · Neutral dashboard</button>
+  <button onclick="show('s6',this)">6 · Case-manager console</button>
+  <div class="grp">Employer</div>
+  <button onclick="show('s7',this)">7 · Employer compliance</button>
+  <div class="grp">Sealed</div>
+  <button class="posh" onclick="show('s8',this)">8 · POSH — Internal Committee</button>
+ </nav>
+ <main>
+
+  <div class="screen on" id="s1">
+   <div class="note">The employee's view. Shows only their own matter; the employer's internal material is never rendered here.</div>
+   <div class="win"><h2>Employee portal — my matter <span>GET /cases/{id}</span></h2><div class="body">
+    <div class="bar"><span>Case WP-3182 · Full &amp; final + relieving letter</span><span class="pill">In mediation</span></div>
+    <div class="kpi"><div><b>₹2.4L</b><small>Claimed</small></div><div><b>2</b><small>Sessions held</small></div><div><b>18 Aug</b><small>Next session</small></div><div><b>Pending</b><small>Relieving letter</small></div></div>
+    <div class="cols"><div class="col">
+      <div class="lbl">What happens next</div>
+      <table><tr><th>Step</th><th>When</th></tr>
+       <tr><td>Upload salary slips &amp; appointment letter</td><td>12 Aug</td></tr>
+       <tr><td>Mediation session (video)</td><td>18 Aug</td></tr>
+       <tr><td>Review settlement draft</td><td>After session</td></tr></table>
+      <button class="btn" onclick="show('s3',null)">Check my F&amp;F figure →</button>
+     </div><div class="col">
+      <div class="lbl">Your rights</div>
+      <div class="sealed-box" style="background:#DCEEE4;border-color:var(--green)">Gratuity, PF and ESI are <b>statutory</b> — they are paid, not waived. Any settlement here records their proper payment.</div>
+      <button class="btn ghost">Talk to a case manager</button>
+     </div></div>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s2">
+   <div class="note">Triage decides the route. A POSH matter is never opened as an ordinary case — the API refuses it (422).</div>
+   <div class="win"><h2>Route triage <span>POST /cases/{id}/triage</span></h2><div class="body">
+    <div class="bar"><span>Classifying WP-3182</span><span class="pill gold">AI-assisted</span></div>
+    <table><tr><th>If the matter is…</th><th>Route</th><th>Status</th></tr>
+     <tr><td>Sexual harassment (POSH)</td><td>Internal Committee (sealed)</td><td><span class="pill r">Refused as ordinary case</span></td></tr>
+     <tr><td>Criminal conduct / safety threat</td><td>Police</td><td><span class="pill r">Signpost</span></td></tr>
+     <tr><td>Collective / union dispute</td><td>IR Code machinery</td><td><span class="pill gr">Signpost</span></td></tr>
+     <tr><td>Individual grievance</td><td>GRC, then mediation</td><td><span class="pill gold">Conditional</span></td></tr>
+     <tr><td><b>Wages / F&amp;F / separation</b></td><td><b>Mediation</b></td><td><span class="pill g">Selected</span></td></tr></table>
+    <div class="cap">Route and rationale are recorded; a signposted matter is closed with the referral noted, not absorbed.</div>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s3">
+   <div class="note">The F&amp;F calculator computes gratuity on the <b>Code on Wages</b> definition and warns when the wage structure suppresses it.</div>
+   <div class="win"><h2>Full &amp; final computation <span>POST /cases/{id}/ff-computation</span></h2><div class="body">
+    <div class="cols"><div class="col">
+      <div class="lbl">Inputs</div>
+      <div class="field">Monthly wages (basic + DA): ₹40,000</div>
+      <div class="field">Wages as % of CTC: 32%</div>
+      <div class="field">Completed years: 6</div>
+      <div class="field">Notice days short: 20</div>
+     </div><div class="col">
+      <div class="lbl">Computation</div>
+      <table><tr><th>Component</th><th>₹</th></tr>
+       <tr><td>Unpaid salary + leave encashment</td><td>85,000</td></tr>
+       <tr><td>Gratuity (15 × wages × yrs / 26)</td><td>1,38,462</td></tr>
+       <tr><td>Less notice shortfall</td><td>(26,667)</td></tr>
+       <tr><td><b>Net payable</b></td><td><b>1,96,795</b></td></tr></table>
+     </div></div>
+    <div class="note red" style="margin-top:12px"><b>Wage-definition warning.</b> Wages are 32% of CTC — below the 50% floor. Under the Code on Wages the excess must be added back for statutory computation, so <b>gratuity may be understated</b>. Recompute before settling.</div>
+    <div class="cap">Indicative only. Statutory dues cannot be waived in the settlement.</div>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s4">
+   <div class="note">Money moves through a regulated escrow agent, and the final tranche is conditional on the relieving letter and asset return.</div>
+   <div class="win"><h2>Settlement &amp; escrow <span>POST /cases/{id}/settlement · /escrow/{id}/release</span></h2><div class="body">
+    <div class="track"><div class="dot on"></div><div class="seg on"></div><div class="dot on"></div><div class="seg"></div><div class="dot"></div><div class="seg"></div><div class="dot"></div></div>
+    <div class="cap" style="margin-top:0">Agreed → Funded into escrow → Relieving issued → Final release &amp; closure</div>
+    <table><tr><th>Milestone</th><th>Condition</th><th>₹</th><th>Status</th></tr>
+     <tr><td>On signature</td><td>Settlement e-signed &amp; stamped</td><td>1,00,000</td><td><span class="pill g">Released</span></td></tr>
+     <tr><td>On relieving</td><td>Relieving + experience letter issued</td><td>60,000</td><td><span class="pill gold">Pending</span></td></tr>
+     <tr><td>Final</td><td>Company assets returned</td><td>36,795</td><td><span class="pill gr">Not due</span></td></tr></table>
+    <button class="btn gold" disabled>Release next tranche — blocked until relieving confirmed</button>
+    <div class="cap">The API returns 409 if a release is attempted before its condition is met.</div>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s5">
+   <div class="note">The neutral's caseload. Note the conflict banner — it appears whenever the employer is also a POSH subscriber.</div>
+   <div class="win"><h2>Neutral dashboard <span>GET /cases?assignedTo=me</span></h2><div class="body">
+    <div class="bar"><span>Welcome, Adv. S. Rao (Grade A · POSH endorsed)</span><span class="pill g">5 active</span></div>
+    <div class="note red"><b>Structural conflict disclosed.</b> Equator supplies an external IC member to Acme Ltd. You are not that member, and this disclosure has been made to both parties (Rule 7).</div>
+    <table><tr><th>Case</th><th>Type</th><th>Employer</th><th>Stage</th><th>Flags</th></tr>
+     <tr><td>WP-3182</td><td>F&amp;F</td><td>Acme Ltd</td><td>Session 3</td><td><span class="pill gold">Wage-definition warning</span></td></tr>
+     <tr><td>WP-3170</td><td>Termination</td><td>Nova Pvt</td><td>Drafting</td><td>—</td></tr>
+     <tr><td>WP-3155</td><td>Grievance</td><td>Orbit Inc</td><td>Post-GRC</td><td>—</td></tr>
+     <tr><td>WP-3140</td><td>Retrenchment</td><td>Delta Mfg</td><td>Signposted</td><td><span class="pill gr">IR Code route</span></td></tr></table>
+    <button class="btn">Open WP-3182 →</button>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s6">
+   <div class="note">Operations view across all non-POSH matters. POSH cases appear only as a count — never as content.</div>
+   <div class="win"><h2>Case-manager console <span>GET /cases · /employers/{id}/compliance</span></h2><div class="body">
+    <div class="kpi"><div><b>78</b><small>Open cases</small></div><div><b>12</b><small>Awaiting triage</small></div><div><b>4</b><small>SLA at risk</small></div><div><b>9</b><small>POSH (sealed — count only)</small></div><div><b>16</b><small>In escrow</small></div></div>
+    <table><tr><th>Case</th><th>Received</th><th>Type</th><th>Route</th><th>Action</th></tr>
+     <tr><td>WP-3201</td><td>2 hrs ago</td><td>Wage dues</td><td>Mediation</td><td>Appoint neutral</td></tr>
+     <tr><td>WP-3200</td><td>4 hrs ago</td><td>Union roster dispute</td><td>IR Code</td><td>Signpost &amp; close</td></tr>
+     <tr><td>WP-3199</td><td>Yesterday</td><td><i>Sealed</i></td><td>POSH</td><td><span class="pill r">No access</span></td></tr></table>
+    <div class="sealed-box" style="margin-top:10px"><b>Sealed.</b> POSH matters are held in a separate schema with a separate database role. This console has no privilege to read their content — only the count.</div>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s7">
+   <div class="note">The employer's compliance view — the commercial hook for the POSH subscription.</div>
+   <div class="win"><h2>Employer compliance <span>GET /employers/{id}/compliance</span></h2><div class="body">
+    <div class="bar"><span>Acme Ltd · 240 employees</span><span class="pill gold">2 gaps</span></div>
+    <table><tr><th>Requirement</th><th>Basis</th><th>Status</th></tr>
+     <tr><td>Internal Committee constituted</td><td>POSH s.4 (10+ workers)</td><td><span class="pill g">Yes</span></td></tr>
+     <tr><td>External member present</td><td>POSH s.4</td><td><span class="pill g">Equator-supplied</span></td></tr>
+     <tr><td>At least half members women</td><td>POSH s.4</td><td><span class="pill g">Yes (3 of 4)</span></td></tr>
+     <tr><td>Annual report filed</td><td>POSH</td><td><span class="pill r">Not filed for 2025</span></td></tr>
+     <tr><td>Grievance Redressal Committee</td><td>IR Code 2020</td><td><span class="pill r">Not constituted</span></td></tr>
+     <tr><td>Awareness sessions in last 12 months</td><td>POSH</td><td><span class="pill gold">1 of 2</span></td></tr></table>
+    <div class="cols"><div class="col"><button class="btn">Generate annual report</button></div><div class="col"><button class="btn ghost">Book IC training</button></div></div>
+   </div></div>
+  </div>
+
+  <div class="screen" id="s8">
+   <div class="note red"><b>Sealed surface.</b> This screen is reachable only with the <code>posh</code> scope, held by Internal-Committee members and designated support. Data lives in a separate schema with no join path to ordinary case data (POSH Act s.16).</div>
+   <div class="win sealed"><h2>POSH — Internal Committee <span>/posh/* (scope: posh)</span></h2><div class="body">
+    <div class="bar red"><span>Complaint POSH-0442 · sealed</span><span class="pill r">Confidential (s.16)</span></div>
+    <div class="track"><div class="dot on"></div><div class="seg on"></div><div class="dot on"></div><div class="seg"></div><div class="dot r"></div><div class="seg"></div><div class="dot"></div></div>
+    <div class="cap" style="margin-top:0">Received → Conciliation offered → Inquiry (day 41 of 90) → Report → Employer action</div>
+    <div class="cols"><div class="col">
+      <div class="lbl">Committee</div>
+      <table><tr><th>Role</th><th>Status</th></tr>
+       <tr><td>Presiding Officer (senior woman)</td><td><span class="pill g">Yes</span></td></tr>
+       <tr><td>External member</td><td><span class="pill g">Present</span></td></tr>
+       <tr><td>Half members women</td><td><span class="pill g">3 of 4</span></td></tr></table>
+      <div class="cap">The database rejects an IC recorded without an external member, or with fewer than half women.</div>
+     </div><div class="col">
+      <div class="lbl">Section 10 conciliation</div>
+      <div class="field">Requested by the aggrieved woman? — Yes</div>
+      <div class="field">Monetary basis? — <b>No (locked false)</b></div>
+      <button class="btn red" disabled>Record conciliation — money basis blocked</button>
+      <div class="cap">A conciliation not requested by her, or asserting any monetary basis, is refused (422 + CHECK constraint).</div>
+      <div class="lbl">Inquiry clock</div>
+      <div class="field">Day 41 of 90 · report due 10 days after conclusion</div>
+     </div></div>
+    <div class="sealed-box" style="margin-top:10px"><b>Nothing on this screen is visible to the case-manager console, the neutral dashboard, or any employer view.</b> Access is separately audit-logged.</div>
+   </div></div>
+  </div>
+
+ </main>
+</div>
+<script>
+function show(id,btn){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  var btns=document.querySelectorAll('nav button');
+  if(btn){btns.forEach(function(b){b.classList.remove('on');});btn.classList.add('on');}
+  else{btns.forEach(function(b){b.classList.remove('on');});
+       var map={s1:0,s2:1,s3:2,s4:3,s5:4,s6:5,s7:6,s8:7};
+       if(map[id]!==undefined)btns[map[id]].classList.add('on');}
+  window.scrollTo(0,0);
+}
+</script></body></html>

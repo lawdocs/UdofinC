@@ -1,0 +1,96 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Unified Dispute Explorer</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8}
+ *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:16px 24px}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:18px}header .tag{color:#CADCEA;font-size:12.5px;font-style:italic;display:block;margin-top:4px}
+ .wrap{max-width:940px;margin:0 auto;padding:24px 18px 90px}
+ .step{background:#fff;border:1px solid #e2e8eb;border-radius:14px;padding:26px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ h1{font-size:23px;margin:.1em 0 .25em;color:var(--navy)}.sub{color:var(--grey);font-size:14px;margin-bottom:18px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:13px}
+ .vcard{border:1.5px solid #d7e0e4;border-radius:12px;padding:16px;cursor:pointer;background:#fff;transition:.15s}
+ .vcard:hover{border-color:var(--teal);background:#f7fbfc;transform:translateY(-2px)}
+ .vcard .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;margin-bottom:9px}
+ .vcard b{display:block;color:var(--navy);font-size:15px;margin-bottom:5px}
+ .vcard small{color:var(--grey);font-size:12.2px;line-height:1.45;display:block}
+ .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:9px 15px;margin:5px 6px 0 0;cursor:pointer;font-size:14px;background:#fff}.chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+ .nav{display:flex;justify-content:space-between;margin-top:24px}button{border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}.primary{background:var(--teal);color:#fff}.ghost{background:#eaf0f2;color:var(--navy)}
+ .banner{border-radius:10px;padding:13px 15px;margin:12px 0;font-size:14px}.b-red{background:#F6E0E4;border-left:5px solid var(--red)}.b-gold{background:var(--lgold);border-left:5px solid var(--gold)}.b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}
+ .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:17px 19px;margin:13px 0;background:#fff}.sumcard h3{margin:.1em 0 .55em;color:var(--navy);font-size:16px}
+ .kv{font-size:14px;margin:5px 0}.muted{color:var(--grey);font-size:12.5px}
+ .badge{display:inline-block;border-radius:20px;padding:6px 14px;font-size:13.5px;font-weight:700;color:#fff}
+ a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700;margin-top:10px}
+ .disc{font-size:11.5px;color:var(--grey);margin-top:20px;line-height:1.55}
+ .quick{position:fixed;right:18px;top:14px;background:var(--red);color:#fff;border-radius:20px;padding:7px 14px;font-size:12.5px;font-weight:700;z-index:60;border:0;cursor:pointer}
+</style></head><body>
+<button class="quick" onclick="quickExit()">Quick exit</button>
+<header><span class="brand">EQUATOR RESOLUTION</span><span class="tag">One front door — tell us what's happened and we'll point you to the right process</span></header>
+<div class="wrap"><div id="app"></div></div>
+<script>
+const V={
+ family:{name:"Family & Marital",colour:"var(--teal)",icon:"⚖",
+  blurb:"Divorce, maintenance, custody and parenting, matrimonial property and stridhan.",
+  law:"Mediation Act 2023 (s.27 enforceable as a decree); Family Courts Act 1984; personal law by regime; PWDVA 2005.",
+  route:"Confidential safety screening, then mediation — or a court-referred mediation. Settlement is enforceable as a decree.",
+  types:["Divorce (mutual consent)","Divorce (contested terms)","Maintenance / alimony","Child custody & parenting","Matrimonial property / stridhan","Domestic violence–linked","NRI / cross-border marriage"]},
+ workplace:{name:"Workplace & HR",colour:"var(--gold)",icon:"🏢",
+  blurb:"Wages and full-and-final, termination and separation, grievances, benefits — and POSH.",
+  law:"POSH Act 2013; the four Labour Codes (in force 21 Nov 2025); Mediation Act 2023.",
+  route:"Mediation for money and separation disputes; a POSH complaint goes to the employer's Internal Committee; grievances may go to the Grievance Redressal Committee.",
+  types:["Wage / salary dues","Full & final settlement","Wrongful / unfair termination","Notice period / bond","Gratuity / PF / ESI","Sexual harassment (POSH)","Workplace grievance"]},
+ financial:{name:"Financial & Loan",colour:"var(--green)",icon:"₹",
+  blurb:"Loan default and one-time settlement, cheque bounce, digital-lending grievances, recovery conduct.",
+  law:"RBI Integrated Ombudsman Scheme 2021; RBI Digital Lending Directions (8 May 2025); NI Act ss.138/147; Mediation Act 2023.",
+  route:"Mediation and one-time settlement secured by escrow; cheque matters settle and compound; service complaints escalate to the RBI Ombudsman after 30 days.",
+  types:["Loan default / one-time settlement","Cheque bounce (s.138)","Wrong or excess charges","Digital-lending / app grievance","Recovery-agent harassment","Credit-bureau correction","Secured debt (bank/FI)"]},
+ commercial:{name:"Commercial & Business",colour:"var(--navy)",icon:"📄",
+  blurb:"Contract and payment disputes, MSME delayed payment, shareholder and supply disputes.",
+  law:"Arbitration & Conciliation Act 1996; Commercial Courts Act s.12A (pre-institution mediation); MSMED Act s.18; Mediation Act 2023.",
+  route:"Arbitration where there is a clause; mandatory pre-institution mediation under s.12A for commercial suits; MSME Samadhaan for delayed payment.",
+  types:["Breach of contract / damages","Payment & recovery","MSME delayed payment","Supply / vendor / procurement","Shareholder / JV / partnership","Construction & infrastructure","Cross-border / international"]}
+};
+const state={v:null,type:null,urgent:false};
+let step=0;const app=document.getElementById('app');
+function quickExit(){window.location.replace("https://www.google.com");}
+function render(){[s0,s1,s2][step]();window.scrollTo(0,0);}
+function s0(){
+ app.innerHTML='<div class="step"><h1>What kind of dispute is it?</h1><div class="sub">Pick the closest — you can change it on the next screen. Nothing on this page is stored.</div>'
+ +'<div class="grid">'+Object.keys(V).map(function(k){var v=V[k];
+   return '<div class="vcard" onclick="pick(\''+k+'\')"><div class="ic" style="background:'+v.colour+'">'+v.icon+'</div><b>'+v.name+'</b><small>'+v.blurb+'</small></div>';}).join('')+'</div>'
+ +'<div class="banner b-red" style="margin-top:18px"><b>If you are in immediate danger, contact the police.</b> This service is not an emergency service. Use <b>Quick exit</b> (top right) to leave this page at once.</div>'
+ +'<div class="disc">Equator Resolution is a neutral mediation and settlement institution. This tool gives general information about your options — it is not legal advice, and it does not create any relationship with us.</div></div>';
+}
+function pick(k){state.v=k;state.type=null;step=1;render();}
+function s1(){var v=V[state.v];
+ app.innerHTML='<div class="step"><h1>'+v.name+' — what best describes it?</h1><div class="sub">Choose the closest description.</div>'
+ +'<div>'+v.types.map(function(t){return '<span class="chip '+(state.type===t?'sel':'')+'" onclick="setType(\''+t.replace(/'/g,"\\'")+'\')">'+t+'</span>';}).join('')+'</div>'
+ +(state.v==='family'||state.v==='workplace'?'<div class="banner b-gold" style="margin-top:16px"><label style="cursor:pointer"><input type="checkbox" '+(state.urgent?'checked':'')+' onchange="state.urgent=this.checked;render()"> There has been violence, harassment or a threat to someone\'s safety.</label></div>':'')
+ +'<div class="nav"><button class="ghost" onclick="step=0;render()">← Back</button><button class="primary" onclick="step=2;render()" '+(state.type?'':'disabled style="opacity:.5"')+'>See my options →</button></div></div>';
+}
+function setType(t){state.type=t;render();}
+function s2(){var v=V[state.v];var safety=state.urgent||/violence|harassment|POSH/i.test(state.type||"");
+ var html='<div class="step"><h1>Your options at a glance</h1><div class="sub">General guidance, not legal advice — but this is how Equator would approach it.</div>';
+ if(safety){html+='<div class="banner b-red"><b>Safety comes first.</b> Because you have indicated violence, harassment or a threat to safety: if anyone is in immediate danger, contact the police. '
+  +(state.v==='family'?'In a family matter we screen each party confidentially and separately before any joint session, and we will never ask you to meet or speak to the other party.':'')
+  +(state.v==='workplace'?'A sexual-harassment complaint is handled confidentially by your employer\'s Internal Committee under the POSH Act — it is never diverted, and never settled on a monetary basis.':'')
+  +'</div>';}
+ html+='<div class="sumcard"><h3>Vertical</h3><span class="badge" style="background:'+v.colour+'">'+v.name+'</span>'
+  +'<div class="kv" style="margin-top:9px">• '+state.type+'</div></div>'
+  +'<div class="sumcard"><h3>How it would run</h3><div class="kv">'+v.route+'</div></div>'
+  +'<div class="sumcard"><h3>The law that applies</h3><div class="kv">'+v.law+'</div></div>'
+  +'<div class="sumcard"><h3>What happens next</h3>'
+  +'<div class="kv">1. You start confidentially — we verify both sides and take your consent.</div>'
+  +'<div class="kv">2. We triage: mediation, a statutory forum, or a safety pathway.</div>'
+  +'<div class="kv">3. A neutral, conflict-checked mediator is appointed.</div>'
+  +'<div class="kv">4. Money, where any, is held in escrow — never by us.</div>'
+  +'<div class="kv">5. A settlement is e-signed, e-stamped and enforceable as a decree.</div></div>'
+  +'<div class="banner b-teal">Each vertical has its own detailed Dispute Explorer with rights, remedies, calculators and draft documents. This front door simply points you to the right one.</div>'
+  +'<a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">Start confidentially with Equator →</a>'
+  +'<div class="nav"><button class="ghost" onclick="step=1;render()">← Back</button><button class="ghost" onclick="restart()">Start over</button></div>'
+  +'<div class="disc"><b>Prototype.</b> A demonstration of unified triage across Equator\'s four verticals. It stores no data, gives no legal advice, and is not a substitute for advice from a lawyer. If you are in danger, contact the police.</div></div>';
+ app.innerHTML=html;
+}
+function restart(){state.v=null;state.type=null;state.urgent=false;step=0;render();}
+render();
+</script></body></html>

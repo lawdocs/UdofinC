@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EQR-19 · Wireframes</title><style>
+:root{--navy:#0B2E4F;--teal:#1F7A8C;--gold:#B98A2E;--ink:#1A1A1A;--muted:#5A6B7B;--border:#C9D3DC;--light:#EAF1F6;--success:#2E7D5B;--warn:#B9822E;--danger:#8A2E4F}
+*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);margin:0;background:#eef2f6}
+.wrap{max-width:1000px;margin:0 auto;padding:26px}
+header.doc{border-bottom:3px solid var(--gold);padding-bottom:12px;margin-bottom:6px}
+.eyebrowd{color:var(--teal);font-weight:700;font-size:13px}h1.doc{color:var(--navy);margin:6px 0 2px;font-size:28px}.subd{color:var(--muted);font-style:italic}
+.meta0{color:var(--muted);font-size:12px;margin-top:6px}
+.screen{background:#fff;border:1px solid var(--border);border-radius:14px;margin:22px 0;overflow:hidden;box-shadow:0 1px 3px rgba(11,46,79,.08)}
+.slabel{background:var(--navy);color:#fff;padding:9px 16px;font-weight:700;font-size:14px}
+.sdesc{color:var(--muted);font-size:12.5px;padding:8px 16px 0}
+.frame{padding:16px;background:#fff}
+.btn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}.btn.lg{padding:11px 18px;font-size:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--border);padding:10px 14px}
+.logo{color:var(--navy);font-weight:800}.mnav span{color:var(--ink);font-size:13px;margin:0 8px}.tb-cta{display:flex;gap:8px}
+.hero{padding:28px 18px;background:linear-gradient(180deg,#f4f8fb,#fff)}.eyebrow{color:var(--teal);font-weight:700;font-size:12px;letter-spacing:.5px}
+.hero h1{color:var(--navy);font-size:34px;margin:6px 0}.lead{color:var(--ink);max-width:640px}.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.stats{display:flex;gap:12px;padding:14px 18px;flex-wrap:wrap}.stat{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;min-width:150px}.stat b{color:var(--navy);font-size:20px;display:block}.stat span{color:var(--muted);font-size:12px}
+.steps{display:flex;gap:12px;padding:0 18px 18px;flex-wrap:wrap}.step{flex:1;min-width:180px;border:1px solid var(--border);border-radius:10px;padding:14px}.step .n{background:var(--teal);color:#fff;border-radius:999px;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}.step b{color:var(--navy);display:block;margin:6px 0 2px}.step p{color:var(--muted);font-size:13px;margin:0}
+.apptop{display:flex;align-items:center;gap:14px;background:#fff;border-bottom:1px solid var(--border);padding:10px 14px}.crumb{color:var(--muted);font-size:13px}.pill{margin-left:auto;background:var(--light);border:1px solid var(--border);border-radius:999px;padding:3px 12px;font-size:12px;color:var(--navy)}.pill.free{color:var(--success)}
+.wizard{padding:16px}.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.stepper span{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:4px 10px}.stepper .cur{background:var(--navy);color:#fff;border-color:var(--navy)}.stepper .done{color:var(--success);border-color:var(--success)}
+.form{max-width:560px}.form h2{color:var(--navy);font-size:18px}.form label{display:block;margin:12px 0;font-size:13px;color:var(--ink);font-weight:600}
+.form select,.form input{width:100%;padding:9px;border:1.5px solid var(--border);border-radius:8px;margin-top:5px;font-size:14px}
+.segbtns{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}.segbtns span{border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--muted)}.segbtns .sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.money{display:flex;align-items:center;gap:6px;margin-top:5px}.money span{color:var(--muted)}.money input{margin-top:0}
+.hintbox{background:var(--light);border-left:4px solid var(--teal);border-radius:6px;padding:9px 12px;font-size:12.5px;color:var(--ink);margin:12px 0}
+.wizfoot{display:flex;justify-content:space-between;margin-top:16px}
+.chat{padding:16px;max-width:640px}.bubble{padding:10px 13px;border-radius:12px;margin:8px 0;font-size:14px;max-width:80%}.bubble.bot{background:var(--light);color:var(--ink)}.bubble.user{background:var(--navy);color:#fff;margin-left:auto}
+.report{border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0;background:#fff}.report b{color:var(--navy)}.vb{margin:6px 0}.report ul{margin:6px 0 4px;padding-left:18px;font-size:13px}.report small{color:var(--muted)}
+.chip{background:var(--light);border:1px solid var(--border);border-radius:999px;padding:2px 9px;font-size:12px;color:var(--navy)}.chip.strong{background:#e5f2ec;color:var(--success);border-color:var(--success)}
+.chatbar{display:flex;gap:8px;margin-top:10px}.chatbar input{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:8px}
+.statuswrap{padding:16px}.statushead{display:flex;justify-content:space-between;align-items:flex-start}.statushead h2{color:var(--navy);margin:0;font-size:18px}.muted{color:var(--muted);font-size:13px}
+.clockpill{border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;color:#fff}.clockpill.amber{background:var(--warn)}.clockpill.red{background:var(--danger)}.clockpill.green{background:var(--success)}
+.tl{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.ev{border:1px solid var(--border);border-radius:8px;padding:8px 12px;min-width:120px}.ev b{display:block;color:var(--muted);font-size:13px}.ev span{font-size:12px;color:var(--muted)}.ev.done b{color:var(--success)}.ev.cur{border-color:var(--navy)}.ev.cur b{color:var(--navy)}
+.docrow{margin-top:8px;font-size:13px}.tag{background:var(--light);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:12px;margin:0 3px;color:var(--navy)}
+.dash{padding:16px}.cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.kc{flex:1;min-width:120px;border:1px solid var(--border);border-radius:10px;padding:12px;background:#fff}.kc b{color:var(--navy);font-size:22px;display:block}.kc span{color:var(--muted);font-size:12px}.kc.warn{border-color:var(--warn)}.kc.warn b{color:var(--warn)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl th{background:var(--navy);color:#fff;text-align:left;padding:7px 9px}.tbl td{border:1px solid var(--border);padding:7px 9px}
+.two{display:flex;gap:12px;flex-wrap:wrap}.panel{flex:1;min-width:220px;border:1px solid var(--border);border-radius:10px;padding:12px}.panel b{color:var(--navy)}.panel ul{padding-left:16px;font-size:13px}
+footer{color:var(--muted);font-size:11px;text-align:center;border-top:1px solid var(--border);margin-top:24px;padding-top:10px}
+</style></head><body><div class="wrap">
+<header class="doc"><div class="eyebrowd">FAMILY E · WEB, MOBILE &amp; CONTENT</div><h1 class="doc">Hi-Fi Wireframes</h1><div class="subd">Realistic screen mockups for the priority flows, built on the EQR-19 design system.</div><div class="meta0">Document EQR-19 (wireframes) · v1.0 · 9 July 2026 · Confidential — Internal · Companion to EQR-09/10/25</div></header>
+<div class="screen"><div class="slabel">Home — hero</div><div class="sdesc">Public landing. One primary action (Dispute Explorer), trust stats, three-step how-it-works.</div><div class="frame">
+<div class="topbar"><div class="logo">▲ Equator Resolution</div><nav class="mnav"><span>Resolve</span><span>Solutions</span><span>Neutrals</span><span>Training ↗</span><span>Integration</span><span>International</span></nav><div class="tb-cta"><button class="btn ghost">Login</button><button class="btn">Try Dispute Explorer</button></div></div>
+<div class="hero"><div class="eyebrow">THE PEOPLE'S COURT</div><h1>Resolve. Revolve.</h1><p class="lead">Quick settlement, with your consent. Resolve family, business, lending or workplace disputes entirely online — with legally-enforceable outcomes.</p><div class="row"><button class="btn lg">Try Dispute Explorer · free</button><button class="btn lg ghost">File a Claim</button><button class="btn lg ghost">File a Response</button></div></div>
+<div class="stats"><div class="stat"><b>up to 80%</b><span>saving on litigation cost</span></div><div class="stat"><b>₹999</b><span>services starting price (India)</span></div><div class="stat"><b>days</b><span>not years to resolve</span></div><div class="stat"><b>win–win</b><span>settle on your terms</span></div></div>
+<div class="steps"><div class="step"><span class="n">1</span><b>Explore</b><p>Learn, free, if and how to pursue your dispute.</p></div><div class="step"><span class="n">2</span><b>File</b><p>File a claim or response in minutes.</p></div><div class="step"><span class="n">3</span><b>Resolve</b><p>Meet online, settle or get an award — executed at ground level.</p></div></div></div></div><div class="screen"><div class="slabel">File a Claim — wizard (step 2 of 5)</div><div class="sdesc">Guided multi-step filing (F5). Save-draft, progress stepper, clear primary action.</div><div class="frame">
+<div class="apptop"><div class="logo">▲ Equator</div><div class="crumb">Resolve › File a Claim</div><div class="pill">Draft saved ✓</div></div>
+<div class="wizard"><div class="stepper"><span class="done">1 Parties</span><span class="cur">2 Dispute</span><span>3 Facts</span><span>4 Documents</span><span>5 Review &amp; Pay</span></div>
+<div class="form"><h2>What is the dispute about?</h2>
+<label>Dispute category<select><option>NBFC / lending</option><option>Commercial / MSME</option><option selected>Family / matrimonial</option><option>Consumer</option><option>Securities</option><option>International</option></select></label>
+<label>Preferred method<div class="segbtns"><span>Negotiation</span><span class="sel">Mediation</span><span>Conciliation</span><span>Arbitration</span></div></label>
+<label>Claim value (optional)<div class="money"><span>₹</span><input value="4,50,000"></div></label>
+<label>Language<select><option>English</option><option>हिन्दी</option><option>বাংলা</option></select></label>
+<div class="hintbox">ⓘ Custody and marital status are non-arbitrable — mediation is recommended for family matters.</div>
+<div class="wizfoot"><button class="btn ghost">← Back</button><button class="btn">Continue →</button></div></div></div></div></div><div class="screen"><div class="slabel">Dispute Explorer — AI consultation</div><div class="sdesc">Conversational pre-litigation consultation (EQR-07). Advisory, with viability read and next step.</div><div class="frame">
+<div class="apptop"><div class="logo">▲ Equator</div><div class="crumb">Resolve › Dispute Explorer</div><div class="pill free">Free · advisory</div></div>
+<div class="chat"><div class="bubble bot">Tell me what happened, in your own words. You can also upload a contract or notice.</div>
+<div class="bubble user">A supplier didn't deliver goods worth ₹4.5L after I paid 50% advance.</div>
+<div class="bubble bot">Thanks. Was there a written purchase order or agreement, and does it mention arbitration or mediation?</div>
+<div class="bubble user">Yes, a PO with an arbitration clause.</div>
+<div class="report"><b>Viability &amp; feasibility</b><div class="vb">Viability: <span class="chip strong">Reasonable</span> · Method: Arbitration · Est. 45–90 days</div><ul><li>Strength: written PO + arbitration clause + proof of payment.</li><li>Gather: delivery correspondence, invoices, bank proof.</li><li>Next step: <b>File on Equator</b> (pre-filled) or try direct negotiation.</li></ul><small>Informational only — not legal advice; nothing is filed without your action.</small></div>
+<div class="chatbar"><input placeholder="Type your reply…"><button class="btn">Send</button></div></div></div></div><div class="screen"><div class="slabel">Track My Case — status timeline</div><div class="sdesc">Public/party case status, modelled on eCourts (EQR-09 §7). Timeline, clocks, next hearing.</div><div class="frame">
+<div class="apptop"><div class="logo">▲ Equator</div><div class="crumb">Resolve › Track My Case</div><div class="pill">EQR-2026-004821</div></div>
+<div class="statuswrap"><div class="statushead"><div><h2>Commercial · Arbitration</h2><span class="muted">Claimant: A Traders · Respondent: B Supplies Pvt Ltd</span></div><div class="clockpill amber">S.29A · 41 days left</div></div>
+<div class="tl"><div class="ev done"><b>Filed</b><span>02 Jun 2026</span></div><div class="ev done"><b>Scrutiny cleared</b><span>05 Jun 2026</span></div><div class="ev done"><b>Neutral appointed</b><span>09 Jun 2026</span></div><div class="ev done"><b>Notice served</b><span>11 Jun 2026</span></div><div class="ev cur"><b>In proceedings</b><span>next hearing 14 Jul 2026</span></div><div class="ev"><b>Outcome</b><span>—</span></div><div class="ev"><b>Execution</b><span>—</span></div></div>
+<div class="docrow"><b>Documents</b> <span class="tag">Statement of claim</span><span class="tag">PO.pdf ✓ hashed</span><span class="tag">Order-1.pdf</span></div></div></div></div><div class="screen"><div class="slabel">Neutral workspace — dashboard</div><div class="sdesc">Caseload-centric, clock-aware neutral home (EQR-05 §5).</div><div class="frame">
+<div class="apptop"><div class="logo">▲ Equator · Neutral</div><div class="crumb">Dashboard</div><div class="pill">Arbitrator · Grade A</div></div>
+<div class="dash"><div class="cards"><div class="kc"><b>7</b><span>Active cases</span></div><div class="kc warn"><b>2</b><span>Clocks amber/red</span></div><div class="kc"><b>3</b><span>Hearings this week</span></div><div class="kc"><b>₹1.2L</b><span>Payouts pending</span></div></div>
+<table class="tbl"><tr><th>Case</th><th>Stage</th><th>Clock</th><th>Next action</th></tr>
+<tr><td>2026-004821</td><td>In proceedings</td><td><span class="clockpill amber">41d</span></td><td>Hold hearing</td></tr>
+<tr><td>2026-004655</td><td>Award drafting</td><td><span class="clockpill red">6d</span></td><td>Sign &amp; stamp</td></tr>
+<tr><td>2026-004510</td><td>Notice served</td><td><span class="clockpill green">88d</span></td><td>Schedule</td></tr></table></div></div></div><div class="screen"><div class="slabel">Enterprise console — grievance & escalations</div><div class="sdesc">B2B admin: dispute/grievance volumes, SLA heatmap, escalations to EDRS (EQR-06).</div><div class="frame">
+<div class="apptop"><div class="logo">▲ Equator · Enterprise</div><div class="crumb">NBFC Co. › Console</div><div class="pill">API: 3 keys</div></div>
+<div class="dash"><div class="cards"><div class="kc"><b>18,240</b><span>Cases (FY)</span></div><div class="kc"><b>62%</b><span>Settled pre-arbitration</span></div><div class="kc warn"><b>34</b><span>SLA breaching</span></div><div class="kc"><b>96%</b><span>Clause coverage</span></div></div>
+<div class="two"><div class="panel"><b>Escalations → EDRS</b><ul><li>Ticket #88421 · unresolved 31d · <span class="chip">escalate</span></li><li>Ticket #88377 · borrower dispute · <span class="chip">escalated ✓</span></li></ul></div><div class="panel"><b>Bulk intake</b><p>Upload CSV or POST /escalations. Last batch: 1,180 cases · 11 Jul.</p><button class="btn ghost">Upload batch</button></div></div></div></div></div>
+<footer>Confidential — © 2026 Equator Resolution (Infrabyx Consultancy (OPC) Pvt. Ltd.). Indicative mockups; final visuals per the design system (EQR-19) and front-end spec (EQR-25).</footer>
+</div></body></html>

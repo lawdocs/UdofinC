@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Commercial ADR — UI Wireframe Kit</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--ink:#1B2A32;--grey:#556168;--bg:#EEF2F4;--line:#c9d3d8;--box:#e4e9ec;--card:#fff}
+ *{box-sizing:border-box} body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:14px 22px} header b{letter-spacing:.5px} header span{color:#CADCEA;font-size:12.5px;font-style:italic;margin-left:10px}
+ .tabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 22px;background:#fff;border-bottom:1px solid var(--line)}
+ .tab{padding:9px 14px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:13.5px;background:#fff}
+ .tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+ .wrap{max-width:1080px;margin:18px auto;padding:0 18px 60px}
+ .screen{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ .bar{background:var(--navy);color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
+ .bar .r{font-size:12px;color:#CADCEA}
+ .body{padding:16px;display:grid;gap:12px}
+ .row{display:grid;gap:12px}
+ .box{background:var(--box);border:1px dashed var(--line);border-radius:8px;min-height:44px;display:flex;align-items:center;padding:10px 12px;font-size:13px;color:var(--grey)}
+ .box.tall{min-height:120px;align-items:flex-start} .box.solid{background:#fff;border-style:solid}
+ .lbl{font-size:11px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:-4px}
+ .btn{display:inline-block;background:var(--teal);color:#fff;border-radius:7px;padding:8px 14px;font-size:12.5px;font-weight:700}
+ .btn.gold{background:var(--gold);color:#20303a}.btn.ghost{background:#e7edf0;color:var(--navy)}
+ .pill{display:inline-block;background:#dceaef;color:var(--navy);border-radius:14px;padding:3px 10px;font-size:11.5px;margin-right:5px}
+ .split{display:grid;grid-template-columns:220px 1fr;gap:12px}
+ .split3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+ .note{font-size:12px;color:var(--grey);font-style:italic;margin-top:8px}
+ table{width:100%;border-collapse:collapse;font-size:12.5px}
+ th,td{border:1px solid var(--line);padding:7px 9px;text-align:left}th{background:#f2f6f8;color:var(--navy)}
+ h3{margin:0 0 6px;color:var(--navy);font-size:16px}
+</style></head><body>
+<header><b>EQUATOR RESOLUTION</b><span>Commercial ADR — UI Wireframe Kit (low-fidelity)</span></header>
+<div class="tabs" id="tabs"></div>
+<div class="wrap" id="stage"></div>
+<script>
+const SCREENS={
+"Intake wizard":`
+ <div class="screen"><div class="bar"><span>New matter — Step 2 of 6</span><span class="r">equatorresolution.com</span></div>
+ <div class="body">
+  <div class="lbl">Progress</div><div class="box solid">▓▓▓▓▓░░░░░  Mechanism & dispute</div>
+  <div class="lbl">Mechanism (AI-recommended)</div>
+  <div class="split3"><div class="box solid">◉ Arbitration</div><div class="box">○ Mediation / s.12A</div><div class="box">○ MSME Samadhaan</div></div>
+  <div class="lbl">Dispute type (multi-select)</div>
+  <div class="box tall"><span class="pill">Breach of contract</span><span class="pill">Payment & recovery</span><span class="pill">+ add</span></div>
+  <div class="lbl">Amount in dispute / arbitration clause?</div>
+  <div class="split"><div class="box solid">₹ 2,00,00,000</div><div class="box solid">☑ Clause exists</div></div>
+  <div class="row" style="grid-template-columns:1fr 1fr"><span class="btn ghost">← Back</span><span class="btn" style="justify-self:end">Continue →</span></div>
+  <div class="note">The "Ask Equator AI" launcher floats bottom-right on every step (mechanism recommender + arbitrability + drafting).</div>
+ </div></div>`,
+"Case list / dashboard":`
+ <div class="screen"><div class="bar"><span>My Cases</span><span class="r">Claimant · Acme Components Pvt Ltd</span></div>
+ <div class="body">
+  <div class="row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+   <div class="box solid">Active: 4</div><div class="box solid">Awaiting me: 2</div><div class="box solid">In hearing: 1</div><div class="box solid"><span class="btn gold">+ New matter</span></div></div>
+  <table><tr><th>Case No.</th><th>Mechanism</th><th>Status</th><th>Value</th><th>Next date</th></tr>
+   <tr><td>EQ/COM/MUM/2026/00042</td><td>Arbitration</td><td>Pleadings</td><td>₹2.0 cr</td><td>12 Aug</td></tr>
+   <tr><td>EQ/COM/MUM/2026/00051</td><td>Mediation (s.12A)</td><td>Scheduled</td><td>₹40 L</td><td>05 Aug</td></tr>
+   <tr><td>EQ/COM/DEL/2026/00019</td><td>MSME Samadhaan</td><td>Conciliation</td><td>₹12 L</td><td>—</td></tr></table>
+  <div class="note">Row click → Case room. Filters by mechanism/status. Sync badge shows court/tribunal status.</div>
+ </div></div>`,
+"Case room":`
+ <div class="screen"><div class="bar"><span>EQ/COM/MUM/2026/00042 — Case room</span><span class="r">s.29A clock: 214 days left</span></div>
+ <div class="body split">
+  <div class="row">
+   <div class="box solid">Overview</div><div class="box">Parties</div><div class="box">Tribunal</div><div class="box">Pleadings</div>
+   <div class="box">Hearings</div><div class="box">Documents</div><div class="box">Orders & Award</div><div class="box">Escrow</div></div>
+  <div class="row">
+   <div class="lbl">Timeline</div><div class="box solid">Constituted ✓ · ToR ✓ · PO-1 ✓ · SoC ✓ · SoD due 12 Aug</div>
+   <div class="lbl">Documents (confidentiality ring)</div>
+   <div class="box tall">📄 Statement of Claim (F-C09) · 📄 Contract · 📄 Exhibits C-1..C-8 <br>🔒 Respondent-only bundle hidden</div>
+   <div class="row" style="grid-template-columns:1fr 1fr 1fr"><span class="btn">Join hearing</span><span class="btn ghost">Upload</span><span class="btn gold">e-Sign</span></div></div>
+ </div></div>`,
+"Arbitrator / tribunal dashboard":`
+ <div class="screen"><div class="bar"><span>Tribunal workspace — EQ/COM/MUM/2026/00042</span><span class="r">Presiding Arbitrator</span></div>
+ <div class="body split">
+  <div class="row"><div class="box solid">Case file</div><div class="box">Pleadings & evidence</div><div class="box">Draft orders</div><div class="box">Draft award</div><div class="box">AI copilot</div></div>
+  <div class="row">
+   <div class="lbl">AI copilot (human-owned drafts)</div>
+   <div class="box tall">• Draft Procedural Order No. 2 (timetable)…<br>• Summarise Exhibits C-1..C-8…<br>• Suggest award structure & interest calc…<br><span class="note">Every output is a draft the tribunal reviews and owns. AI never decides.</span></div>
+   <div class="lbl">Award scrutiny (form)</div><div class="box solid">☑ All issues addressed · ☑ within s.29A · ☐ costs · ☐ signatures</div>
+   <div class="row" style="grid-template-columns:1fr 1fr"><span class="btn">Issue order</span><span class="btn gold">Submit draft award for scrutiny</span></div></div>
+ </div></div>`,
+"Case-manager console":`
+ <div class="screen"><div class="bar"><span>Case-Manager Console</span><span class="r">Equator · Secretariat</span></div>
+ <div class="body">
+  <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+   <div class="box solid">SLA breaches: 0</div><div class="box solid">Awaiting appointment: 3</div><div class="box solid">Escrow to release: 2</div></div>
+  <table><tr><th>Case</th><th>Stage</th><th>SLA</th><th>Action</th></tr>
+   <tr><td>…00042</td><td>Pleadings</td><td>On track</td><td>Chase SoD</td></tr>
+   <tr><td>…00051</td><td>Mediation</td><td>Due 05 Aug</td><td>Confirm mediator</td></tr>
+   <tr><td>…00019</td><td>MSME conciliation</td><td>—</td><td>Compute interest</td></tr></table>
+  <div class="lbl">Quick actions</div>
+  <div class="row" style="grid-template-columns:1fr 1fr 1fr 1fr"><span class="btn ghost">Serve notice</span><span class="btn ghost">Run conflict check</span><span class="btn ghost">Set up escrow</span><span class="btn gold">Refer to court</span></div>
+  <div class="note">Tribunal-secretary functions are administrative only — no role in the tribunal's decision.</div>
+ </div></div>`
+};
+const tabs=document.getElementById('tabs'),stage=document.getElementById('stage');
+Object.keys(SCREENS).forEach((k,i)=>{const t=document.createElement('div');t.className='tab'+(i===0?' on':'');t.textContent=k;t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');stage.innerHTML='<h3>'+k+'</h3>'+SCREENS[k];};tabs.appendChild(t);});
+stage.innerHTML='<h3>'+Object.keys(SCREENS)[0]+'</h3>'+SCREENS[Object.keys(SCREENS)[0]];
+</script></body></html>

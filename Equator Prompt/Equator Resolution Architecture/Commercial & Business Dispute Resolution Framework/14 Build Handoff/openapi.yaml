@@ -1,0 +1,153 @@
+openapi: 3.0.3
+info:
+  title: Equator Resolution — Commercial ADR Platform API
+  version: 1.0.0
+  description: >
+    Indicative REST API for Equator Resolution's Commercial & Business dispute-resolution
+    platform (arbitration, mediation, MSME). Secure every endpoint with OAuth2 / OIDC,
+    role-based access control and audit logging. This is a design artifact, not a running service.
+servers:
+  - url: https://api.equatorresolution.com/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: Cases
+  - name: Tribunal
+  - name: Pleadings
+  - name: Outcome
+  - name: MSME
+  - name: AI
+  - name: Execution
+  - name: Court
+paths:
+  /cases:
+    post:
+      tags: [Cases]
+      summary: Create a case (Request for Arbitration / Mediation / MSME)
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CaseCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+    get:
+      tags: [Cases]
+      summary: List cases (scoped to the caller's role)
+      parameters:
+        - { name: status, in: query, schema: { type: string } }
+        - { name: mechanism, in: query, schema: { type: string, enum: [arbitration, mediation, s12a, msme] } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Case' } } } } }
+  /cases/{caseId}:
+    get:
+      tags: [Cases]
+      summary: Get a case
+      parameters: [ { $ref: '#/components/parameters/caseId' } ]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+  /cases/{caseId}/triage:
+    post:
+      tags: [Cases]
+      summary: Run arbitrability / mechanism triage
+      parameters: [ { $ref: '#/components/parameters/caseId' } ]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/TriageResult' } } } }
+  /cases/{caseId}/notice:
+    post: { tags: [Cases], summary: Serve notice on the respondent, parameters: [ { $ref: '#/components/parameters/caseId' } ], responses: { '202': { description: Accepted } } }
+  /cases/{caseId}/response:
+    post: { tags: [Pleadings], summary: File a Response (+ counterclaim), parameters: [ { $ref: '#/components/parameters/caseId' } ], responses: { '201': { description: Created } } }
+  /cases/{caseId}/tribunal:
+    post:
+      tags: [Tribunal]
+      summary: Nominate / appoint / confirm the tribunal
+      parameters: [ { $ref: '#/components/parameters/caseId' } ]
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AppointmentRequest' } } } }
+      responses: { '201': { description: Created } }
+  /cases/{caseId}/disclosure:
+    post: { tags: [Tribunal], summary: Submit arbitrator disclosure (s.12), parameters: [ { $ref: '#/components/parameters/caseId' } ], responses: { '201': { description: Created } } }
+  /cases/{caseId}/pleadings:
+    post: { tags: [Pleadings], summary: File SoC / SoD / evidence, parameters: [ { $ref: '#/components/parameters/caseId' } ], responses: { '201': { description: Created } } }
+  /cases/{caseId}/interim:
+    post: { tags: [Outcome], summary: Application for interim / emergency measures, parameters: [ { $ref: '#/components/parameters/caseId' } ], responses: { '201': { description: Created } } }
+  /cases/{caseId}/award:
+    post: { tags: [Outcome], summary: Issue award / consent award / MSA, parameters: [ { $ref: '#/components/parameters/caseId' } ], responses: { '201': { description: Created } } }
+  /msme/reference:
+    post: { tags: [MSME], summary: File an MSME Samadhaan reference, responses: { '201': { description: Created } } }
+  /ai/ask:
+    post:
+      tags: [AI]
+      summary: AI assistant Q&A (mechanism / arbitrability / procedure) — guardrailed
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AiAsk' } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/AiAnswer' } } } } }
+  /ai/draft:
+    post: { tags: [AI], summary: AI draft (RFA / SoC / SoD) — human review required, responses: { '200': { description: OK } } }
+  /esign:
+    post: { tags: [Execution], summary: Initiate Aadhaar eSign / DSC on a document, responses: { '202': { description: Accepted } } }
+  /estamp:
+    post: { tags: [Execution], summary: e-Stamp a settlement / award via SHCIL, responses: { '202': { description: Accepted } } }
+  /escrow/{escrowId}/release:
+    post: { tags: [Execution], summary: Release an escrow tranche on milestone, parameters: [ { name: escrowId, in: path, required: true, schema: { type: string } } ], responses: { '200': { description: OK } } }
+  /court/refer:
+    post: { tags: [Court], summary: Referral in/out (s.8 / s.11 / s.12A), responses: { '202': { description: Accepted } } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    caseId: { name: caseId, in: path, required: true, schema: { type: string, format: uuid } }
+  schemas:
+    CaseCreate:
+      type: object
+      required: [mechanism, disputeType, claimValue]
+      properties:
+        mechanism: { type: string, enum: [arbitration, mediation, s12a, msme] }
+        disputeType: { type: array, items: { type: string } }
+        sector: { type: string }
+        claimValue: { type: number }
+        arbitrationClause: { type: boolean }
+        seat: { type: string }
+        governingLaw: { type: string }
+        language: { type: string }
+        numberOfArbitrators: { type: integer, enum: [1, 3] }
+        claimant: { $ref: '#/components/schemas/Party' }
+        respondent: { $ref: '#/components/schemas/Party' }
+    Case:
+      allOf:
+        - { $ref: '#/components/schemas/CaseCreate' }
+        - type: object
+          properties:
+            caseNo: { type: string, example: EQ/COM/MUM/2026/00042 }
+            status: { type: string }
+            createdAt: { type: string, format: date-time }
+    Party:
+      type: object
+      properties:
+        name: { type: string }
+        entityType: { type: string }
+        cin: { type: string }
+        gstin: { type: string }
+        pan: { type: string }
+        authorisedSignatory: { type: string }
+        contact: { type: string }
+    AppointmentRequest:
+      type: object
+      properties:
+        method: { type: string, enum: [party, institutional, s11] }
+        nominees: { type: array, items: { type: string } }
+    TriageResult:
+      type: object
+      properties:
+        recommendedMechanism: { type: string }
+        arbitrable: { type: boolean }
+        reasons: { type: array, items: { type: string } }
+    AiAsk:
+      type: object
+      required: [question]
+      properties:
+        question: { type: string }
+        caseId: { type: string }
+    AiAnswer:
+      type: object
+      properties:
+        answer: { type: string }
+        citations: { type: array, items: { type: string } }
+        disclaimer: { type: string, example: "Information, not legal advice." }
+        escalateToHuman: { type: boolean }

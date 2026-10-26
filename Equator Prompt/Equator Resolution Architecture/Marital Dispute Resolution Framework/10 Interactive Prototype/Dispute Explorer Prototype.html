@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — AI Dispute Explorer (Prototype)</title>
+<style>
+  :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;
+        --ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8;--card:#fff;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Segoe UI,Calibri,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:var(--navy);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header .brand{font-weight:700;letter-spacing:.5px;font-size:18px}
+  header .tag{color:#CADCEA;font-size:12.5px;font-style:italic}
+  .wrap{max-width:920px;margin:0 auto;padding:22px 18px 90px}
+  .prog{height:8px;background:#dfe7ea;border-radius:6px;overflow:hidden;margin:6px 0 20px}
+  .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:14%;transition:.3s}
+  .step{background:var(--card);border:1px solid #e2e8eb;border-radius:14px;padding:24px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+  h1{font-size:22px;margin:.1em 0 .2em;color:var(--navy)}
+  h2{font-size:19px;margin:.1em 0 .4em;color:var(--navy)}
+  .sub{color:var(--grey);font-size:14px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+  .opt{border:1.5px solid #d7e0e4;border-radius:10px;padding:14px;cursor:pointer;transition:.15s;background:#fff;font-size:14.5px}
+  .opt:hover{border-color:var(--teal);background:#f7fbfc}
+  .opt.sel{border-color:var(--teal);background:var(--ltteal);box-shadow:inset 0 0 0 1px var(--teal)}
+  .opt small{display:block;color:var(--grey);font-size:12px;margin-top:4px}
+  .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:9px 15px;margin:5px 6px 0 0;cursor:pointer;font-size:14px;background:#fff}
+  .chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .row{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+  label.f{display:block;font-size:12.5px;color:var(--navy);font-weight:600;margin:12px 0 4px}
+  select,input[type=number],textarea{padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px;background:#fff;font-family:inherit}
+  select,input[type=number]{min-width:180px}
+  textarea{width:100%;min-height:90px;resize:vertical}
+  .nav{display:flex;justify-content:space-between;margin-top:22px}
+  button{border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}
+  .primary{background:var(--teal);color:#fff}.primary:hover{background:#186576}
+  .ghost{background:#eaf0f2;color:var(--navy)}.ghost:hover{background:#dde6e9}
+  .banner{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:14px}
+  .b-red{background:#F6E0E4;border-left:5px solid var(--red)}
+  .b-gold{background:var(--lgold);border-left:5px solid var(--gold)}
+  .b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}
+  .b-green{background:#DCEEE4;border-left:5px solid var(--green)}
+  .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:16px 18px;margin:12px 0;background:#fff}
+  .sumcard h3{margin:.1em 0 .5em;color:var(--navy);font-size:16px}
+  .kv{font-size:14px;margin:4px 0}.kv b{color:var(--navy)}
+  .muted{color:var(--grey);font-size:12.5px}
+  .pill{display:inline-block;background:var(--ltteal);color:var(--navy);border-radius:20px;padding:4px 11px;margin:3px 4px 0 0;font-size:12.5px}
+  .badge{display:inline-block;border-radius:20px;padding:5px 13px;font-size:13px;font-weight:700;color:#fff}
+  .disc{font-size:11.5px;color:var(--grey);margin-top:18px;line-height:1.5}
+  a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700;margin-top:8px}
+  /* AI assistant */
+  #aiBtn{position:fixed;right:20px;bottom:20px;background:var(--gold);color:#20303a;border-radius:30px;padding:13px 20px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:40}
+  #aiPanel{position:fixed;right:20px;bottom:78px;width:min(420px,92vw);max-height:72vh;background:#fff;border:1px solid #d7e0e4;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:none;flex-direction:column;z-index:41;overflow:hidden}
+  #aiPanel.open{display:flex}
+  #aiPanel .hd{background:var(--navy);color:#fff;padding:12px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  #aiLog{padding:12px 14px;overflow:auto;flex:1;font-size:14px}
+  .msg{margin:8px 0;padding:10px 12px;border-radius:10px;line-height:1.45}
+  .msg.ai{background:var(--ltteal)}
+  .msg.me{background:#eef3f5;text-align:right}
+  #aiChips{padding:6px 12px;border-top:1px solid #eee;max-height:120px;overflow:auto}
+  #aiForm{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #eee}
+  #aiForm input{flex:1;padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px}
+  .modal{position:fixed;inset:0;background:rgba(10,25,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .modal.open{display:flex}
+  .modal .box{background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">EQUATOR RESOLUTION</span>
+  <span class="tag">AI Dispute Explorer — ask questions, understand your options, draft your case</span>
+</header>
+<div class="wrap">
+  <div class="prog"><i id="bar"></i></div>
+  <div id="app"></div>
+</div>
+
+<!-- AI assistant -->
+<button id="aiBtn" onclick="toggleAI()">💬 Ask Equator AI</button>
+<div id="aiPanel">
+  <div class="hd"><span>Equator AI assistant</span><span style="cursor:pointer" onclick="toggleAI()">✕</span></div>
+  <div id="aiLog"></div>
+  <div id="aiChips"></div>
+  <form id="aiForm" onsubmit="return askFree(event)"><input id="aiInput" placeholder="Type a question…" autocomplete="off"/><button class="primary" type="submit">Ask</button></form>
+</div>
+<div class="modal" id="draftModal"><div class="box" id="draftBox"></div></div>
+
+<script>
+const REGIMES={
+ hindu:{label:"Hindu / Buddhist / Jain / Sikh",law:"Hindu Marriage Act, 1955",mc:"Mutual consent under s.13B (living apart ≥ 1 year)"},
+ sma:{label:"Inter-faith / Civil",law:"Special Marriage Act, 1954",mc:"Mutual consent under s.28 (≥ 1 year)"},
+ intercaste:{label:"Inter-caste",law:"Hindu Marriage Act, 1955 / Special Marriage Act, 1954",mc:"Per the applicable Act"},
+ muslim:{label:"Muslim",law:"Muslim personal law (Shariat Act 1937; Dissolution of Muslim Marriages Act 1939)",mc:"Khula / Mubarat; mahr settled"},
+ christian:{label:"Christian",law:"Divorce Act, 1869",mc:"Mutual consent under s.10A (≥ 2 years)"},
+ parsi:{label:"Parsi",law:"Parsi Marriage and Divorce Act, 1936",mc:"Mutual consent under s.32B (≥ 1 year)"},
+ nri:{label:"NRI / Overseas",law:"Personal law of the marriage + cross-border rules",mc:"Per governing law; video-mediation"},
+ livein:{label:"Live-in relationship",law:"Protection under the Domestic Violence Act, 2005",mc:"Civil settlement of shared issues"}
+};
+const DTYPES={
+ "Divorce & Dissolution":{law:"Dissolution per your regime; irretrievable breakdown (Shilpa Sailesh)",issues:["Mutual-consent divorce","Contested – cruelty","Contested – desertion","Contested – adultery","Judicial separation","Reconciliation"]},
+ "Maintenance & Alimony":{law:"HMA ss.24–25 / BNSS s.144; Rajnesh v. Neha",issues:["Interim maintenance","Permanent alimony / one-time","Child maintenance","Enhancement / reduction"]},
+ "Child Custody":{law:"Guardians & Wards Act 1890; welfare is paramount",issues:["Physical custody","Joint / shared parenting","Visitation / access","Relocation / child's passport"],child:true},
+ "Property, Streedhan & Mahr":{law:"Title-based; streedhan (Pratibha Rani); mahr per Muslim law",issues:["Matrimonial home","Return of streedhan / jewellery","Joint assets & liabilities","Mahr / dower"]},
+ "Domestic Violence":{law:"Protection of Women from Domestic Violence Act, 2005",issues:["Protection order","Residence order","Monetary relief","Compensation"],dv:true},
+ "Dowry & Cruelty":{law:"BNS ss.85–86 (ex-498A); Dowry Prohibition Act, 1961",issues:["Cruelty complaint (BNS 85/86)","Dowry demand","Return of dowry articles"],crim:true},
+ "Criminal cross-complaints / FIR closure":{law:"Compounding (s.359 BNSS) / quashing (s.528 BNSS; Gian Singh)",issues:["Withdraw complaint","Compounding","Quashing on settlement"],crim:true},
+ "Polygamy / Bigamy":{law:"BNS s.82; a void second marriage cannot be validated",issues:["Bigamy allegation","Consequences for spouse & children"],limited:true},
+ "NRI / Cross-border":{law:"Jurisdiction & foreign-decree recognition (Y. Narasimha Rao)",issues:["Jurisdiction","Foreign-decree alignment","Cross-border service"]}
+};
+const RELIEF=["Mutual-consent divorce","Judicial separation","Reconciliation","Interim maintenance","Permanent alimony / one-time settlement","Child maintenance","Custody arrangement","Visitation schedule","Transfer / partition of property","Return of streedhan / jewellery","Payment of mahr","Protection / no-contact","Withdrawal / quashing of criminal cases","Escrow-secured payment"];
+
+const state={regime:null,initiator:null,children:"no",childCount:0,facts:"",dtypes:new Set(),issues:new Set(),relief:new Set(),lang:"",gender:"",mode:"",spec:""};
+let step=0; const STEPS=7;
+const app=document.getElementById('app'), bar=document.getElementById('bar');
+const DISC="This is general information about your options and the law, not legal advice. Please consult a lawyer before deciding.";
+
+function render(){
+  bar.style.width=Math.round(((step+1)/STEPS)*100)+"%";
+  [stepRegime,stepAbout,stepDtypes,stepIssues,stepRelief,stepMediator,stepSummary][step]();
+}
+function nav(nextLabel="Continue →",nextOk=true){
+  return `<div class="nav"><button class="ghost" onclick="go(-1)" ${step===0?'style=\"visibility:hidden\"':''}>← Back</button>
+    <button class="primary" onclick="next()" ${nextOk?'':'disabled style=\"opacity:.5\"'}>${nextLabel}</button></div>`;
+}
+function go(d){step=Math.max(0,Math.min(STEPS-1,step+d));render();window.scrollTo(0,0);}
+function next(){if(step<STEPS-1){step++;render();window.scrollTo(0,0);}}
+function toggle(set,val){const s=state[set];s.has(val)?s.delete(val):s.add(val);render();}
+
+function stepRegime(){app.innerHTML=`<div class="step"><h1>First, how were you married?</h1>
+  <div class="sub">This tells us which law applies. Everything stays on this page — nothing is stored.</div>
+  <div class="grid">${Object.entries(REGIMES).map(([k,v])=>`<div class="opt ${state.regime===k?'sel':''}" onclick="state.regime='${k}';render()">${v.label}<small>${v.law}</small></div>`).join('')}</div>
+  ${nav("Continue →",!!state.regime)}</div>`;}
+
+function stepAbout(){app.innerHTML=`<div class="step"><h1>A little about the situation</h1>
+  <div class="sub">Either spouse can start. Nothing here is binding.</div>
+  <label class="f">Who is exploring this?</label>
+  <div>${["Husband","Wife","Prefer not to say"].map(o=>`<span class="chip ${state.initiator===o?'sel':''}" onclick="state.initiator='${o}';render()">${o}</span>`).join('')}</div>
+  <label class="f">Are children involved?</label>
+  <div>${["no","yes"].map(o=>`<span class="chip ${state.children===o?'sel':''}" onclick="state.children='${o}';render()">${o==='yes'?'Yes':'No'}</span>`).join('')}</div>
+  ${state.children==='yes'?`<label class="f">How many?</label><input type="number" min="1" max="10" value="${state.childCount||1}" onchange="state.childCount=this.value">`:''}
+  <label class="f">In a few lines, what has happened? (optional — helps the AI draft your case)</label>
+  <textarea id="facts" oninput="state.facts=this.value" placeholder="e.g. We married in 2015, have one child, and have lived apart since Jan 2024. I would like a mutual-consent divorce and shared parenting…">${state.facts}</textarea>
+  ${nav("Continue →",!!state.initiator)}</div>`;}
+
+function stepDtypes(){app.innerHTML=`<div class="step"><h1>What would you like to resolve?</h1>
+  <div class="sub">Choose all that apply — real situations are usually a mix.</div>
+  <div>${Object.keys(DTYPES).map(t=>`<span class="chip ${state.dtypes.has(t)?'sel':''}" onclick="toggle('dtypes','${t.replace(/'/g,"\\'")}')">${t}</span>`).join('')}</div>
+  ${nav("Continue →",state.dtypes.size>0)}</div>`;}
+
+function stepIssues(){const issues=[...new Set([...state.dtypes].flatMap(t=>DTYPES[t].issues))];
+  [...state.issues].forEach(i=>{if(!issues.includes(i))state.issues.delete(i);});
+  app.innerHTML=`<div class="step"><h1>Which specific issues?</h1><div class="sub">Pick the ones that matter to you.</div>
+  <div>${issues.map(i=>`<span class="chip ${state.issues.has(i)?'sel':''}" onclick="toggle('issues','${i.replace(/'/g,"\\'")}')">${i}</span>`).join('')}</div>
+  ${nav()}</div>`;}
+
+function stepRelief(){app.innerHTML=`<div class="step"><h1>What outcome are you hoping for?</h1><div class="sub">Select any that fit.</div>
+  <div>${RELIEF.map(r=>`<span class="chip ${state.relief.has(r)?'sel':''}" onclick="toggle('relief','${r.replace(/'/g,"\\'")}')">${r}</span>`).join('')}</div>
+  ${nav()}</div>`;}
+
+function stepMediator(){const opt=(v,arr)=>`<select onchange="state.${v}=this.value"><option value="">No preference</option>${arr.map(a=>`<option ${state[v]===a?'selected':''}>${a}</option>`).join('')}</select>`;
+  app.innerHTML=`<div class="step"><h1>Your mediator preferences</h1><div class="sub">Choose together, or we recommend three.</div>
+  <div class="row">
+   <div><label class="f">Language</label>${opt('lang',["Hindi","English","Marathi","Gujarati","Tamil","Telugu","Kannada","Bengali","Punjabi","Urdu"])}</div>
+   <div><label class="f">Mediator gender</label>${opt('gender',["Male","Female"])}</div>
+   <div><label class="f">Mode</label>${opt('mode',["Online","In-person","Hybrid"])}</div>
+   <div><label class="f">Specialisation</label>${opt('spec',["Child custody & parenting","Financial / property","Muslim personal law","Christian personal law","NRI / cross-border","Domestic-violence sensitive"])}</div>
+  </div>${nav("See my summary →")}</div>`;}
+
+function admissibility(){
+  const dv=[...state.dtypes].some(t=>DTYPES[t].dv);
+  const crim=[...state.dtypes].some(t=>DTYPES[t].crim);
+  const limited=[...state.dtypes].some(t=>DTYPES[t].limited);
+  let level="Fit for mediation",color="var(--green)",notes=[];
+  if(dv){level="Fit — after a safety assessment";color="var(--gold)";notes.push("Because domestic violence is involved, a safety assessment comes first; some matters may be better suited to court.");}
+  if(crim){notes.push("The civil dispute is mediatable; any criminal case is closed lawfully through the court (compounding/quashing), not 'mediated'.");}
+  if(limited){level="Partly mediatable";color="var(--gold)";notes.push("A void marriage (bigamy) cannot be validated by agreement, but the financial and child-related consequences can be mediated.");}
+  if(!notes.length)notes.push("Your matter is a civil marital dispute suitable for mediation under the Mediation Act, 2023.");
+  return {level,color,notes};
+}
+
+function stepSummary(){
+  const r=REGIMES[state.regime];
+  const dv=[...state.dtypes].some(t=>DTYPES[t].dv), crim=[...state.dtypes].some(t=>DTYPES[t].crim), child=state.children==='yes'||[...state.dtypes].some(t=>DTYPES[t].child);
+  const money=[...state.relief].some(x=>/maintenance|alimony|property|streedhan|mahr|escrow/i.test(x));
+  const laws=[...state.dtypes].map(t=>`<div class="kv">• <b>${t}:</b> ${DTYPES[t].law}</div>`).join('');
+  const adm=admissibility();
+  app.innerHTML=`<div class="step">
+   <h1>Your options at a glance</h1>
+   <div class="sub">General guidance, not legal advice — but this is how Equator would approach your matter.</div>
+   ${dv?`<div class="banner b-red"><b>Your safety comes first.</b> Because you mentioned domestic violence, we use a safety-first process. If you are in immediate danger, contact the police.</div>`:''}
+   <div class="sumcard"><h3>Can my dispute be mediated?</h3>
+     <span class="badge" style="background:${adm.color}">${adm.level}</span>
+     <div style="margin-top:8px">${adm.notes.map(n=>`<div class="kv">• ${n}</div>`).join('')}</div>
+   </div>
+   <div class="sumcard"><h3>Governing law</h3>
+     <div class="kv"><b>Marriage type:</b> ${r.label}</div>
+     <div class="kv"><b>Applies:</b> ${r.law}</div>
+     <div class="kv"><b>Route to end the marriage:</b> ${r.mc}</div></div>
+   <div class="sumcard"><h3>What we'd work on</h3>${laws||'<div class="muted">No issues selected.</div>'}
+     <div style="margin-top:8px">${[...state.issues].map(i=>`<span class="pill">${i}</span>`).join('')}</div></div>
+   <div class="sumcard"><h3>Outcomes you're seeking</h3>
+     <div>${[...state.relief].map(x=>`<span class="pill">${x}</span>`).join('')||'<span class="muted">None selected.</span>'}</div></div>
+   ${money?`<div class="banner b-gold"><b>Money can be protected by escrow.</b> Settlement funds are held by a regulated bank and released only when agreed steps are done.</div>`:''}
+   ${crim?`<div class="banner b-teal"><b>Closing criminal cases.</b> Lawful withdrawal, compounding (s.359 BNSS) or quashing (s.528 BNSS) is built into the settlement. Serious offences can't be closed by agreement alone.</div>`:''}
+   ${child?`<div class="banner b-green"><b>Children come first.</b> We help you build a parenting plan; the child's welfare guides everything.</div>`:''}
+   <div class="sumcard"><h3>Draft your case with AI</h3>
+     <div class="muted" style="margin-bottom:8px">Generate a first draft from what you've told us — review it, then have a lawyer settle it.</div>
+     <button class="primary" onclick="draft('claim')">Draft my Statement of Claim</button>
+     <button class="ghost" onclick="draft('defence')" style="margin-left:8px">Draft a Statement of Defence</button>
+   </div>
+   <div class="sumcard"><h3>How it would run — fully online</h3>
+     <div class="kv">• A neutral, conflict-checked mediator${state.lang?` (${state.lang})`:''}${state.mode?`, ${state.mode.toLowerCase()}`:''}, on a statutory <b>180-day</b> clock.</div>
+     <div class="kv">• File and sign online with <b>Aadhaar e-Sign</b>; the settlement is <b>e-stamped</b> and registered on the platform.</div>
+     <div class="kv">• Once registered, your agreement is <b>enforceable as a court decree</b> (s.27).</div></div>
+   <a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">Start confidentially with Equator →</a>
+   <div class="nav"><button class="ghost" onclick="go(-1)">← Back</button><button class="ghost" onclick="restart()">Start over</button></div>
+   <div class="disc"><b>Prototype.</b> Demonstration of the AI-assisted intake only. It does not store your data, the AI answers are illustrative, and nothing here is legal advice. Equator Resolution is a neutral mediation service under the Mediation Act, 2023.</div>
+  </div>`;
+}
+function restart(){Object.assign(state,{regime:null,initiator:null,children:"no",childCount:0,facts:"",dtypes:new Set(),issues:new Set(),relief:new Set(),lang:"",gender:"",mode:"",spec:""});step=0;render();}
+
+/* ---- draft generator ---- */
+function draft(kind){
+  const r=state.regime?REGIMES[state.regime]:{label:"[regime]",law:"[Act]"};
+  const facts=(state.facts||"").split(/\n|(?<=\.)\s+/).map(s=>s.trim()).filter(Boolean);
+  const issues=[...state.issues], relief=[...state.relief];
+  let t="";
+  if(kind==='claim'){
+    t=`STATEMENT OF CLAIM (DRAFT)\n(Prepared with AI assistance — review and have counsel settle before filing)\n\n`+
+      `Governing law: ${r.law}\nParties: the Applicant (${state.initiator||'[Applicant]'}) and the Respondent.\n\n`+
+      `1. PARTIES & MARRIAGE\nThe parties were married on [date] at [place] under the ${r.label} regime`+
+      `${state.children==='yes'?` and have ${state.childCount||1} child(ren)`:''}.\n\n`+
+      `2. STATEMENT OF FACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts in chronological order.]")+"\n\n"+
+      `3. ISSUES FOR RESOLUTION\n`+(issues.length?issues.map((x,i)=>`${i+1}. ${x}`).join("\n"):"[Select the issues to resolve.]")+"\n\n"+
+      `4. RELIEF SOUGHT (PRAYER)\nThe Applicant prays for:\n`+(relief.length?relief.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [state the relief sought];")+
+      `\n(z) such further relief as may be just.\n\nVERIFICATION\nVerified that the contents are true to my knowledge and belief.\n\n_________________________\nApplicant`;
+  } else {
+    t=`STATEMENT OF DEFENCE (DRAFT)\n(Prepared with AI assistance — review and have counsel settle before filing)\n\n`+
+      `Governing law: ${r.law}\n\n1. RESPONSE TO THE CLAIM\nThe Respondent responds to the Statement of Claim as follows: [admit / deny / explain each paragraph].\n\n`+
+      `2. RESPONDENT'S CASE\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the respondent's account.]")+"\n\n"+
+      `3. COUNTER-ISSUES & RELIEF\n`+(issues.length?issues.map((x,i)=>`${i+1}. ${x}`).join("\n"):"[Issues the respondent wishes to raise.]")+"\n\n"+
+      `VERIFICATION\nVerified that the contents are true to my knowledge and belief.\n\n_________________________\nRespondent`;
+  }
+  document.getElementById('draftBox').innerHTML=`<h2>${kind==='claim'?'Statement of Claim':'Statement of Defence'} — draft</h2>
+    <div class="muted" style="margin-bottom:8px">AI-generated draft from your inputs. Not legal advice — edit and have a lawyer settle it.</div>
+    <textarea style="min-height:340px">${t.replace(/</g,'&lt;')}</textarea>
+    <div class="nav"><button class="ghost" onclick="closeModal()">Close</button>
+      <button class="primary" onclick="copyDraft(this)">Copy draft</button></div>`;
+  document.getElementById('draftModal').classList.add('open');
+}
+function closeModal(){document.getElementById('draftModal').classList.remove('open');}
+function copyDraft(b){const ta=document.querySelector('#draftBox textarea');ta.select();try{document.execCommand('copy');b.textContent='Copied ✓';}catch(e){b.textContent='Select & copy';}}
+
+/* ---- AI assistant (rule-based demo) ---- */
+const QUICK=["How does Equator mediation work?","Can my dispute be mediated?","What remedies apply to me?","How long does it take?","What does it cost?","What is escrow?","How do I sign — is e-sign valid?","Is it confidential?"];
+function aiAnswer(q){
+  const s=q.toLowerCase();
+  const dt=[...state.dtypes];
+  if(/how.*work|process|steps|procedure/.test(s)) return "Either spouse starts online; the other is invited to respond. You pick or are matched to a neutral mediator, then meet (online or in person) in joint and private sessions. When you agree, we put it in writing, secure any money in escrow, help close any criminal cases, e-stamp and register it — all within a statutory 180 days. "+DISC;
+  if(/mediat|admissib|allowed|eligible|can my|suitable/.test(s)){const a=admissibility();return `Based on what you've chosen: ${a.level}. ${a.notes.join(" ")} `+DISC;}
+  if(/remed|right|entitl|maintenance|custody|alimony|claim|get/.test(s)){const lines=dt.length?dt.map(t=>`${t}: ${DTYPES[t].law}`).join("; "):"Select your issues and I'll list the remedies.";return `For your selected issues — ${lines}. In mediation you shape these terms yourselves. `+DISC;}
+  if(/time|long|days|duration/.test(s)) return "The Mediation Act gives a statutory clock: up to 120 days from the first session, extendable once by 60 (max 180). Many family matters settle sooner. "+DISC;
+  if(/cost|fee|pay|charge|price/.test(s)) return "There's a clear published schedule — a registration fee, a per-session case-management fee, and the mediator's fee by grade — far less than years of litigation. Fee waivers/pro-bono are available if you can't afford it. "+DISC;
+  if(/escrow|money.*safe|hold.*money/.test(s)) return "Escrow is a neutral holding account with a regulated bank. The payer deposits the settlement money; it's released to the payee only when the agreed steps are done (e.g., the divorce first motion, an FIR withdrawal, or handover). Neither side has to trust a promise. "+DISC;
+  if(/sign|e-?sign|esign/.test(s)) return "Yes — you can sign online with Aadhaar e-Sign or a Digital Signature Certificate. These are legally valid under the IT Act, 2000, carry an audit trail, and are admissible in court (with a s.65B certificate). "+DISC;
+  if(/stamp|estamp|register/.test(s)) return "The settlement is e-stamped on the platform (stamp duty paid digitally via SHCIL) and then registered under s.20 of the Mediation Act — after which it's enforceable as a court decree (s.27). "+DISC;
+  if(/confiden|private|secret/.test(s)) return "Mediation is confidential and, by law, what you say can't be used against you in court — the only exception is information about someone being at risk of harm. "+DISC;
+  if(/safe|violence|abuse|hurt|threat/.test(s)) return "Your safety comes first. If there's violence or a threat, tell us — we screen carefully, keep parties apart if needed, and help you reach a Protection Officer. If you're in immediate danger, contact the police. "+DISC;
+  if(/court|quash|498|fir|criminal|withdraw/.test(s)) return "Where you've filed complaints against each other, a genuine settlement can be carried to lawful closure — compounding (s.359 BNSS) or quashing by the High Court (s.528 BNSS; Gian Singh). Serious offences (e.g., dowry death) can't be closed by agreement alone. "+DISC;
+  if(/draft|statement|claim|defence|defense/.test(s)) return "I can draft your Statement of Claim or Defence from what you've told me — finish the steps and use the 'Draft my Statement' buttons on the summary. It's a draft to review, then have a lawyer settle. "+DISC;
+  return "I can help with Equator's process, the remedies for your dispute, whether your matter can be mediated, fees, timelines, escrow, e-sign/e-stamp, confidentiality and safety. Try a question below. "+DISC;
+}
+function pushMsg(who,txt){const log=document.getElementById('aiLog');const d=document.createElement('div');d.className='msg '+who;d.textContent=txt;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+function ask(q){pushMsg('me',q);setTimeout(()=>pushMsg('ai',aiAnswer(q)),150);}
+function askFree(e){e.preventDefault();const i=document.getElementById('aiInput');if(i.value.trim()){ask(i.value.trim());i.value='';}return false;}
+function toggleAI(){const p=document.getElementById('aiPanel');p.classList.toggle('open');
+  if(p.classList.contains('open')&&!document.getElementById('aiLog').dataset.init){
+    document.getElementById('aiLog').dataset.init='1';
+    pushMsg('ai',"Hello — I'm the Equator AI assistant. I can explain the process, your possible remedies, whether your matter can be mediated, and help draft your case. Ask me anything, or tap a question below. "+DISC);
+    document.getElementById('aiChips').innerHTML=QUICK.map(q=>`<span class="chip" onclick="ask('${q.replace(/'/g,"\\'")}')">${q}</span>`).join('');
+  }}
+render();
+</script>
+</body>
+</html>

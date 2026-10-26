@@ -1,0 +1,1037 @@
+openapi: 3.1.0
+info:
+  title: Equator Resolution Platform API
+  version: 1.0.0 (EQR-18)
+  description: API-first surface for Equator Resolution — file and manage disputes, escalate company tickets,
+    run the Dispute Explorer, handle payments, and retrieve enforceable outcomes. Every capability is
+    an API before it is a screen. Confidential — Internal draft; see EQR-06 (integration) and EQR-12 (schema).
+  contact:
+    name: Equator Resolution — Partnerships Engineering
+    url: https://www.equatorresolution.com
+    email: api@equatorresolution.com
+servers:
+- url: https://api.equatorresolution.com/v1
+  description: Production
+- url: https://sandbox.api.equatorresolution.com/v1
+  description: Sandbox (synthetic data)
+tags:
+- name: Parties
+- name: Cases
+- name: Escalation
+- name: Documents
+- name: Hearings
+- name: Outcomes
+- name: Payments
+- name: Dispute Explorer
+security:
+- bearerAuth: []
+paths:
+  /parties:
+    post:
+      tags:
+      - Parties
+      summary: Register an individual party (F1)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartyCreate'
+      responses:
+        '201':
+          description: Party created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /parties/{id}:
+    get:
+      tags:
+      - Parties
+      summary: Get a party
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Party
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Party'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /parties/{id}/kyc:
+    post:
+      tags:
+      - Parties
+      summary: Submit KYC (video-KYC/DigiLocker)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KycSubmit'
+      responses:
+        '202':
+          description: KYC accepted for verification
+  /entities:
+    post:
+      tags:
+      - Parties
+      summary: Register an organisation (KYB, F2)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityCreate'
+      responses:
+        '201':
+          description: Entity created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+  /cases:
+    get:
+      tags:
+      - Cases
+      summary: List cases
+      parameters:
+      - name: pillar
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Case list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseList'
+    post:
+      tags:
+      - Cases
+      summary: File a case (master filing, F5)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseCreate'
+      responses:
+        '201':
+          description: Case filed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cases/{id}:
+    get:
+      tags:
+      - Cases
+      summary: Get a case
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Case
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cases/{id}/status:
+    get:
+      tags:
+      - Cases
+      summary: Get case status timeline (eCourts-style)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Status timeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStatus'
+  /cases/{id}/responses:
+    post:
+      tags:
+      - Cases
+      summary: File a response/defence (F9)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseCreate'
+      responses:
+        '201':
+          description: Response filed
+  /escalations:
+    post:
+      tags:
+      - Escalation
+      summary: Escalate a company ticket into a case (F22)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EscalationCreate'
+      responses:
+        '201':
+          description: Escalation accepted; case created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Escalation'
+        '409':
+          description: Missing consent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /escalations/{id}:
+    get:
+      tags:
+      - Escalation
+      summary: Get an escalation
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Escalation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Escalation'
+  /cases/{id}/documents:
+    post:
+      tags:
+      - Documents
+      summary: Upload a document (hashed on write)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                kind:
+                  type: string
+      responses:
+        '201':
+          description: Document stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+  /documents/{id}:
+    get:
+      tags:
+      - Documents
+      summary: Get document metadata (with hash)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+  /cases/{id}/hearings:
+    get:
+      tags:
+      - Hearings
+      summary: List hearings for a case
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Hearings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HearingList'
+  /hearings/{id}/join:
+    post:
+      tags:
+      - Hearings
+      summary: Get a hearing join token (liveness-gated)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Join token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinToken'
+  /cases/{id}/settlement:
+    get:
+      tags:
+      - Outcomes
+      summary: Get the mediated settlement (MSA)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Settlement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+  /cases/{id}/award:
+    get:
+      tags:
+      - Outcomes
+      summary: Get the arbitral award
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Award
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Award'
+  /cases/{id}/execution-bundle:
+    get:
+      tags:
+      - Outcomes
+      summary: Get the court-ready execution bundle (S.36/S.27)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Execution bundle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionBundle'
+  /invoices:
+    post:
+      tags:
+      - Payments
+      summary: Raise an invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCreate'
+      responses:
+        '201':
+          description: Invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+  /payments:
+    post:
+      tags:
+      - Payments
+      summary: Initiate a payment (Razorpay/PayPal)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+      responses:
+        '201':
+          description: Payment intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+  /payouts/{id}:
+    get:
+      tags:
+      - Payments
+      summary: Get a neutral payout
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payout'
+  /explorer/sessions:
+    post:
+      tags:
+      - Dispute Explorer
+      summary: Start a Dispute Explorer session (AI, advisory)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplorerCreate'
+      responses:
+        '201':
+          description: Session with viability read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorerSession'
+  /explorer/sessions/{id}:
+    get:
+      tags:
+      - Dispute Explorer
+      summary: Get a Dispute Explorer session
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorerSession'
+webhooks:
+  case.filed:
+    post:
+      summary: A case was filed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Case'
+      responses:
+        '200':
+          description: ack
+  neutral.appointed:
+    post:
+      summary: A neutral was appointed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Case'
+      responses:
+        '200':
+          description: ack
+  hearing.scheduled:
+    post:
+      summary: A hearing was scheduled
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HearingList'
+      responses:
+        '200':
+          description: ack
+  award.signed:
+    post:
+      summary: An award was signed & stamped
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Award'
+      responses:
+        '200':
+          description: ack
+  settlement.paid:
+    post:
+      summary: Settlement funds released
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settlement'
+      responses:
+        '200':
+          description: ack
+  case.closed:
+    post:
+      summary: A case was closed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Case'
+      responses:
+        '200':
+          description: ack
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT (OAuth2/OIDC)
+  schemas:
+    PartyCreate:
+      type: object
+      properties:
+        full_name:
+          type: string
+        dob:
+          type: string
+          format: date
+        mobile:
+          type: string
+        email:
+          type: string
+          format: email
+        party_role:
+          type: string
+          enum:
+          - Claimant
+          - Respondent
+          - Advocate
+          - AuthRep
+        consent_flag:
+          type: boolean
+      required:
+      - full_name
+      - mobile
+      - email
+      - party_role
+      - consent_flag
+    Party:
+      type: object
+      properties:
+        party_id:
+          type: string
+        full_name:
+          type: string
+        role:
+          type: string
+        kyc_status:
+          type: string
+          enum:
+          - pending
+          - verified
+    KycSubmit:
+      type: object
+      properties:
+        id_type:
+          type: string
+          enum:
+          - Aadhaar
+          - PAN
+          - Passport
+          - VoterID
+          - DL
+        method:
+          type: string
+          enum:
+          - VideoKYC
+          - DigiLocker
+          - Manual
+      required:
+      - id_type
+      - method
+    EntityCreate:
+      type: object
+      properties:
+        legal_name:
+          type: string
+        entity_type:
+          type: string
+          enum:
+          - PrivateLtd
+          - PublicLtd
+          - LLP
+          - NBFC
+          - Bank
+          - UCB
+          - Partnership
+          - Proprietor
+        pan:
+          type: string
+        gstin:
+          type: string
+        signatory_name:
+          type: string
+      required:
+      - legal_name
+      - entity_type
+      - pan
+    Entity:
+      type: object
+      properties:
+        entity_id:
+          type: string
+        legal_name:
+          type: string
+        entity_type:
+          type: string
+    CaseCreate:
+      type: object
+      properties:
+        claimant_ids:
+          type: array
+          items:
+            type: string
+        respondent_ids:
+          type: array
+          items:
+            type: string
+        pillar:
+          type: string
+          enum:
+          - Family
+          - NBFC
+          - Commercial
+          - MSME
+          - Grievance
+          - POSH
+          - Consumer
+          - Securities
+          - International
+        mechanism:
+          type: string
+          enum:
+          - Negotiation
+          - Conciliation
+          - Mediation
+          - Arbitration
+        claim_value:
+          type: number
+        currency:
+          type: string
+          enum:
+          - INR
+          - USD
+          - EUR
+          - GBP
+        facts:
+          type: string
+        reliefs:
+          type: string
+        clause_ref:
+          type: string
+        consent_flag:
+          type: boolean
+        explorer_session_id:
+          type: string
+      required:
+      - claimant_ids
+      - respondent_ids
+      - pillar
+      - mechanism
+      - facts
+      - reliefs
+      - consent_flag
+    Case:
+      type: object
+      properties:
+        case_id:
+          type: string
+        pillar:
+          type: string
+        mechanism:
+          type: string
+        status:
+          type: string
+        confidentiality_tier:
+          type: string
+        ruleset_version_id:
+          type: string
+        filed_at:
+          type: string
+          format: date-time
+    CaseList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Case'
+        next_cursor:
+          type: string
+    CaseStatus:
+      type: object
+      properties:
+        case_id:
+          type: string
+        status:
+          type: string
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              state:
+                type: string
+              at:
+                type: string
+                format: date-time
+              note:
+                type: string
+        clocks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              due_at:
+                type: string
+                format: date-time
+              state:
+                type: string
+                enum:
+                - green
+                - amber
+                - red
+    ResponseCreate:
+      type: object
+      properties:
+        reply:
+          type: string
+        counter_claims:
+          type: string
+        consent_flag:
+          type: boolean
+      required:
+      - reply
+      - consent_flag
+    EscalationCreate:
+      type: object
+      properties:
+        source_system:
+          type: string
+        ticket_ref:
+          type: string
+        party_consent_ref:
+          type: string
+        pillar:
+          type: string
+        payload:
+          type: object
+          properties: {}
+        confidentiality_tier:
+          type: string
+          enum:
+          - Standard
+          - High
+          - POSH
+        callback:
+          type: string
+          format: uri
+      required:
+      - source_system
+      - ticket_ref
+      - party_consent_ref
+      - pillar
+      - callback
+    Escalation:
+      type: object
+      properties:
+        escalation_id:
+          type: string
+        case_id:
+          type: string
+        status:
+          type: string
+    Document:
+      type: object
+      properties:
+        document_id:
+          type: string
+        kind:
+          type: string
+        sha256:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    HearingList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              hearing_id:
+                type: string
+              datetime:
+                type: string
+                format: date-time
+              mode:
+                type: string
+                enum:
+                - Video
+                - Audio
+                - In-person
+    JoinToken:
+      type: object
+      properties:
+        token:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+        liveness_required:
+          type: boolean
+    Settlement:
+      type: object
+      properties:
+        settlement_id:
+          type: string
+        case_id:
+          type: string
+        terms:
+          type: string
+        signed:
+          type: boolean
+        stamped:
+          type: boolean
+        enforceable_basis:
+          type: string
+          example: s.27 Mediation Act 2023
+    Award:
+      type: object
+      properties:
+        award_id:
+          type: string
+        case_id:
+          type: string
+        signed:
+          type: boolean
+        enforceable_basis:
+          type: string
+          example: s.36 A&C Act 1996
+        s29a_due_at:
+          type: string
+          format: date-time
+    ExecutionBundle:
+      type: object
+      properties:
+        bundle_id:
+          type: string
+        case_id:
+          type: string
+        items:
+          type: array
+          items:
+            type: string
+        format:
+          type: string
+          example: e-Courts-compatible
+        generated_at:
+          type: string
+          format: date-time
+    InvoiceCreate:
+      type: object
+      properties:
+        case_id:
+          type: string
+        rate_card_id:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+      required:
+      - case_id
+      - amount
+    Invoice:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        amount:
+          type: number
+        status:
+          type: string
+    PaymentCreate:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        rail:
+          type: string
+          enum:
+          - Razorpay
+          - PayPal
+      required:
+      - invoice_id
+      - rail
+    Payment:
+      type: object
+      properties:
+        payment_id:
+          type: string
+        rail:
+          type: string
+        status:
+          type: string
+        redirect_url:
+          type: string
+          format: uri
+    Payout:
+      type: object
+      properties:
+        payout_id:
+          type: string
+        neutral_id:
+          type: string
+        amount:
+          type: number
+        rail:
+          type: string
+        status:
+          type: string
+    ExplorerCreate:
+      type: object
+      properties:
+        description:
+          type: string
+        document_id:
+          type: string
+        consent_flag:
+          type: boolean
+      required:
+      - description
+      - consent_flag
+    ExplorerSession:
+      type: object
+      properties:
+        session_id:
+          type: string
+        category:
+          type: string
+        method:
+          type: string
+        viability:
+          type: string
+          enum:
+          - Weak
+          - Mixed
+          - Reasonable
+          - Strong
+        rationale:
+          type: string
+        disclaimer:
+          type: string
+          example: Informational only; not legal advice.
+        model_ref:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string

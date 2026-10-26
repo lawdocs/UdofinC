@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equator Resolution — Architecture Diagrams</title>
+<style>
+  :root{
+    --navy:#0B2A4A; --teal:#0E7C7B; --accent:#1F6FB2; --light:#EAF2F8; --lighter:#F4F8FB;
+    --ink:#1F2937; --grey:#6B7280; --line:#CFD8E3; --amber:#B45309; --amberbg:#FCE9D8;
+    --green:#0E7C7B; --bg:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:var(--ink);margin:0;background:#eef2f6;}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 60px;}
+  header.top{background:var(--navy);color:#fff;border-radius:14px;padding:26px 30px;margin-bottom:8px;}
+  header.top h1{margin:0 0 4px;font-size:30px;letter-spacing:.5px;}
+  header.top .sub{color:#bfe0e0;font-style:italic;font-size:15px;}
+  header.top .meta{color:#9fb6cc;font-size:12.5px;margin-top:10px;}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin:16px 0 26px;font-size:13.5px;}
+  .toc b{color:var(--navy);}
+  .toc a{color:var(--accent);text-decoration:none;margin-right:6px;}
+  .toc a:hover{text-decoration:underline;}
+  section.diagram{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px 8px;margin-bottom:26px;box-shadow:0 1px 3px rgba(11,42,74,.06);}
+  section.diagram h2{color:var(--navy);font-size:20px;margin:2px 0 2px;border-bottom:3px solid var(--teal);padding-bottom:8px;}
+  section.diagram p.note{color:var(--grey);font-size:13.5px;margin:10px 0 14px;line-height:1.5;}
+  svg{width:100%;height:auto;display:block;}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--grey);margin:6px 4px 14px;}
+  .legend .it{display:flex;align-items:center;gap:6px;}
+  .sw{width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.12);}
+  text{font-family:'Segoe UI',Arial,sans-serif;}
+  .printbtn{position:fixed;right:18px;bottom:18px;background:var(--teal);color:#fff;border:none;border-radius:30px;padding:12px 20px;font-size:14px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2);}
+  @media print{body{background:#fff;} .printbtn,.toc{display:none;} section.diagram{break-inside:avoid;box-shadow:none;border:1px solid #ccc;} header.top{break-after:avoid;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>EQUATOR RESOLUTION</h1>
+    <div class="sub">Where Disputes Find Their Balance — Architecture Diagrams</div>
+    <div class="meta">Online Dispute Resolution Platform · Mediation · Arbitration · Conciliation · Grievance Redressal &nbsp;|&nbsp; v1.0 · June 2026 · Confidential</div>
+  </header>
+
+  <div class="toc">
+    <b>Diagrams:</b>
+    <a href="#d1">1 · System Context</a> ·
+    <a href="#d2">2 · Layered Architecture</a> ·
+    <a href="#d3">3 · Microservices Map</a> ·
+    <a href="#d4">4 · Case Lifecycle</a> ·
+    <a href="#d5">5 · NBFC Escalation Flow</a> ·
+    <a href="#d6">6 · Grievance &amp; POSH Flow</a> ·
+    <a href="#d7">7 · Deployment Topology</a> ·
+    <a href="#d8">8 · Data Model (ERD core)</a>
+  </div>
+
+  <!-- ============ 1. SYSTEM CONTEXT ============ -->
+  <section class="diagram" id="d1">
+    <h2>1 · System Context — Who uses Equator, and what it connects to</h2>
+    <p class="note">The platform (centre) sits between the people who use it (left/right) and the external services it orchestrates (bottom). Two business pathways for companies — external disputes and internal grievance — are both served by one core.</p>
+    <div class="legend">
+      <div class="it"><span class="sw" style="background:#EAF2F8;border-color:#1F6FB2"></span>Demand side (parties)</div>
+      <div class="it"><span class="sw" style="background:#E3F1F0;border-color:#0E7C7B"></span>Supply side (neutrals/ops)</div>
+      <div class="it"><span class="sw" style="background:#0B2A4A"></span>Equator platform</div>
+      <div class="it"><span class="sw" style="background:#F3F4F6;border-color:#9CA3AF"></span>External services</div>
+    </div>
+    <svg viewBox="0 0 1100 560" role="img" aria-label="System context diagram">
+      <title>Equator Resolution system context</title>
+      <!-- center platform -->
+      <rect x="410" y="150" width="280" height="150" rx="14" fill="#0B2A4A"/>
+      <text x="550" y="200" text-anchor="middle" fill="#fff" font-size="22" font-weight="700">Equator Resolution</text>
+      <text x="550" y="226" text-anchor="middle" fill="#bfe0e0" font-size="13">ODR Platform &amp; Institution (EDRS)</text>
+      <text x="550" y="252" text-anchor="middle" fill="#9fb6cc" font-size="12">Multi-tenant · API-first · Config-driven</text>
+      <text x="550" y="276" text-anchor="middle" fill="#9fb6cc" font-size="12">India-first · Global-ready</text>
+
+      <!-- demand actors (left) -->
+      <g font-size="12.5">
+        <rect x="40" y="60" width="200" height="44" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="140" y="87" text-anchor="middle" fill="#0B2A4A">Families / Marital parties</text>
+        <rect x="40" y="120" width="200" height="44" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="140" y="147" text-anchor="middle" fill="#0B2A4A">NBFCs &amp; Borrowers</text>
+        <rect x="40" y="180" width="200" height="44" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="140" y="207" text-anchor="middle" fill="#0B2A4A">Companies (commercial)</text>
+        <rect x="40" y="240" width="200" height="44" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="140" y="262" text-anchor="middle" fill="#0B2A4A">Employees / Staff</text>
+        <text x="140" y="279" text-anchor="middle" fill="#6B7280" font-size="11">(grievance &amp; POSH)</text>
+        <rect x="40" y="300" width="200" height="44" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="140" y="327" text-anchor="middle" fill="#0B2A4A">Counsel / Representatives</text>
+      </g>
+      <!-- supply actors (right) -->
+      <g font-size="12.5">
+        <rect x="860" y="60" width="200" height="44" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="960" y="87" text-anchor="middle" fill="#0B2A4A">Arbitrators</text>
+        <rect x="860" y="120" width="200" height="44" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="960" y="147" text-anchor="middle" fill="#0B2A4A">Mediators / Conciliators</text>
+        <rect x="860" y="180" width="200" height="44" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="960" y="207" text-anchor="middle" fill="#0B2A4A">Case Managers</text>
+        <rect x="860" y="240" width="200" height="44" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="960" y="262" text-anchor="middle" fill="#0B2A4A">Private Courts</text>
+        <text x="960" y="279" text-anchor="middle" fill="#6B7280" font-size="11">(self-managed)</text>
+        <rect x="860" y="300" width="200" height="44" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="960" y="327" text-anchor="middle" fill="#0B2A4A">Academy learners</text>
+      </g>
+      <!-- external services (bottom) -->
+      <g font-size="11.5">
+        <rect x="120" y="430" width="150" height="60" rx="9" fill="#F3F4F6" stroke="#9CA3AF"/><text x="195" y="455" text-anchor="middle" fill="#374151">KYC / KYB</text><text x="195" y="472" text-anchor="middle" fill="#6B7280" font-size="10.5">Aadhaar · DigiLocker</text>
+        <rect x="285" y="430" width="150" height="60" rx="9" fill="#F3F4F6" stroke="#9CA3AF"/><text x="360" y="455" text-anchor="middle" fill="#374151">e-Sign / e-Stamp</text><text x="360" y="472" text-anchor="middle" fill="#6B7280" font-size="10.5">eMudhra · SHCIL</text>
+        <rect x="450" y="430" width="150" height="60" rx="9" fill="#F3F4F6" stroke="#9CA3AF"/><text x="525" y="455" text-anchor="middle" fill="#374151">Payments</text><text x="525" y="472" text-anchor="middle" fill="#6B7280" font-size="10.5">UPI · Cards · Escrow</text>
+        <rect x="615" y="430" width="150" height="60" rx="9" fill="#F3F4F6" stroke="#9CA3AF"/><text x="690" y="455" text-anchor="middle" fill="#374151">Video / Comms</text><text x="690" y="472" text-anchor="middle" fill="#6B7280" font-size="10.5">WebRTC · WhatsApp</text>
+        <rect x="780" y="430" width="180" height="60" rx="9" fill="#F3F4F6" stroke="#9CA3AF"/><text x="870" y="452" text-anchor="middle" fill="#374151">Regulator / Gov</text><text x="870" y="469" text-anchor="middle" fill="#6B7280" font-size="10.5">SEBI SMART ODR · RBI</text><text x="870" y="483" text-anchor="middle" fill="#6B7280" font-size="10.5">SHe-Box · e-Daakhil</text>
+      </g>
+      <!-- connectors -->
+      <g stroke="#1F6FB2" stroke-width="1.6" fill="none" opacity=".7">
+        <path d="M240 82 H410"/><path d="M240 142 H410 M240 142 L410 175"/><path d="M240 202 H410"/><path d="M240 262 L410 235"/><path d="M240 322 L410 260"/>
+      </g>
+      <g stroke="#0E7C7B" stroke-width="1.6" fill="none" opacity=".7">
+        <path d="M860 82 H690"/><path d="M860 142 H690 M860 142 L690 175"/><path d="M860 202 H690"/><path d="M860 262 L690 235"/><path d="M860 322 L690 260"/>
+      </g>
+      <g stroke="#9CA3AF" stroke-width="1.4" fill="none" opacity=".7" stroke-dasharray="4 3">
+        <path d="M195 430 L470 300"/><path d="M360 430 L500 300"/><path d="M525 430 V300"/><path d="M690 430 L610 300"/><path d="M870 430 L640 300"/>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ============ 2. LAYERED ARCHITECTURE ============ -->
+  <section class="diagram" id="d2">
+    <h2>2 · Layered Architecture — From channels to data</h2>
+    <p class="note">A thin channel layer over an API gateway, fronting domain services grouped by the case lifecycle, all standing on shared platform services and a configuration plane. Read top to bottom.</p>
+    <svg viewBox="0 0 1100 640" role="img" aria-label="Layered architecture">
+      <title>Layered architecture</title>
+      <!-- Channels -->
+      <rect x="30" y="20" width="1040" height="78" rx="10" fill="#EAF2F8" stroke="#1F6FB2"/>
+      <text x="48" y="44" fill="#0B2A4A" font-size="14" font-weight="700">CHANNELS</text>
+      <g font-size="12">
+        <rect x="60" y="54" width="150" height="34" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="135" y="76" text-anchor="middle">Party Web Portal</text>
+        <rect x="225" y="54" width="150" height="34" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="300" y="76" text-anchor="middle">Neutral Workspace</text>
+        <rect x="390" y="54" width="160" height="34" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="470" y="76" text-anchor="middle">Case Manager Console</text>
+        <rect x="565" y="54" width="160" height="34" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="645" y="76" text-anchor="middle">Enterprise Admin</text>
+        <rect x="740" y="54" width="120" height="34" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="800" y="76" text-anchor="middle">Academy LMS</text>
+        <rect x="875" y="54" width="175" height="34" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="962" y="76" text-anchor="middle">Mobile · Embeds · API</text>
+      </g>
+      <!-- gateway -->
+      <rect x="30" y="112" width="1040" height="46" rx="10" fill="#0B2A4A"/>
+      <text x="550" y="140" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">API GATEWAY &nbsp;·&nbsp; AuthN/Z &nbsp;·&nbsp; Rate limiting &nbsp;·&nbsp; Schema validation &nbsp;·&nbsp; Routing</text>
+      <!-- domain services -->
+      <rect x="30" y="172" width="1040" height="190" rx="10" fill="#F4F8FB" stroke="#0E7C7B"/>
+      <text x="48" y="196" fill="#0B2A4A" font-size="14" font-weight="700">DOMAIN SERVICES (case lifecycle)</text>
+      <g font-size="11.5">
+        <rect x="55" y="208" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="130" y="232" text-anchor="middle">Onboarding / KYC</text>
+        <rect x="215" y="208" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="290" y="232" text-anchor="middle">Intake &amp; Clauses</text>
+        <rect x="375" y="208" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="450" y="232" text-anchor="middle">Case Core</text>
+        <rect x="535" y="208" width="160" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="615" y="232" text-anchor="middle">Allocation &amp; Panels</text>
+        <rect x="705" y="208" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="780" y="232" text-anchor="middle">Hearings</text>
+        <rect x="865" y="208" width="180" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="955" y="232" text-anchor="middle">Documents &amp; Evidence</text>
+        <rect x="55" y="258" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="130" y="282" text-anchor="middle">Mediation</text>
+        <rect x="215" y="258" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="290" y="282" text-anchor="middle">Arbitration</text>
+        <rect x="375" y="258" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="450" y="282" text-anchor="middle">Conciliation</text>
+        <rect x="535" y="258" width="160" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="615" y="282" text-anchor="middle">Grievance &amp; POSH</text>
+        <rect x="705" y="258" width="150" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="780" y="282" text-anchor="middle">e-Sign / e-Stamp</text>
+        <rect x="865" y="258" width="180" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="955" y="282" text-anchor="middle">Academy (LMS)</text>
+        <rect x="55" y="308" width="230" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="170" y="332" text-anchor="middle">Billing · Payments · Payouts</text>
+        <rect x="295" y="308" width="230" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="410" y="332" text-anchor="middle">Notifications &amp; Comms</text>
+        <rect x="535" y="308" width="230" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="650" y="332" text-anchor="middle">AI / ML (advisory only)</text>
+        <rect x="775" y="308" width="270" height="40" rx="7" fill="#E3F1F0" stroke="#0E7C7B"/><text x="910" y="332" text-anchor="middle">Audit · Compliance · Reporting</text>
+      </g>
+      <!-- platform services -->
+      <rect x="30" y="376" width="1040" height="86" rx="10" fill="#EAF2F8" stroke="#1F6FB2"/>
+      <text x="48" y="400" fill="#0B2A4A" font-size="14" font-weight="700">PLATFORM / SHARED SERVICES</text>
+      <g font-size="11.5">
+        <rect x="55" y="412" width="170" height="38" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="140" y="435" text-anchor="middle">Identity &amp; Access (IAM)</text>
+        <rect x="235" y="412" width="150" height="38" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="310" y="435" text-anchor="middle">Event Bus (Kafka)</text>
+        <rect x="395" y="412" width="150" height="38" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="470" y="435" text-anchor="middle">Search</text>
+        <rect x="555" y="412" width="150" height="38" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="630" y="435" text-anchor="middle">Cache (Redis)</text>
+        <rect x="715" y="412" width="150" height="38" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="790" y="435" text-anchor="middle">Secrets / KMS</text>
+        <rect x="875" y="412" width="170" height="38" rx="7" fill="#fff" stroke="#1F6FB2"/><text x="960" y="435" text-anchor="middle">Object Storage / CDN</text>
+      </g>
+      <!-- config + data -->
+      <rect x="30" y="476" width="510" height="140" rx="10" fill="#FFF7ED" stroke="#B45309"/>
+      <text x="48" y="500" fill="#B45309" font-size="14" font-weight="700">CONFIGURATION PLANE</text>
+      <g font-size="11.5">
+        <rect x="50" y="512" width="225" height="36" rx="7" fill="#fff" stroke="#B45309"/><text x="162" y="534" text-anchor="middle">Rulesets (timelines, panels)</text>
+        <rect x="285" y="512" width="235" height="36" rx="7" fill="#fff" stroke="#B45309"/><text x="402" y="534" text-anchor="middle">Templates &amp; Clause Library</text>
+        <rect x="50" y="556" width="225" height="36" rx="7" fill="#fff" stroke="#B45309"/><text x="162" y="578" text-anchor="middle">Fee Schedules</text>
+        <rect x="285" y="556" width="235" height="36" rx="7" fill="#fff" stroke="#B45309"/><text x="402" y="578" text-anchor="middle">Jurisdictions / Tenants</text>
+      </g>
+      <rect x="560" y="476" width="510" height="140" rx="10" fill="#0B2A4A"/>
+      <text x="578" y="500" fill="#fff" font-size="14" font-weight="700">DATA STORES</text>
+      <g font-size="11.5" fill="#0B2A4A">
+        <rect x="580" y="512" width="150" height="36" rx="7" fill="#E3F1F0"/><text x="655" y="534" text-anchor="middle">PostgreSQL</text>
+        <rect x="740" y="512" width="150" height="36" rx="7" fill="#E3F1F0"/><text x="815" y="534" text-anchor="middle">Object store</text>
+        <rect x="900" y="512" width="150" height="36" rx="7" fill="#E3F1F0"/><text x="975" y="534" text-anchor="middle">Warehouse</text>
+        <rect x="580" y="556" width="150" height="36" rx="7" fill="#E3F1F0"/><text x="655" y="578" text-anchor="middle">Search index</text>
+        <rect x="740" y="556" width="150" height="36" rx="7" fill="#E3F1F0"/><text x="815" y="578" text-anchor="middle">Redis</text>
+        <rect x="900" y="556" width="150" height="36" rx="7" fill="#E3F1F0"/><text x="975" y="578" text-anchor="middle">Audit (WORM)</text>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ============ 3. MICROSERVICES MAP ============ -->
+  <section class="diagram" id="d3">
+    <h2>3 · Microservices &amp; Event Flow</h2>
+    <p class="note">Each service owns its data and talks to others via the event bus. The audit service is a pure consumer of every event. A representative slice is shown.</p>
+    <svg viewBox="0 0 1100 470" role="img" aria-label="Microservices map">
+      <title>Microservices and events</title>
+      <!-- event bus spine -->
+      <rect x="120" y="215" width="860" height="40" rx="8" fill="#0B2A4A"/>
+      <text x="550" y="240" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">EVENT BUS — domain events (CaseFiled, NeutralAppointed, AwardSigned, GrievanceEscalated …)</text>
+      <!-- top services -->
+      <g font-size="11.5">
+        <rect x="120" y="60" width="135" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="187" y="82" text-anchor="middle">intake-svc</text><text x="187" y="98" text-anchor="middle" fill="#6B7280" font-size="10">CaseFiled</text>
+        <rect x="280" y="60" width="135" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="347" y="82" text-anchor="middle">case-svc</text><text x="347" y="98" text-anchor="middle" fill="#6B7280" font-size="10">StateChanged</text>
+        <rect x="440" y="60" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="515" y="82" text-anchor="middle">allocation-svc</text><text x="515" y="98" text-anchor="middle" fill="#6B7280" font-size="10">NeutralAppointed</text>
+        <rect x="615" y="60" width="135" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="682" y="82" text-anchor="middle">hearing-svc</text><text x="682" y="98" text-anchor="middle" fill="#6B7280" font-size="10">HearingHeld</text>
+        <rect x="775" y="60" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="850" y="82" text-anchor="middle">document-svc</text><text x="850" y="98" text-anchor="middle" fill="#6B7280" font-size="10">DocUploaded</text>
+      </g>
+      <!-- bottom services -->
+      <g font-size="11.5">
+        <rect x="120" y="360" width="135" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="187" y="382" text-anchor="middle">mediation-svc</text><text x="187" y="398" text-anchor="middle" fill="#6B7280" font-size="10">MSAGenerated</text>
+        <rect x="280" y="360" width="135" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="347" y="382" text-anchor="middle">arbitration-svc</text><text x="347" y="398" text-anchor="middle" fill="#6B7280" font-size="10">AwardSigned</text>
+        <rect x="440" y="360" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="515" y="382" text-anchor="middle">grievance-svc</text><text x="515" y="398" text-anchor="middle" fill="#6B7280" font-size="10">EscalatedToEDRS</text>
+        <rect x="615" y="360" width="135" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="682" y="382" text-anchor="middle">billing-svc</text><text x="682" y="398" text-anchor="middle" fill="#6B7280" font-size="10">PaymentCaptured</text>
+        <rect x="775" y="360" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="850" y="382" text-anchor="middle">notify-svc</text><text x="850" y="398" text-anchor="middle" fill="#6B7280" font-size="10">NotificationSent</text>
+      </g>
+      <!-- side: audit & config & ai -->
+      <rect x="955" y="120" width="120" height="50" rx="8" fill="#FFF7ED" stroke="#B45309"/><text x="1015" y="142" text-anchor="middle" font-size="11.5">config-svc</text><text x="1015" y="158" text-anchor="middle" fill="#6B7280" font-size="10">rulesets</text>
+      <rect x="955" y="300" width="120" height="50" rx="8" fill="#FFF7ED" stroke="#B45309"/><text x="1015" y="322" text-anchor="middle" font-size="11.5">audit-svc</text><text x="1015" y="338" text-anchor="middle" fill="#6B7280" font-size="10">consumes all</text>
+      <rect x="25" y="120" width="120" height="50" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="85" y="142" text-anchor="middle" font-size="11.5">identity-svc</text><text x="85" y="158" text-anchor="middle" fill="#6B7280" font-size="10">RBAC/ABAC</text>
+      <rect x="25" y="300" width="120" height="50" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="85" y="322" text-anchor="middle" font-size="11.5">ai-svc</text><text x="85" y="338" text-anchor="middle" fill="#6B7280" font-size="10">advisory</text>
+      <!-- connectors to bus -->
+      <g stroke="#0E7C7B" stroke-width="1.5" fill="none" opacity=".65">
+        <path d="M187 110 V215"/><path d="M347 110 V215"/><path d="M515 110 V215"/><path d="M682 110 V215"/><path d="M850 110 V215"/>
+        <path d="M187 360 V255"/><path d="M347 360 V255"/><path d="M515 360 V255"/><path d="M682 360 V255"/><path d="M850 360 V255"/>
+      </g>
+      <g stroke="#B45309" stroke-width="1.5" fill="none" opacity=".7" stroke-dasharray="4 3">
+        <path d="M1015 170 V215"/><path d="M1015 300 V255"/>
+      </g>
+      <g stroke="#1F6FB2" stroke-width="1.5" fill="none" opacity=".7" stroke-dasharray="4 3">
+        <path d="M145 145 H120 M132 145 V215"/><path d="M145 325 H120 M132 325 V255"/>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ============ 4. CASE LIFECYCLE ============ -->
+  <section class="diagram" id="d4">
+    <h2>4 · Case Lifecycle State Machine</h2>
+    <p class="note">One configurable state machine drives every pillar; each pillar's pathway selects which states and timers apply. Green = resolved, amber = unresolved/escalated.</p>
+    <div class="legend">
+      <div class="it"><span class="sw" style="background:#EAF2F8;border-color:#1F6FB2"></span>In-progress states</div>
+      <div class="it"><span class="sw" style="background:#E3F1F0;border-color:#0E7C7B"></span>Resolved</div>
+      <div class="it"><span class="sw" style="background:#FCE9D8;border-color:#B45309"></span>Unresolved / escalated</div>
+    </div>
+    <svg viewBox="0 0 1100 360" role="img" aria-label="Case lifecycle">
+      <title>Case lifecycle state machine</title>
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0B2A4A"/></marker></defs>
+      <g font-size="11.5">
+        <rect x="20" y="40" width="110" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="75" y="68" text-anchor="middle">DRAFT</text>
+        <rect x="160" y="40" width="110" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="215" y="68" text-anchor="middle">FILED</text>
+        <rect x="300" y="40" width="120" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="360" y="63" text-anchor="middle">REGISTERED</text><text x="360" y="78" text-anchor="middle" fill="#6B7280" font-size="9.5">clock starts</text>
+        <rect x="450" y="40" width="130" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="515" y="68" text-anchor="middle">NOTICE_SERVED</text>
+        <rect x="610" y="40" width="150" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="685" y="63" text-anchor="middle">NEUTRAL_APPOINTED</text><text x="685" y="78" text-anchor="middle" fill="#6B7280" font-size="9.5">S.29A / 120-day</text>
+        <rect x="790" y="40" width="130" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="855" y="68" text-anchor="middle">IN_RESOLUTION</text>
+      </g>
+      <g font-size="11.5">
+        <rect x="300" y="160" width="150" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="375" y="183" text-anchor="middle">SETTLEMENT_DRAFTED</text><text x="375" y="198" text-anchor="middle" fill="#6B7280" font-size="9.5">(mediation)</text>
+        <rect x="610" y="160" width="150" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="685" y="183" text-anchor="middle">AWARD_DRAFTED</text><text x="685" y="198" text-anchor="middle" fill="#6B7280" font-size="9.5">(arbitration)</text>
+        <rect x="455" y="250" width="150" height="46" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="530" y="273" text-anchor="middle">SIGNED + STAMPED</text>
+        <rect x="200" y="250" width="180" height="46" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="290" y="273" text-anchor="middle">CLOSED_RESOLVED</text>
+        <rect x="680" y="250" width="200" height="46" rx="8" fill="#FCE9D8" stroke="#B45309"/><text x="780" y="270" text-anchor="middle">CLOSED_UNRESOLVED</text><text x="780" y="285" text-anchor="middle" fill="#6B7280" font-size="9.5">withdrawn / escalated</text>
+      </g>
+      <g stroke="#0B2A4A" stroke-width="1.6" fill="none" marker-end="url(#ar)">
+        <path d="M130 63 H156"/><path d="M270 63 H296"/><path d="M420 63 H446"/><path d="M580 63 H606"/><path d="M760 63 H786"/>
+        <path d="M855 86 V120 H375 V156"/>
+        <path d="M855 86 V120 H685 V156"/>
+        <path d="M375 206 V224 H530 V246"/>
+        <path d="M685 206 V224 H530 V246"/>
+        <path d="M455 273 H384"/>
+        <path d="M760 63 H940 V273 H884"/>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ============ 5. NBFC FLOW ============ -->
+  <section class="diagram" id="d5">
+    <h2>5 · NBFC ↔ Borrower Escalation Ladder (SEBI SMART-ODR pattern)</h2>
+    <p class="note">High-volume, clause-driven. Bulk intake feeds a conciliation-first ladder; round-robin allocation to empanelled neutrals; awards/settlements flow to recovery.</p>
+    <svg viewBox="0 0 1100 250" role="img" aria-label="NBFC escalation flow">
+      <title>NBFC escalation flow</title>
+      <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0E7C7B"/></marker></defs>
+      <g font-size="12">
+        <rect x="20" y="90" width="150" height="64" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="95" y="116" text-anchor="middle">Bulk / Clause</text><text x="95" y="134" text-anchor="middle" fill="#6B7280" font-size="10.5">CSV · API intake</text>
+        <rect x="205" y="90" width="160" height="64" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="285" y="110" text-anchor="middle">Nodal Officer</text><text x="285" y="128" text-anchor="middle" fill="#6B7280" font-size="10.5">triage · 30-day SLA</text>
+        <rect x="400" y="90" width="160" height="64" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="480" y="110" text-anchor="middle">Pre-Conciliation</text><text x="480" y="128" text-anchor="middle" fill="#6B7280" font-size="10.5">free window</text>
+        <rect x="595" y="90" width="160" height="64" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="675" y="110" text-anchor="middle">Conciliation</text><text x="675" y="128" text-anchor="middle" fill="#6B7280" font-size="10.5">round-robin neutral</text>
+        <rect x="790" y="60" width="150" height="54" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="865" y="83" text-anchor="middle">Mediation /</text><text x="865" y="100" text-anchor="middle">Arbitration</text>
+        <rect x="790" y="130" width="150" height="54" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="865" y="153" text-anchor="middle">Settlement /</text><text x="865" y="170" text-anchor="middle">Award</text>
+        <rect x="975" y="95" width="105" height="54" rx="9" fill="#0B2A4A"/><text x="1027" y="118" text-anchor="middle" fill="#fff">Recovery</text><text x="1027" y="135" text-anchor="middle" fill="#bfe0e0" font-size="10">execution</text>
+      </g>
+      <g stroke="#0E7C7B" stroke-width="1.7" fill="none" marker-end="url(#ar2)">
+        <path d="M170 122 H201"/><path d="M365 122 H396"/><path d="M560 122 H591"/><path d="M755 110 H786"/><path d="M755 134 H786"/><path d="M940 87 H965 V120 H972"/><path d="M940 157 H958 V120"/>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ============ 6. GRIEVANCE / POSH FLOW ============ -->
+  <section class="diagram" id="d6">
+    <h2>6 · Enterprise Grievance &amp; POSH Flow (SHe-Box pattern)</h2>
+    <p class="note">Single-window intake auto-routes to the Internal Committee; the 90-day POSH clock and strict confidentiality apply; unresolved matters hand off to EDRS for neutral resolution.</p>
+    <svg viewBox="0 0 1100 270" role="img" aria-label="Grievance and POSH flow">
+      <title>Grievance and POSH flow</title>
+      <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1F6FB2"/></marker></defs>
+      <g font-size="12">
+        <rect x="20" y="100" width="160" height="64" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="100" y="126" text-anchor="middle">Employee complaint</text><text x="100" y="144" text-anchor="middle" fill="#6B7280" font-size="10.5">general · POSH</text>
+        <rect x="215" y="100" width="160" height="64" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="295" y="120" text-anchor="middle">Auto-routing</text><text x="295" y="138" text-anchor="middle" fill="#6B7280" font-size="10.5">IC vs LC · category</text>
+        <rect x="410" y="100" width="170" height="64" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/><text x="495" y="120" text-anchor="middle">Internal Committee</text><text x="495" y="138" text-anchor="middle" fill="#6B7280" font-size="10.5">inquiry · 90-day clock</text>
+        <rect x="615" y="40" width="170" height="56" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="700" y="63" text-anchor="middle">IC Report /</text><text x="700" y="80" text-anchor="middle">Recommendation</text>
+        <rect x="615" y="168" width="170" height="56" rx="9" fill="#FCE9D8" stroke="#B45309"/><text x="700" y="191" text-anchor="middle">Escalation to EDRS</text><text x="700" y="208" text-anchor="middle" fill="#6B7280" font-size="10.5">consented hand-off</text>
+        <rect x="820" y="168" width="180" height="56" rx="9" fill="#0B2A4A"/><text x="910" y="191" text-anchor="middle" fill="#fff">Mediation / Arbitration</text><text x="910" y="208" text-anchor="middle" fill="#bfe0e0" font-size="10">(EDRS neutral)</text>
+        <rect x="820" y="40" width="180" height="56" rx="9" fill="#E3F1F0" stroke="#0E7C7B"/><text x="910" y="63" text-anchor="middle">Action &amp; Closure</text><text x="910" y="80" text-anchor="middle" fill="#6B7280" font-size="10.5">annual-report log</text>
+      </g>
+      <g stroke="#1F6FB2" stroke-width="1.7" fill="none" marker-end="url(#ar3)">
+        <path d="M180 132 H211"/><path d="M375 132 H406"/><path d="M580 120 H600 V68 H611"/><path d="M580 144 H600 V196 H611"/><path d="M785 68 H816"/><path d="M785 196 H816"/>
+      </g>
+    </svg>
+  </section>
+
+  <!-- ============ 7. DEPLOYMENT ============ -->
+  <section class="diagram" id="d7">
+    <h2>7 · Deployment Topology (cloud, India-first, multi-AZ)</h2>
+    <p class="note">Primary Indian region with multi-AZ HA; a second Indian region for DR. Public edge (CDN/WAF/gateway) fronts private service and data subnets. Global expansion replicates per residency zone.</p>
+    <svg viewBox="0 0 1100 400" role="img" aria-label="Deployment topology">
+      <title>Deployment topology</title>
+      <!-- region box -->
+      <rect x="20" y="30" width="720" height="350" rx="12" fill="#F4F8FB" stroke="#0E7C7B"/>
+      <text x="40" y="56" fill="#0B2A4A" font-size="14" font-weight="700">Primary Region — India (ap-south)</text>
+      <!-- edge -->
+      <rect x="40" y="70" width="680" height="56" rx="9" fill="#EAF2F8" stroke="#1F6FB2"/>
+      <g font-size="11.5">
+        <text x="60" y="92" fill="#0B2A4A" font-weight="700">EDGE</text>
+        <rect x="120" y="82" width="120" height="34" rx="6" fill="#fff" stroke="#1F6FB2"/><text x="180" y="104" text-anchor="middle">CDN</text>
+        <rect x="255" y="82" width="120" height="34" rx="6" fill="#fff" stroke="#1F6FB2"/><text x="315" y="104" text-anchor="middle">WAF / DDoS</text>
+        <rect x="390" y="82" width="150" height="34" rx="6" fill="#fff" stroke="#1F6FB2"/><text x="465" y="104" text-anchor="middle">API Gateway</text>
+        <rect x="555" y="82" width="145" height="34" rx="6" fill="#fff" stroke="#1F6FB2"/><text x="627" y="104" text-anchor="middle">Load Balancer</text>
+      </g>
+      <!-- AZ1 -->
+      <rect x="40" y="140" width="330" height="220" rx="10" fill="#fff" stroke="#9CA3AF"/>
+      <text x="58" y="162" fill="#0B2A4A" font-size="12.5" font-weight="700">Availability Zone A</text>
+      <rect x="58" y="172" width="294" height="86" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="205" y="194" text-anchor="middle" font-size="11.5" font-weight="700">Kubernetes — service pods</text>
+      <text x="205" y="214" text-anchor="middle" font-size="10.5" fill="#374151">intake · case · allocation · hearing</text>
+      <text x="205" y="230" text-anchor="middle" font-size="10.5" fill="#374151">document · mediation · arbitration</text>
+      <text x="205" y="246" text-anchor="middle" font-size="10.5" fill="#374151">billing · notify · grievance · ai</text>
+      <rect x="58" y="266" width="142" height="80" rx="8" fill="#0B2A4A"/><text x="129" y="300" text-anchor="middle" fill="#fff" font-size="11">PostgreSQL</text><text x="129" y="318" text-anchor="middle" fill="#bfe0e0" font-size="10">primary</text>
+      <rect x="210" y="266" width="142" height="80" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="281" y="300" text-anchor="middle" font-size="11">Redis · Kafka</text><text x="281" y="318" text-anchor="middle" fill="#6B7280" font-size="10">cache · events</text>
+      <!-- AZ2 -->
+      <rect x="390" y="140" width="330" height="220" rx="10" fill="#fff" stroke="#9CA3AF"/>
+      <text x="408" y="162" fill="#0B2A4A" font-size="12.5" font-weight="700">Availability Zone B</text>
+      <rect x="408" y="172" width="294" height="86" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="555" y="194" text-anchor="middle" font-size="11.5" font-weight="700">Kubernetes — service pods</text>
+      <text x="555" y="220" text-anchor="middle" font-size="10.5" fill="#374151">(replicated · autoscaled)</text>
+      <text x="555" y="238" text-anchor="middle" font-size="10.5" fill="#374151">stateless · HPA</text>
+      <rect x="408" y="266" width="142" height="80" rx="8" fill="#0B2A4A"/><text x="479" y="300" text-anchor="middle" fill="#fff" font-size="11">PostgreSQL</text><text x="479" y="318" text-anchor="middle" fill="#bfe0e0" font-size="10">replica</text>
+      <rect x="560" y="266" width="142" height="80" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="631" y="300" text-anchor="middle" font-size="11">Object store</text><text x="631" y="318" text-anchor="middle" fill="#6B7280" font-size="10">+ Search</text>
+      <!-- DR region -->
+      <rect x="770" y="90" width="310" height="170" rx="12" fill="#FFF7ED" stroke="#B45309"/>
+      <text x="790" y="116" fill="#B45309" font-size="13.5" font-weight="700">DR Region (India)</text>
+      <rect x="790" y="128" width="270" height="50" rx="8" fill="#fff" stroke="#B45309"/><text x="925" y="150" text-anchor="middle" font-size="11">Warm standby · async replication</text><text x="925" y="167" text-anchor="middle" font-size="10.5" fill="#6B7280">RPO ≤ 15 min · RTO ≤ 2 h</text>
+      <rect x="790" y="186" width="270" height="56" rx="8" fill="#fff" stroke="#B45309"/><text x="925" y="208" text-anchor="middle" font-size="11">Backups · PITR · DR drills</text><text x="925" y="226" text-anchor="middle" font-size="10.5" fill="#6B7280">tested failover</text>
+      <!-- global note -->
+      <rect x="770" y="280" width="310" height="100" rx="12" fill="#EAF2F8" stroke="#1F6FB2"/>
+      <text x="790" y="304" fill="#0B2A4A" font-size="13" font-weight="700">Global expansion</text>
+      <text x="790" y="326" font-size="11" fill="#374151">Replicate stack per residency zone</text>
+      <text x="790" y="344" font-size="11" fill="#374151">(IN · SG · AE · UK · EU). Route</text>
+      <text x="790" y="362" font-size="11" fill="#374151">tenants to zone; share code, not data.</text>
+      <!-- arrows -->
+      <g stroke="#B45309" stroke-width="1.6" fill="none" stroke-dasharray="5 3"><path d="M620 306 H770"/></g>
+    </svg>
+  </section>
+
+  <!-- ============ 8. ERD ============ -->
+  <section class="diagram" id="d8">
+    <h2>8 · Core Data Model (ERD — central entities)</h2>
+    <p class="note">The relational heart. Full schema (60+ tables, ~190 columns) is in the Forms &amp; Database Specification. Crow's-foot lines show one-to-many (fork) relationships.</p>
+    <svg viewBox="0 0 1100 470" role="img" aria-label="Entity relationship diagram">
+      <title>Core ERD</title>
+      <g font-size="11.5">
+        <!-- tenants -->
+        <rect x="470" y="20" width="160" height="62" rx="8" fill="#0B2A4A"/><text x="550" y="44" text-anchor="middle" fill="#fff" font-weight="700">tenants</text><text x="550" y="62" text-anchor="middle" fill="#bfe0e0" font-size="10">EDRS · Private Court · Enterprise</text>
+        <!-- users -->
+        <rect x="40" y="200" width="150" height="70" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="115" y="224" text-anchor="middle" font-weight="700">users</text><text x="115" y="242" text-anchor="middle" fill="#6B7280" font-size="10">party · neutral ·</text><text x="115" y="256" text-anchor="middle" fill="#6B7280" font-size="10">case mgr · staff</text>
+        <!-- neutrals -->
+        <rect x="40" y="330" width="150" height="62" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="115" y="354" text-anchor="middle" font-weight="700">neutrals</text><text x="115" y="372" text-anchor="middle" fill="#6B7280" font-size="10">empanelment</text>
+        <!-- cases -->
+        <rect x="470" y="200" width="170" height="80" rx="8" fill="#1F6FB2"/><text x="555" y="226" text-anchor="middle" fill="#fff" font-weight="700">cases</text><text x="555" y="244" text-anchor="middle" fill="#dbeafe" font-size="10">pillar · mechanism</text><text x="555" y="260" text-anchor="middle" fill="#dbeafe" font-size="10">status · tier · ruleset</text>
+        <!-- parties -->
+        <rect x="270" y="330" width="150" height="56" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="345" y="354" text-anchor="middle" font-weight="700">parties</text><text x="345" y="371" text-anchor="middle" fill="#6B7280" font-size="10">claimant/respondent</text>
+        <!-- assignments -->
+        <rect x="270" y="410" width="150" height="48" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="345" y="432" text-anchor="middle" font-weight="700">assignments</text><text x="345" y="448" text-anchor="middle" fill="#6B7280" font-size="10">neutral ↔ case</text>
+        <!-- hearings / documents / awards / settlements -->
+        <rect x="700" y="120" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="775" y="142" text-anchor="middle" font-weight="700">hearings</text><text x="775" y="158" text-anchor="middle" fill="#6B7280" font-size="10">+ attendances</text>
+        <rect x="700" y="200" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="775" y="222" text-anchor="middle" font-weight="700">documents</text><text x="775" y="238" text-anchor="middle" fill="#6B7280" font-size="10">+ versions</text>
+        <rect x="700" y="280" width="150" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="775" y="302" text-anchor="middle" font-weight="700">awards</text><text x="775" y="318" text-anchor="middle" fill="#6B7280" font-size="10">arbitration</text>
+        <rect x="900" y="240" width="160" height="50" rx="8" fill="#E3F1F0" stroke="#0E7C7B"/><text x="980" y="262" text-anchor="middle" font-weight="700">settlements / MSA</text><text x="980" y="278" text-anchor="middle" fill="#6B7280" font-size="10">mediation</text>
+        <!-- grievances -->
+        <rect x="470" y="330" width="170" height="62" rx="8" fill="#FCE9D8" stroke="#B45309"/><text x="555" y="354" text-anchor="middle" font-weight="700">grievances</text><text x="555" y="372" text-anchor="middle" fill="#6B7280" font-size="10">+ ic_committees · escalations</text>
+        <!-- invoices -->
+        <rect x="900" y="140" width="160" height="50" rx="8" fill="#EAF2F8" stroke="#1F6FB2"/><text x="980" y="162" text-anchor="middle" font-weight="700">invoices</text><text x="980" y="178" text-anchor="middle" fill="#6B7280" font-size="10">+ payments</text>
+        <!-- rulesets -->
+        <rect x="270" y="200" width="150" height="56" rx="8" fill="#FFF7ED" stroke="#B45309"/><text x="345" y="224" text-anchor="middle" font-weight="700">rulesets</text><text x="345" y="241" text-anchor="middle" fill="#6B7280" font-size="10">+ templates · fees</text>
+      </g>
+      <!-- relationships (crow's foot simplified as fork) -->
+      <g stroke="#0B2A4A" stroke-width="1.5" fill="none" opacity=".75">
+        <path d="M550 82 V200"/>            <!-- tenants->cases -->
+        <path d="M470 240 H190"/>           <!-- users->cases created_by (approx) -->
+        <path d="M115 270 V330"/>           <!-- users->neutrals -->
+        <path d="M470 250 H420 V340"/>      <!-- cases->parties -->
+        <path d="M345 386 V410"/>           <!-- parties context (assignments near) -->
+        <path d="M470 260 H440 V434 H420"/> <!-- cases->assignments -->
+        <path d="M190 360 H260 M260 360 V434 H270"/> <!-- neutrals->assignments -->
+        <path d="M640 220 H700"/>           <!-- cases->documents -->
+        <path d="M640 210 H672 V145 H700"/> <!-- cases->hearings -->
+        <path d="M640 250 H668 V305 H700"/> <!-- cases->awards -->
+        <path d="M850 305 H880 V265 H900"/> <!-- awards-> settlements region (approx) -->
+        <path d="M555 280 V330"/>           <!-- cases->grievances (escalation) -->
+        <path d="M420 228 H470"/>           <!-- rulesets->cases -->
+        <path d="M640 230 H860 V165 H900"/> <!-- cases->invoices -->
+      </g>
+    </svg>
+  </section>
+
+</div>
+<button class="printbtn" onclick="window.print()">Print / Save as PDF</button>
+</body>
+</html>

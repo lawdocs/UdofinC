@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Insurance Dispute Explorer (Prototype)</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8;}
+ *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI","Nirmala UI",Calibri,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:16px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:18px} header .tag{color:#CADCEA;font-size:12.5px;font-style:italic;flex:1}
+ .lang{background:#17485E;border-radius:20px;padding:4px;display:flex;gap:2px}
+ .lang button{background:transparent;color:#CADCEA;border:0;border-radius:18px;padding:6px 14px;font-size:13px;cursor:pointer}
+ .lang button.on{background:var(--gold);color:#20303a;font-weight:700}
+ .wrap{max-width:940px;margin:0 auto;padding:22px 18px 90px}
+ .prog{height:8px;background:#dfe7ea;border-radius:6px;overflow:hidden;margin:6px 0 20px}
+ .prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:12%;transition:.3s}
+ .step{background:#fff;border:1px solid #e2e8eb;border-radius:14px;padding:24px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ h1{font-size:22px;margin:.1em 0 .2em;color:var(--navy)} .sub{color:var(--grey);font-size:14px;margin-bottom:16px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+ .opt{border:1.5px solid #d7e0e4;border-radius:10px;padding:14px;cursor:pointer;background:#fff;font-size:14.5px}
+ .opt:hover{border-color:var(--teal);background:#f7fbfc}.opt.sel{border-color:var(--teal);background:var(--ltteal);box-shadow:inset 0 0 0 1px var(--teal)}
+ .opt small{display:block;color:var(--grey);font-size:12px;margin-top:4px}
+ .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:9px 15px;margin:5px 6px 0 0;cursor:pointer;font-size:14px;background:#fff}
+ .chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+ label.f{display:block;font-size:12.5px;color:var(--navy);font-weight:600;margin:12px 0 4px}
+ select,input,textarea{padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px;font-family:inherit}
+ select,input{min-width:190px}textarea{width:100%;min-height:80px}
+ .nav{display:flex;justify-content:space-between;margin-top:22px;gap:10px}
+ button{border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}
+ .primary{background:var(--teal);color:#fff}.ghost{background:#eaf0f2;color:var(--navy)}
+ .banner{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:14px;line-height:1.5}
+ .b-red{background:#F6E0E4;border-left:5px solid var(--red)}.b-gold{background:var(--lgold);border-left:5px solid var(--gold)}
+ .b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}.b-green{background:#DCEEE4;border-left:5px solid var(--green)}
+ .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:16px 18px;margin:12px 0;background:#fff}
+ .sumcard h3{margin:.1em 0 .5em;color:var(--navy);font-size:16px}
+ .kv{font-size:14px;margin:5px 0}.kv b{color:var(--navy)}
+ .muted{color:var(--grey);font-size:12.5px}
+ .pill{display:inline-block;background:var(--ltteal);color:var(--navy);border-radius:20px;padding:4px 11px;margin:3px 4px 0 0;font-size:12.5px}
+ table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+ th{background:var(--navy);color:#fff;text-align:left;padding:8px 10px;font-weight:600}
+ td{padding:8px 10px;border-bottom:1px solid #e6ecee;vertical-align:top}
+ tr:nth-child(even) td{background:#f7fafb}
+ .yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}
+ a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700;margin-top:8px}
+ .disc{font-size:11.5px;color:var(--grey);margin-top:18px;line-height:1.5}
+ #aiBtn{position:fixed;right:20px;bottom:20px;background:var(--gold);color:#20303a;border-radius:30px;padding:13px 20px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:40}
+ #aiPanel{position:fixed;right:20px;bottom:78px;width:min(430px,92vw);max-height:74vh;background:#fff;border:1px solid #d7e0e4;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:none;flex-direction:column;z-index:41;overflow:hidden}
+ #aiPanel.open{display:flex}
+ #aiPanel .hd{background:var(--navy);color:#fff;padding:12px 16px;font-weight:700;display:flex;justify-content:space-between}
+ #aiLog{padding:12px 14px;overflow:auto;flex:1;font-size:14px}
+ .msg{margin:8px 0;padding:10px 12px;border-radius:10px;line-height:1.5}.msg.ai{background:var(--ltteal)}.msg.me{background:#eef3f5;text-align:right}
+ #aiChips{padding:6px 12px;border-top:1px solid #eee;max-height:130px;overflow:auto}
+ #aiForm{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #eee}#aiForm input{flex:1;min-width:0}
+ .modal{position:fixed;inset:0;background:rgba(10,25,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+ .modal.open{display:flex}.modal .box{background:#fff;border-radius:14px;max-width:800px;width:100%;max-height:86vh;overflow:auto;padding:22px}
+ pre{white-space:pre-wrap;font-family:Consolas,monospace;font-size:12.5px;background:#f7fafb;padding:14px;border-radius:8px;border:1px solid #e6ecee}
+</style></head><body>
+<header>
+ <span class="brand">EQUATOR RESOLUTION</span>
+ <span class="tag" id="hdTag">Insurance Dispute Explorer — your route, your rights, your deadlines</span>
+ <span class="lang"><button id="lEN" class="on" onclick="setLang('en')">English</button><button id="lHI" onclick="setLang('hi')">हिंदी</button></span>
+</header>
+<div class="wrap"><div class="prog"><i id="bar"></i></div><div id="app"></div></div>
+<button id="aiBtn" onclick="toggleAI()">💬 <span id="aiBtnTxt">Ask Equator AI</span></button>
+<div id="aiPanel">
+ <div class="hd"><span id="aiTitle">Equator AI assistant</span><span style="cursor:pointer" onclick="toggleAI()">✕</span></div>
+ <div id="aiLog"></div><div id="aiChips"></div>
+ <form id="aiForm" onsubmit="return askFree(event)"><input id="aiInput" placeholder="Type a question…" autocomplete="off"/><button class="primary" type="submit">Ask</button></form>
+</div>
+<div class="modal" id="draftModal"><div class="box" id="draftBox"></div></div>
+
+<script>
+/* ============================ i18n ============================ */
+var LANG='en';
+var T={
+ en:{
+  tag:"Insurance Dispute Explorer — your route, your rights, your deadlines",
+  aiBtn:"Ask Equator AI", aiTitle:"Equator AI assistant",
+  back:"Back", next:"Continue", restart:"Start again", print:"Print / save",
+  s1h:"What kind of policy is this?",
+  s1s:"This one answer decides everything else. Retail policies and business policies follow completely different routes.",
+  s2h:"What is the dispute about?",
+  s2s:"Choose all that apply.",
+  s3h:"What did the insurer say?",
+  s3s:"Tick the grounds actually stated in the insurer's letter. Leave blank if no reasons were given.",
+  s4h:"The dates and the amount",
+  s4s:"These decide which forums are open to you and by when you must act. Give your best estimate if unsure.",
+  s5h:"Where you stand",
+  s5s:"Your routes, your deadlines, and what to do next.",
+  q_line:"Line of business", q_amt:"Amount in dispute (₹)",
+  q_loss:"Date of the loss / event", q_letter:"Date of the insurer's letter",
+  q_rep:"Date you complained to the insurer in writing (blank if you have not)",
+  q_reply:"Date of the insurer's reply (blank if none)",
+  q_outcome:"The insurer's reply was…", q_pending:"Is the same matter already filed in a court, consumer commission or arbitration?",
+  ombElig:"Insurance Ombudsman — eligibility", conds:"Condition", res:"Position", ok:"Open?",
+  clocks:"Your deadlines", clock:"Deadline", expiry:"Last date to act", left:"Days left",
+  routes:"Your routes", next3:"What to do next",
+  disc:"Equator Resolution is a private dispute-resolution institution. It is not the Insurance Ombudsman, IRDAI, a consumer commission or a court. This tool explains options and deadlines. It does not give legal advice, does not assess whether a claim will succeed, and does not estimate what a claim is worth. Using Equator does not affect your right to approach the Insurance Ombudsman, a consumer commission or a court, and does not extend any limitation or filing period. Law stated as at July 2026."
+ },
+ hi:{
+  tag:"बीमा विवाद एक्सप्लोरर — आपका रास्ता, आपके अधिकार, आपकी समय-सीमाएँ",
+  aiBtn:"इक्वेटर AI से पूछें", aiTitle:"इक्वेटर AI सहायक",
+  back:"पीछे", next:"आगे", restart:"फिर से शुरू करें", print:"प्रिंट / सेव",
+  s1h:"यह किस प्रकार की पॉलिसी है?",
+  s1s:"यही एक उत्तर बाकी सब तय करता है। रिटेल और व्यावसायिक पॉलिसियों के रास्ते पूरी तरह अलग हैं।",
+  s2h:"विवाद किस बारे में है?",
+  s2s:"जो भी लागू हों, सब चुनें।",
+  s3h:"बीमा कंपनी ने क्या कहा?",
+  s3s:"बीमा कंपनी के पत्र में वास्तव में दिए गए आधार चुनें। कारण न दिए गए हों तो खाली छोड़ें।",
+  s4h:"तारीखें और राशि",
+  s4s:"इन्हीं से तय होता है कि कौन-से मंच खुले हैं और कब तक कार्रवाई करनी है। अनिश्चित हों तो अनुमान दें।",
+  s5h:"आपकी स्थिति",
+  s5s:"आपके रास्ते, आपकी समय-सीमाएँ, और आगे क्या करें।",
+  q_line:"बीमा का प्रकार", q_amt:"विवादित राशि (₹)",
+  q_loss:"हानि / घटना की तारीख", q_letter:"बीमा कंपनी के पत्र की तारीख",
+  q_rep:"बीमा कंपनी को लिखित शिकायत की तारीख (न की हो तो खाली)",
+  q_reply:"बीमा कंपनी के उत्तर की तारीख (न मिला हो तो खाली)",
+  q_outcome:"बीमा कंपनी का उत्तर था…", q_pending:"क्या यही मामला किसी न्यायालय, उपभोक्ता आयोग या मध्यस्थम् में पहले से दायर है?",
+  ombElig:"बीमा लोकपाल — पात्रता", conds:"शर्त", res:"स्थिति", ok:"पूरी?",
+  clocks:"आपकी समय-सीमाएँ", clock:"समय-सीमा", expiry:"अंतिम तारीख", left:"शेष दिन",
+  routes:"आपके रास्ते", next3:"आगे क्या करें",
+  disc:"इक्वेटर रेज़ोल्यूशन एक निजी विवाद-समाधान संस्था है। यह बीमा लोकपाल, IRDAI, उपभोक्ता आयोग या न्यायालय नहीं है। यह टूल विकल्प और समय-सीमाएँ समझाता है। यह कानूनी सलाह नहीं देता, यह नहीं आँकता कि दावा सफल होगा या नहीं, और दावे का मूल्य नहीं बताता। इक्वेटर का उपयोग करने से बीमा लोकपाल, उपभोक्ता आयोग या न्यायालय जाने का आपका अधिकार प्रभावित नहीं होता, और कोई समय-सीमा नहीं बढ़ती। कानून जुलाई 2026 की स्थिति के अनुसार।"
+ }
+};
+function t(k){return (T[LANG]&&T[LANG][k])||T.en[k];}
+
+/* ============================ data ============================ */
+var LINES={
+ en:["Health — individual or family floater","Health — group / employer","Health — senior / top-up","Life — term / endowment","Life — ULIP / investment-linked","Life — annuity / pension","Life — group / credit","Personal accident / critical illness","Travel / overseas","Govt health — Ayushman / PM-JAY","Govt / State health scheme","PMJJBY / PMSBY (govt life/accident)","Motor — own damage","Motor — third party (injury/death)","Home / householder","Fire & special perils (business)","Business interruption","Marine cargo / transit","Marine hull","Aviation","Engineering — CAR / EAR / machinery","Liability — CGL / public","Professional indemnity","Directors' & officers' (D&O)","Cyber","Trade credit / surety / fidelity","Employees' Compensation (WC)","Crop — PMFBY / weather-based","Cattle / rural package","Title / event / pet / gadget","Reinsurance (insurer vs reinsurer)","Other"],
+ hi:["स्वास्थ्य — व्यक्तिगत या फैमिली फ्लोटर","स्वास्थ्य — समूह / नियोक्ता","स्वास्थ्य — वरिष्ठ / टॉप-अप","जीवन — टर्म / एंडोमेंट","जीवन — ULIP / निवेश-लिंक्ड","जीवन — एन्युटी / पेंशन","जीवन — समूह / क्रेडिट","व्यक्तिगत दुर्घटना / गंभीर बीमारी","यात्रा / विदेश","सरकारी स्वास्थ्य — आयुष्मान / PM-JAY","सरकारी / राज्य स्वास्थ्य योजना","PMJJBY / PMSBY (सरकारी जीवन/दुर्घटना)","मोटर — ओन डैमेज","मोटर — थर्ड पार्टी (चोट/मृत्यु)","गृह / हाउसहोल्डर","अग्नि एवं विशेष जोखिम (व्यवसाय)","व्यवसाय बाधा (BI)","समुद्री कार्गो / ट्रांज़िट","समुद्री हल","विमानन","इंजीनियरिंग — CAR / EAR / मशीनरी","दायित्व — CGL / सार्वजनिक","व्यावसायिक क्षतिपूर्ति","निदेशक एवं अधिकारी (D&O)","साइबर","ट्रेड क्रेडिट / श्योरिटी / फिडेलिटी","कर्मचारी क्षतिपूर्ति (WC)","फसल — PMFBY / मौसम-आधारित","पशु / ग्रामीण पैकेज","टाइटल / इवेंट / पेट / गैजेट","पुनर्बीमा (बीमाकर्ता बनाम पुनर्बीमाकर्ता)","अन्य"]
+};
+var DTYPES={
+ en:["Claim rejected in full","Claim settled for less than claimed","Cashless refused","No decision — long delay","Deduction: room rent / proportionate","Deduction: co-pay or sub-limit","Deduction: depreciation / salvage / excess","Pre-existing disease / waiting period","Non-disclosure alleged","Mis-selling at the point of sale","Free-look refund refused","Underinsurance / average applied","Survey or assessment disputed","Premium / renewal / lapse","Nomination or heirship dispute","Policy or documents not received","Other"],
+ hi:["दावा पूरी तरह अस्वीकृत","दावा किए गए से कम भुगतान","कैशलेस से इनकार","कोई निर्णय नहीं — लंबा विलंब","कटौती: रूम रेंट / आनुपातिक","कटौती: को-पे या सब-लिमिट","कटौती: मूल्यह्रास / सालवेज / एक्सेस","पूर्व-विद्यमान रोग / प्रतीक्षा अवधि","अघोषित तथ्य का आरोप","बिक्री के समय मिस-सेलिंग","फ्री-लुक वापसी से इनकार","अल्प-बीमा / एवरेज लगाया गया","सर्वे या आकलन पर विवाद","प्रीमियम / नवीनीकरण / लैप्स","नामांकन या वारिस विवाद","पॉलिसी या दस्तावेज़ नहीं मिले","अन्य"]
+};
+var GROUNDS={
+ en:["Non-disclosure of a material fact","Pre-existing disease","Waiting period not completed","A specific policy exclusion","Delay in intimating the claim","Policy had lapsed","Documents not furnished","Investigation was adverse","Not a covered peril","Breach of a policy condition","Sum insured / limit exhausted","No reason was given"],
+ hi:["सारवान तथ्य का अघोषित रहना","पूर्व-विद्यमान रोग","प्रतीक्षा अवधि पूरी न होना","कोई विशिष्ट पॉलिसी अपवर्जन","दावा सूचित करने में विलंब","पॉलिसी लैप्स हो चुकी थी","दस्तावेज़ नहीं दिए गए","जाँच प्रतिकूल रही","कवर किया गया जोखिम नहीं","पॉलिसी शर्त का उल्लंघन","बीमित राशि / सीमा समाप्त","कोई कारण नहीं बताया गया"]
+};
+
+var S={ retail:null, line:'', dtypes:[], grounds:[], amount:0,
+        dLoss:'', dLetter:'', dRep:'', dReply:'', outcome:'', pending:'' };
+var step=0, STEPS=5;
+
+/* ============================ helpers ============================ */
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function d(x){ if(!x) return null; var p=new Date(x); return isNaN(p)?null:p; }
+function addDays(dt,n){ var x=new Date(dt.getTime()); x.setDate(x.getDate()+n); return x; }
+function fmt(dt){ if(!dt) return '—'; var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return dt.getDate()+" "+m[dt.getMonth()]+" "+dt.getFullYear(); }
+function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+function today(){ var n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); }
+
+/* ============================ engine ============================ */
+function ombTrigger(){
+  var rep=d(S.dRep), rep2=d(S.dReply);
+  if(rep2) return rep2;
+  if(rep) return addDays(rep,30);
+  return null;
+}
+function eligibility(){
+  var rep=d(S.dRep), rep2=d(S.dReply), now=today();
+  var c1 = !!rep;
+  var c2 = (S.outcome==='rejected'||S.outcome==='unsatisfactory') || (rep && daysBetween(rep,now)>30);
+  var trig = ombTrigger();
+  var c3 = trig ? (now <= addDays(trig,365)) : true;
+  var c4 = (S.amount>0) ? (S.amount<=5000000) : true;
+  var c5 = (S.pending!=='yes');
+  return {c1:c1,c2:!!c2,c3:!!c3,c4:!!c4,c5:!!c5, all:(c1&&c2&&c3&&c4&&c5), trigger:trig};
+}
+function clocks(){
+  var out=[], now=today(), rep=d(S.dRep), loss=d(S.dLoss), letter=d(S.dLetter), trig=ombTrigger();
+  if(rep) out.push({k: LANG==='hi'?"बीमा कंपनी को उत्तर देने के 30 दिन":"Insurer's 30-day reply window", e:addDays(rep,30)});
+  if(trig) out.push({k: LANG==='hi'?"बीमा लोकपाल — दाखिल करने की अंतिम तारीख":"Insurance Ombudsman — last date to file", e:addDays(trig,365), key:true});
+  if(loss) out.push({k: LANG==='hi'?"उपभोक्ता आयोग — सामान्य परिसीमा":"Consumer commission — ordinary limitation", e:addDays(loss,730)});
+  if(letter) out.push({k: LANG==='hi'?"पॉलिसी की वाद-समय शर्त (सामान्यतः 12 माह) [verify]":"Policy suit-time-bar (often 12 months) [verify]", e:addDays(letter,365)});
+  out.forEach(function(o){ o.left = daysBetween(now,o.e); });
+  return out;
+}
+function routes(){
+  var E=eligibility(), R=[], hi=(LANG==='hi'), tp=(S.dtypes||[]).join(' ');
+  var thirdParty = /third party|थर्ड पार्टी/i.test(S.line||'');
+  // ---- special forums that displace the ordinary route ----
+  var scheme = /PM-JAY|Ayushman|State health|PMJJBY|PMSBY|आयुष्मान|सरकारी|PMFBY|weather-based|मौसम-आधारित|फसल/i.test(S.line||'');
+  var ecomp  = /Employees' Comp|कर्मचारी क्षतिपूर्ति/i.test(S.line||'');
+  var reins  = /Reinsurance|पुनर्बीमा/i.test(S.line||'');
+  if(scheme && !thirdParty){
+    var crop = /PMFBY|weather|फसल|मौसम/i.test(S.line||'');
+    R.push({n: crop?(hi?"PMFBY शिकायत सीढ़ी (DGRC → SGRC)":"PMFBY grievance ladder (DGRC → SGRC)")
+                    :(hi?"योजना शिकायत सीढ़ी (CGRMS / 14555)":"Scheme grievance ladder (CGRMS / 14555)"),
+            c:hi?"निःशुल्क":"Free", w:hi?"योजना समय-सीमा":"Scheme timelines",
+            why: crop?(hi?"PMFBY बीमा लोकपाल का विषय नहीं। बैंक/CSC → जिला (DGRC) → राज्य (SGRC, 15 दिन); कृषि रक्षक हेल्पलाइन।"
+                        :"PMFBY is not an Insurance Ombudsman matter. Bank/CSC → District (DGRC) → State (SGRC, 15 days); Krishi Rakshak helpline.")
+                     :(hi?"सरकारी स्वास्थ्य योजना बीमा लोकपाल का विषय नहीं। अस्पताल/जिला → CGRMS/14555 → राज्य → राष्ट्रीय (30 दिन)।"
+                        :"A government health scheme is not an Ombudsman matter. Hospital/District → CGRMS/14555 → State → National (30 days)."),
+            tone:'red'});
+    if(crop){
+      R.push({n:hi?"इक्वेटर मध्यस्थता (बीमाकर्ता–राज्य/मध्यवर्ती विवाद)":"Equator mediation (insurer–State / intermediary dispute)",
+              c:hi?"शुल्क तालिका":"Per tariff", w:"30–45 "+(hi?"दिन":"days"),
+              why:hi?"किसान का योजना-हक मध्यस्थता से समाप्त नहीं हो सकता। उपज-डेटा/सब्सिडी/NEFT जैसे बीमाकर्ता–राज्य विवादों में मध्यस्थता सहायक हो सकती है।"
+                    :"A farmer's scheme entitlement cannot be mediated away. Equator may assist on insurer–State disputes — yield data, subsidy, NEFT — where the parties are willing.", tone:'teal'});
+    } else {
+      R.push({n:hi?"इक्वेटर मध्यस्थता (केवल अस्पताल-पक्ष वाणिज्यिक विवाद)":"Equator mediation (hospital-side commercial dispute only)",
+              c:hi?"शुल्क तालिका":"Per tariff", w:"30–45 "+(hi?"दिन":"days"),
+              why:hi?"लाभार्थी का वैधानिक हक मध्यस्थता से समाप्त नहीं हो सकता। अस्पताल के बकाया/पैकेज-दर/पुन:सूचीकरण जैसे वाणिज्यिक विवादों में मध्यस्थता संभव।"
+                    :"A beneficiary's statutory entitlement cannot be mediated away. Equator may mediate a hospital-side commercial dispute — dues, package rate, re-empanelment.", tone:'teal'});
+    }
+    return R;
+  }
+  if(ecomp){
+    R.push({n:hi?"कर्मचारी क्षतिपूर्ति आयुक्त":"Commissioner for Employees' Compensation",
+            c:hi?"कम":"Low", w:hi?"वैधानिक":"Statutory",
+            why:hi?"रोज़गार-चोट का दावा EC अधिनियम, 1923 के तहत आयुक्त के समक्ष है, बीमा लोकपाल के नहीं।"
+                  :"An employment-injury claim lies before the Commissioner under the Employees' Compensation Act, 1923 — not the Ombudsman.", tone:'gold'});
+    R.push({n:hi?"इक्वेटर मध्यस्थता (बीमाकर्ता–नियोक्ता कवरेज/राशि)":"Equator mediation (insurer–employer coverage / quantum)",
+            c:hi?"शुल्क तालिका":"Per tariff", w:"30–45 "+(hi?"दिन":"days"),
+            why:hi?"बीमाकर्ता और नियोक्ता के बीच कवरेज/राशि का विवाद मध्यस्थ किया जा सकता है; आयुक्त की अनुमति से क्वांटम भी।"
+                  :"A coverage/quantum dispute between insurer and employer can be mediated; quantum with the Commissioner's leave.", tone:'teal'});
+    return R;
+  }
+  if(reins){
+    R.push({n:hi?"पुनर्बीमा संधि मध्यस्थम्":"Reinsurance treaty arbitration",
+            c:hi?"अधिक":"High", w:"12–18 "+(hi?"माह":"months"),
+            why:hi?"पुनर्बीमा विवाद संधि/फैकल्टेटिव शब्दावली के तहत मध्यस्थम् में जाते हैं (यह रिटेल बार से अप्रभावित है)।"
+                  :"Reinsurance disputes arbitrate under the treaty/facultative wording (unaffected by the retail bar).", tone:'teal'});
+    R.push({n:hi?"इक्वेटर मध्यस्थता":"Equator mediation", c:hi?"शुल्क तालिका":"Per tariff", w:"30–45 "+(hi?"दिन":"days"),
+            why:hi?"अंतर्निहित दावे को बंधक बनने से बचाने के लिए बीमाकर्ता–पुनर्बीमाकर्ता विवाद समानांतर में मध्यस्थ किया जा सकता है।"
+                  :"The insurer–reinsurer dispute can be mediated in parallel so the underlying claim is not held hostage.", tone:'green'});
+    return R;
+  }
+  if(thirdParty){
+    R.push({n: hi?"मोटर दुर्घटना दावा अधिकरण (MACT)":"Motor Accidents Claims Tribunal (MACT)",
+            c: hi?"कम":"Low", w: hi?"थर्ड-पार्टी चोट या मृत्यु का दावा":"Third-party injury or death claims",
+            why: hi?"यह विशेष वैधानिक मंच है; बीमा लोकपाल या उपभोक्ता आयोग इसे तय नहीं करते।"
+                   :"This is the exclusive statutory forum. Neither the Ombudsman nor a consumer commission decides it.", tone:'gold'});
+  }
+  if(S.retail===false){
+    R.push({n: hi?"इक्वेटर मध्यस्थता":"Equator mediation", c: hi?"शुल्क तालिका के अनुसार":"Per tariff",
+            w: hi?"30–45 दिन":"30–45 days",
+            why: hi?"व्यावसायिक विवाद प्रायः राशि पर होते हैं, सिद्धांत पर नहीं — और राशि पर समझौता होता है। समझौता धारा 27 के तहत डिक्री की तरह लागू होता है।"
+                   :"Commercial disputes are usually about a number, not a principle — and numbers settle. A settlement is enforceable as a decree under s.27.", tone:'green'});
+    R.push({n: hi?"मध्यस्थम् (Arbitration)":"Arbitration", c: hi?"अधिक":"High", w:"12–18 " + (hi?"माह":"months"),
+            why: hi?"केवल तभी उपलब्ध जब दोनों पक्षों ने अलग से, आपसी सहमति से मध्यस्थम् समझौता किया हो (IRDAI परिपत्र, 27 अक्टूबर 2023)।"
+                   :"Available only where the parties have separately and mutually entered into an arbitration agreement (IRDAI circular, 27 October 2023).", tone:'teal'});
+    R.push({n: hi?"दीवानी न्यायालय":"Civil court", c: hi?"अधिक":"High", w: hi?"वर्षों":"Years",
+            why: hi?"अंतिम विकल्प।":"The fallback.", tone:'teal'});
+    R.push({n: hi?"बीमा लोकपाल — उपलब्ध नहीं":"Insurance Ombudsman — not available", c:"—", w:"—",
+            why: hi?"यह योजना व्यक्तिगत पॉलिसीधारकों के लिए है, व्यावसायिक बीमित के लिए नहीं।"
+                   :"The scheme is for individual policyholders, not commercial insureds.", tone:'red'});
+    return R;
+  }
+  // retail
+  if(!E.c1){
+    R.push({n: hi?"पहले: बीमा कंपनी को लिखित शिकायत":"First: written grievance to your insurer", c: hi?"निःशुल्क":"Free",
+            w:"30 " + (hi?"दिन":"days"),
+            why: hi?"इसके बिना बीमा लोकपाल के पास जाना संभव नहीं। साथ ही बीमा भरोसा (Bima Bharosa) पर निःशुल्क दर्ज करें और टोकन नंबर रखें।"
+                   :"Nothing else is possible until you do this. Register the same grievance free on Bima Bharosa and keep the token number.", tone:'gold', first:true});
+  }
+  R.push({n: hi?"बीमा लोकपाल (Insurance Ombudsman)":"Insurance Ombudsman", c: hi?"निःशुल्क":"Free",
+          w: "~3 " + (hi?"माह":"months"),
+          why: (E.all
+            ? (hi?"आप पात्र प्रतीत होते हैं। 17 कार्यालय; वकील की ज़रूरत नहीं; ₹50 लाख तक; अवार्ड ₹30 लाख तक बीमा कंपनी पर बाध्यकारी, आप पर नहीं।"
+                 :"You appear eligible. 17 offices; no lawyer needed; up to ₹50 lakh; an award binds the insurer up to ₹30 lakh but does not bind you.")
+            : (hi?"अभी सभी पाँच शर्तें पूरी नहीं हैं — नीचे तालिका देखें।"
+                 :"Not all five conditions are met yet — see the table below.")),
+          tone: E.all?'green':'gold'});
+  R.push({n: hi?"इक्वेटर मध्यस्थता (समानांतर)":"Equator mediation (in parallel)", c: hi?"शुल्क तालिका; छूट उपलब्ध":"Per tariff; waivers available",
+          w:"30–45 " + (hi?"दिन":"days"),
+          why: hi?"हम दावा फ़ाइल और सर्वे रिपोर्ट मँगवाते हैं, निर्णय को आधार-दर-आधार तोड़ते हैं, और ऐसा समझौता कराते हैं जो अवार्ड नहीं दे सकता — पॉलिसी की बहाली, निरंतरता, रिकॉर्ड से नकारात्मक टिप्पणी हटाना।"
+                 :"We obtain the claim file and survey report, break the decision down ground by ground, and can agree things an award cannot — reinstatement with continuity, removal of an adverse remark, conversion of a mis-sold product.", tone:'teal'});
+  R.push({n: hi?"उपभोक्ता आयोग":"Consumer commission", c: hi?"कम":"Low", w: hi?"महीनों से वर्षों":"Months to years",
+          why: hi?"स्वतंत्र वैधानिक अधिकार, जिसे किसी मध्यस्थम् खंड से छीना नहीं जा सकता। ध्यान दें: यहाँ दाखिल करने के बाद लोकपाल उसी मामले पर विचार नहीं कर सकते।"
+                 :"An independent statutory right that no arbitration clause can oust. Note: once you file here, the Ombudsman can no longer entertain the same matter.", tone:'teal'});
+  R.push({n: hi?"मध्यस्थम् — रिटेल पॉलिसी के लिए नहीं":"Arbitration — not for a retail policy", c:"—", w:"—",
+          why: hi?"27 अक्टूबर 2023 के IRDAI परिपत्र के अनुसार रिटेल जनरल-इंश्योरेंस पॉलिसियों में मध्यस्थम् खंड नहीं होना चाहिए। पुरानी पॉलिसी में ऐसा खंड हो तो भी वह आपको बाध्य नहीं करता।"
+                 :"Under the IRDAI circular of 27 October 2023, retail general-insurance policies are not to carry an arbitration clause. A legacy clause does not force you into arbitration.", tone:'red'});
+  return R;
+}
+
+/* ============================ render ============================ */
+function render(){
+  $('bar').style.width = Math.round(((step)/(STEPS-1))*100)+"%";
+  $('hdTag').textContent=t('tag'); $('aiBtnTxt').textContent=t('aiBtn'); $('aiTitle').textContent=t('aiTitle');
+  var h='';
+  if(step===0){
+    h+='<div class="step"><h1>'+t('s1h')+'</h1><div class="sub">'+t('s1s')+'</div>';
+    h+='<div class="grid">';
+    h+=optCard(LANG==='hi'?'रिटेल / व्यक्तिगत':'Retail / individual', LANG==='hi'?'मेरी या मेरे परिवार की व्यक्तिगत पॉलिसी — स्वास्थ्य, मोटर, जीवन, गृह, यात्रा':'A personal policy for me or my family — health, motor, life, home, travel', S.retail===true, 'setRetail(true)');
+    h+=optCard(LANG==='hi'?'व्यावसायिक / व्यापार':'Commercial / business', LANG==='hi'?'कंपनी, फर्म या LLP द्वारा अपने व्यावसायिक जोखिमों के लिए ली गई पॉलिसी':'A policy taken by a company, firm or LLP for its business risks', S.retail===false, 'setRetail(false)');
+    h+='</div>';
+    h+='<label class="f">'+t('q_line')+'</label><select id="line" onchange="S.line=this.value">'+
+       '<option value="">—</option>'+LINES[LANG].map(function(x,i){return '<option'+(S.line===LINES.en[i]?' selected':'')+' value="'+esc(LINES.en[i])+'">'+esc(x)+'</option>';}).join('')+'</select>';
+    if(S.retail===false){ h+='<div class="banner b-teal">'+(LANG==='hi'
+        ?'<b>ध्यान दें:</b> व्यावसायिक बीमित के लिए बीमा लोकपाल उपलब्ध नहीं है। मध्यस्थम् तभी संभव है जब दोनों पक्षों ने अलग से समझौता किया हो।'
+        :'<b>Note:</b> the Insurance Ombudsman is not available to commercial insureds. Arbitration is possible only where the parties have separately agreed to it.')+'</div>'; }
+    if(S.retail===true){ h+='<div class="banner b-gold">'+(LANG==='hi'
+        ?'<b>अच्छी खबर:</b> रिटेल पॉलिसी के लिए एक निःशुल्क सरकारी मंच है — बीमा लोकपाल। और 27 अक्टूबर 2023 के IRDAI परिपत्र के बाद रिटेल पॉलिसियों में मध्यस्थम् खंड नहीं होना चाहिए।'
+        :'<b>Good news:</b> for a retail policy there is a free government forum — the Insurance Ombudsman. And since the IRDAI circular of 27 October 2023, retail policies are not to carry an arbitration clause.')+'</div>'; }
+    h+=nav(false, S.retail!==null);
+    h+='</div>';
+  }
+  else if(step===1){
+    h+='<div class="step"><h1>'+t('s2h')+'</h1><div class="sub">'+t('s2s')+'</div>';
+    h+=DTYPES[LANG].map(function(x,i){return chip(x, DTYPES.en[i], S.dtypes, 'dtypes');}).join('');
+    h+=nav(true, S.dtypes.length>0)+'</div>';
+  }
+  else if(step===2){
+    h+='<div class="step"><h1>'+t('s3h')+'</h1><div class="sub">'+t('s3s')+'</div>';
+    h+=GROUNDS[LANG].map(function(x,i){return chip(x, GROUNDS.en[i], S.grounds, 'grounds');}).join('');
+    h+='<div class="banner b-teal" style="margin-top:16px">'+(LANG==='hi'
+      ?'यदि बीमा कंपनी ने कारण लिखित में नहीं दिए, तो पहला काम यही है कि लिखित, सकारण निर्णय माँगा जाए।'
+      :'If the insurer did not give reasons in writing, the first task is to ask for a reasoned decision in writing.')+'</div>';
+    h+=nav(true,true)+'</div>';
+  }
+  else if(step===3){
+    h+='<div class="step"><h1>'+t('s4h')+'</h1><div class="sub">'+t('s4s')+'</div>';
+    h+='<div class="grid">';
+    h+='<div><label class="f">'+t('q_loss')+'</label><input type="date" value="'+S.dLoss+'" onchange="S.dLoss=this.value"/></div>';
+    h+='<div><label class="f">'+t('q_letter')+'</label><input type="date" value="'+S.dLetter+'" onchange="S.dLetter=this.value"/></div>';
+    h+='<div><label class="f">'+t('q_rep')+'</label><input type="date" value="'+S.dRep+'" onchange="S.dRep=this.value"/></div>';
+    h+='<div><label class="f">'+t('q_reply')+'</label><input type="date" value="'+S.dReply+'" onchange="S.dReply=this.value"/></div>';
+    h+='<div><label class="f">'+t('q_amt')+'</label><input type="number" min="0" value="'+(S.amount||'')+'" onchange="S.amount=parseFloat(this.value)||0"/></div>';
+    h+='<div><label class="f">'+t('q_outcome')+'</label><select onchange="S.outcome=this.value">'+
+       ['','rejected','unsatisfactory','satisfactory','none'].map(function(v){
+         var lab={'':'—','rejected':LANG==='hi'?'अस्वीकृत':'a rejection','unsatisfactory':LANG==='hi'?'असंतोषजनक':'unsatisfactory','satisfactory':LANG==='hi'?'संतोषजनक':'satisfactory','none':LANG==='hi'?'कोई उत्तर नहीं':'no reply at all'}[v];
+         return '<option value="'+v+'"'+(S.outcome===v?' selected':'')+'>'+lab+'</option>';}).join('')+'</select></div>';
+    h+='<div><label class="f">'+t('q_pending')+'</label><select onchange="S.pending=this.value">'+
+       ['','no','yes'].map(function(v){var lab={'':'—','no':LANG==='hi'?'नहीं':'No','yes':LANG==='hi'?'हाँ':'Yes'}[v];
+         return '<option value="'+v+'"'+(S.pending===v?' selected':'')+'>'+lab+'</option>';}).join('')+'</select></div>';
+    h+='</div>';
+    h+='<div class="banner b-red" style="margin-top:16px"><b>'+(LANG==='hi'?'सबसे ज़रूरी बात:':'The most important thing:')+'</b> '+
+       (LANG==='hi'?'बीमा कंपनी के उत्तर से एक वर्ष के भीतर ही बीमा लोकपाल के पास जाया जा सकता है। यह समय-सीमा किसी कारण से नहीं रुकती — मध्यस्थता से भी नहीं।'
+                   :'You have one year from the insurer\'s reply to go to the Insurance Ombudsman. That deadline does not pause for anything — including for mediation.')+'</div>';
+    h+=nav(true,true)+'</div>';
+  }
+  else {
+    h+=results();
+  }
+  $('app').innerHTML=h;
+}
+function optCard(title,sub,sel,fn){
+  return '<div class="opt'+(sel?' sel':'')+'" onclick="'+fn+'"><b>'+esc(title)+'</b><small>'+esc(sub)+'</small></div>';
+}
+function chip(label,val,arr,key){
+  var sel=arr.indexOf(val)>-1;
+  return '<span class="chip'+(sel?' sel':'')+'" onclick="tog(\''+key+'\',\''+val.replace(/'/g,"\\'")+'\')">'+esc(label)+'</span>';
+}
+function tog(key,val){ var a=S[key], i=a.indexOf(val); if(i>-1)a.splice(i,1); else a.push(val); render(); }
+function setRetail(v){ S.retail=v; render(); }
+function nav(showBack,canNext){
+  return '<div class="nav">'+
+    (showBack?'<button class="ghost" onclick="step--;render()">'+t('back')+'</button>':'<span></span>')+
+    '<button class="primary" '+(canNext?'':'disabled style="opacity:.45;cursor:not-allowed"')+' onclick="step++;render()">'+t('next')+'</button></div>';
+}
+
+function results(){
+  var E=eligibility(), CL=clocks(), RT=routes(), hi=(LANG==='hi');
+  var h='<div class="step"><h1>'+t('s5h')+'</h1><div class="sub">'+t('s5s')+'</div>';
+
+  h+='<div class="banner b-'+(S.retail?'gold':'teal')+'"><b>'+
+     (S.retail? (hi?'रिटेल / व्यक्तिगत पॉलिसी':'Retail / individual policy') : (hi?'व्यावसायिक पॉलिसी':'Commercial policy'))+'.</b> '+
+     (S.retail? (hi?'बीमा लोकपाल आपके लिए उपलब्ध है और निःशुल्क है। रिटेल पॉलिसी में मध्यस्थम् खंड नहीं होना चाहिए (IRDAI, 27 अक्टूबर 2023)।'
+                  :'The Insurance Ombudsman is available to you and it is free. A retail policy should not carry an arbitration clause (IRDAI, 27 October 2023).')
+              : (hi?'बीमा लोकपाल उपलब्ध नहीं। मध्यस्थम् केवल अलग से किए गए समझौते पर।'
+                  :'The Ombudsman is not available. Arbitration only on a separate, mutually agreed arbitration agreement.'))+'</div>';
+
+  if(S.retail){
+    h+='<div class="sumcard"><h3>'+t('ombElig')+'</h3><table><tr><th style="width:56%">'+t('conds')+'</th><th>'+t('res')+'</th><th style="width:14%">'+t('ok')+'</th></tr>';
+    var rows=[
+      [hi?'1. बीमा कंपनी को लिखित शिकायत की गई':'1. Written representation made to the insurer',
+       S.dRep?(hi?'दिनांक ':'Made on ')+fmt(d(S.dRep)):(hi?'नहीं की गई':'Not made'), E.c1],
+      [hi?'2. अस्वीकृत / 30 दिन में उत्तर नहीं / असंतोषजनक':'2. Rejected, no reply in 30 days, or unsatisfactory',
+       S.outcome? (hi?'उत्तर: ':'Reply: ')+S.outcome : (hi?'—':'—'), E.c2],
+      [hi?'3. एक वर्ष के भीतर':'3. Within one year',
+       E.trigger? (hi?'अंतिम तारीख ':'Last date ')+fmt(addDays(E.trigger,365)) : '—', E.c3],
+      [hi?'4. दावा ₹50 लाख तक':'4. Claim within ₹50 lakh',
+       S.amount? ('₹'+S.amount.toLocaleString('en-IN')) : '—', E.c4],
+      [hi?'5. कहीं और लंबित / निर्णीत नहीं':'5. Not pending or decided elsewhere',
+       S.pending==='yes'?(hi?'कहीं और लंबित':'Pending elsewhere'):(hi?'कुछ लंबित नहीं':'Nothing pending'), E.c5]
+    ];
+    rows.forEach(function(r){ h+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="'+(r[2]?'yes':'no')+'">'+(r[2]?(hi?'हाँ':'YES'):(hi?'नहीं':'NO'))+'</td></tr>'; });
+    h+='</table>';
+    h+='<div class="banner b-'+(E.all?'green':'red')+'" style="margin-top:12px">'+
+       (E.all ? (hi?'<b>आप पात्र प्रतीत होते हैं।</b> बीमा लोकपाल के पास शिकायत दर्ज करें — निःशुल्क, वकील की ज़रूरत नहीं, 17 कार्यालय। अवार्ड ₹30 लाख तक बीमा कंपनी पर बाध्यकारी है, आप पर नहीं।'
+                   :'<b>You appear eligible.</b> File with the Insurance Ombudsman — free, no lawyer needed, 17 offices. An award binds the insurer up to ₹30 lakh but does not bind you.')
+              : (hi?'<b>अभी सभी शर्तें पूरी नहीं हैं।</b> ऊपर जो शर्त "नहीं" दिखा रही है, पहले उसे पूरा करें — या नीचे बताए गए वैकल्पिक मंच का उपयोग करें।'
+                   :'<b>Not all conditions are met yet.</b> Deal with the row marked NO first — or use the fallback forum listed below.'))+'</div>';
+    h+='<div class="muted">[verify] '+(hi?'₹50 लाख / ₹30 लाख की सीमाएँ और 17 कार्यालयों की सूची एक से अधिक बार संशोधित हुई हैं — दाखिल करने से पहले बीमा लोकपाल परिषद की वेबसाइट पर पुष्टि करें।'
+      :'The ₹50 lakh / ₹30 lakh limits and the list of 17 centres have been amended more than once — confirm on the Council for Insurance Ombudsmen website before filing.')+'</div></div>';
+  }
+
+  if(CL.length){
+    h+='<div class="sumcard"><h3>'+t('clocks')+'</h3><table><tr><th style="width:52%">'+t('clock')+'</th><th>'+t('expiry')+'</th><th>'+t('left')+'</th></tr>';
+    CL.forEach(function(c){
+      var cls = c.left<60?'no':(c.left<120?'':'yes');
+      h+='<tr><td>'+(c.key?'<b>':'')+esc(c.k)+(c.key?'</b>':'')+'</td><td>'+fmt(c.e)+'</td><td class="'+cls+'">'+c.left+'</td></tr>';
+    });
+    h+='</table><div class="muted" style="margin-top:8px">'+(hi
+      ?'मध्यस्थता से इनमें से कोई भी समय-सीमा नहीं रुकती। यदि लोकपाल की अंतिम तारीख से 60 दिन पहले समाधान न हो, तो शिकायत दर्ज कर दें।'
+      :'Mediation does not pause any of these. If the matter has not settled 60 days before the Ombudsman date, file the complaint.')+'</div></div>';
+  }
+
+  h+='<div class="sumcard"><h3>'+t('routes')+'</h3>';
+  RT.forEach(function(r){
+    h+='<div class="banner b-'+r.tone+'"><b>'+esc(r.n)+'</b> &nbsp;<span class="pill">'+esc(r.c)+'</span><span class="pill">'+esc(r.w)+'</span><br>'+esc(r.why)+'</div>';
+  });
+  h+='</div>';
+
+  h+='<div class="sumcard"><h3>'+t('next3')+'</h3>';
+  var steps=[];
+  if(S.retail && !S.dRep) steps.push(hi?'आज ही बीमा कंपनी के शिकायत निवारण अधिकारी को लिखित शिकायत भेजें (फॉर्म F-I04), और बीमा भरोसा पर निःशुल्क दर्ज करें।'
+                                       :'Send a written grievance to the insurer\'s grievance redressal officer today (Form F-I04), and register free on Bima Bharosa.');
+  steps.push(hi?'दावा फ़ाइल, पॉलिसी की शर्तें और सर्वेयर/जाँचकर्ता की रिपोर्ट लिखित में माँगें।'
+               :'Ask, in writing, for the claim file, the policy wordings and the surveyor\'s or investigator\'s report.');
+  if(/room rent|co-pay|sub-limit|Deduction/i.test(S.dtypes.join(' ')))
+    steps.push(hi?'हर कटौती की पंक्तिवार सूची बनाएँ — क्या बिल हुआ, क्या स्वीकृत, क्या काटा गया, किस खंड पर। सर्जन शुल्क और इम्प्लांट सामान्यतः कमरे की श्रेणी से नहीं बदलते।'
+                 :'Build a line-by-line schedule of every deduction — billed, allowed, deducted, on what clause. Surgeon\'s fees and implants usually do not vary with room category.');
+  if(/Non-disclosure|अघोषित/i.test(S.grounds.join(' ')) && /Life|जीवन/i.test(S.line||''))
+    steps.push(hi?'जीवन बीमा में सबसे पहले तारीखें जाँचें — जारी होने, जोखिम आरंभ, पुनर्चालन में से बाद वाली। धारा 45 अक्सर अकेले ही मामला तय कर देती है।'
+                 :'For a life policy, check the dates first — the later of issue, commencement of risk and revival. Section 45 often decides the case on arithmetic alone.');
+  if(/Mis-selling|मिस-सेलिंग/i.test(S.dtypes.join(' ')))
+    steps.push(hi?'लाभ-चित्रण, प्रस्ताव फॉर्म, कॉल रिकॉर्डिंग और बैंक विवरण इकट्ठा करें। 2021 के बाद एजेंट और ब्रोकर की शिकायत भी लोकपाल के दायरे में है।'
+                 :'Collect the benefit illustration, proposal form, call recordings and bank statement. Since 2021 complaints about agents and brokers are also within the Ombudsman\'s ambit.');
+  steps.push(hi?'यदि आंशिक भुगतान लेना पड़े तो डिस्चार्ज वाउचर पर हस्ताक्षर के ऊपर लिखें: "विरोध के अधीन, शेष सुरक्षित"।'
+               :'If you must accept a part-payment, write "under protest, balance reserved" above your signature on the discharge voucher.');
+  h+='<ol style="font-size:14px;line-height:1.7">'+steps.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
+  h+='<a class="cta" href="#" onclick="showDraft();return false">'+(hi?'शिकायत पत्र का प्रारूप देखें':'See a draft grievance letter')+'</a> ';
+  h+='<a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">'+(hi?'इक्वेटर से बात करें':'Talk to Equator')+'</a>';
+  h+='</div>';
+
+  h+='<div class="nav"><button class="ghost" onclick="step--;render()">'+t('back')+'</button>'+
+     '<span><button class="ghost" onclick="window.print()">'+t('print')+'</button> '+
+     '<button class="primary" onclick="reset()">'+t('restart')+'</button></span></div>';
+  h+='<div class="disc">'+t('disc')+'</div></div>';
+  return h;
+}
+function reset(){ S={retail:null,line:'',dtypes:[],grounds:[],amount:0,dLoss:'',dLetter:'',dRep:'',dReply:'',outcome:'',pending:''}; step=0; render(); }
+
+function showDraft(){
+  var hi=(LANG==='hi');
+  var body = hi ?
+"सेवा में: शिकायत निवारण अधिकारी, ______ इंश्योरेंस कंपनी लिमिटेड\nपॉलिसी सं.: ______     दावा सं.: ______     दिनांक: ______\n\nविषय: शिकायत — दावे की अस्वीकृति / कम भुगतान\n\n1.  मेरे पास आपकी जारी पॉलिसी सं. ______ है, जो ______ से प्रभावी है। ______ के संबंध में दावा दिनांक ______ को सूचित किया गया।\n2.  आपके पत्र दिनांक "+(S.dLetter||"______")+" द्वारा आपने "+(S.grounds.length?"इस आधार पर कि "+S.grounds.join('; '):"______")+" दावा अस्वीकृत/कम किया है।\n3.  यह निर्णय उचित नहीं है क्योंकि ______ । समर्थन में ______ संलग्न है।\n4.  अतः निवेदन है कि दावा स्वीकार कर ₹"+(S.amount||"______")+" का भुगतान, विलंब अवधि के ब्याज सहित, किया जाए।\n\nकृपया इसे मेरा लिखित अभ्यावेदन मानें। मैं 30 दिन के भीतर लिखित, सकारण निर्णय का अनुरोध करता/करती हूँ। यदि उत्तर न मिला या असंतोषजनक रहा, तो मैं बीमा लोकपाल नियम, 2017 के अंतर्गत बीमा लोकपाल और/या उपभोक्ता आयोग के समक्ष जाऊँगा/जाऊँगी।\n\nभवदीय,  ______      मोबाइल: ______   ईमेल: ______"
+: "To: The Grievance Redressal Officer, ______ Insurance Company Limited\nPolicy no.: ______     Claim no.: ______     Date: ______\n\nSubject: Grievance — repudiation / short settlement of claim\n\n1.  I hold policy no. ______ issued by you, in force from ______. A claim was intimated on ______ in respect of ______ .\n2.  By your letter dated "+(S.dLetter||"______")+" you have "+(S.dtypes.length?"["+S.dtypes.join('; ')+"]":"[rejected the claim / settled it at ₹______]")+", on the ground that "+(S.grounds.length?S.grounds.join('; '):"______")+" .\n3.  That decision is not sustainable because ______ . I enclose ______ in support.\n4.  I therefore request that the claim be admitted and ₹"+(S.amount||"______")+" be paid, with interest for the period of delay.\n\nPlease treat this as my written representation. I request a reasoned decision in writing within 30 days. If I do not receive one, or if it is unsatisfactory, I will approach the Insurance Ombudsman under the Insurance Ombudsman Rules, 2017 and/or the consumer commission.\n\nYours faithfully,  ______      Mobile: ______   Email: ______";
+  $('draftBox').innerHTML = '<h1>'+(hi?'शिकायत पत्र का प्रारूप':'Draft grievance letter')+'</h1>'+
+    '<div class="banner b-gold">'+(hi?'यह केवल एक प्रारूप है। भेजने से पहले किसी व्यक्ति द्वारा जाँचा जाना चाहिए। यह कानूनी सलाह नहीं है।'
+       :'This is a draft only. It must be reviewed by a person before it is sent. It is not legal advice.')+'</div>'+
+    '<pre>'+esc(body)+'</pre>'+
+    '<div class="nav"><span></span><button class="primary" onclick="document.getElementById(\'draftModal\').classList.remove(\'open\')">'+(hi?'बंद करें':'Close')+'</button></div>';
+  $('draftModal').classList.add('open');
+}
+
+/* ============================ guardrailed AI ============================ */
+var AI_RULES=[
+ {re:/(will i win|do i have a case|are they right|मैं जीत|केस बनता)/i, k:'merits'},
+ {re:/(how much|what.*worth|kitna|कितना मिलेगा|राशि कितनी)/i, k:'value'},
+ {re:/(arbitrat|मध्यस्थम)/i, k:'arb'},
+ {re:/(ombudsman|लोकपाल)/i, k:'omb'},
+ {re:/(deadline|time limit|limitation|समय.?सीमा|कब तक)/i, k:'clock'},
+ {re:/(are you.*(government|ombudsman|official)|सरकारी|आप कौन)/i, k:'whoami'},
+ {re:/(room rent|proportion|co.?pay|कमरा|आनुपातिक)/i, k:'room'},
+ {re:/(pre.?existing|ped|पूर्व.?विद्यमान)/i, k:'ped'},
+ {re:/(section 45|s\.?45|धारा 45)/i, k:'s45'},
+ {re:/(voucher|discharge|डिस्चार्ज|वाउचर)/i, k:'voucher'},
+ {re:/(bima bharosa|बीमा भरोसा|irdai)/i, k:'bharosa'},
+ {re:/(mis.?sell|मिस.?सेल)/i, k:'missell'},
+ {re:/(consumer|उपभोक्ता)/i, k:'consumer'},
+ {re:/(fraud|फ्रॉड|धोखा)/i, k:'fraud'},
+ {re:/(died|death|passed away|मृत्यु|निधन)/i, k:'bereaved'}
+];
+var AI_ANS={
+ en:{
+  merits:"I can't tell you that, and I'd be doing you a disservice if I guessed. What I can do is tell you what usually decides cases like yours, and help you get the documents that answer those questions. Would you like me to set out what to ask the insurer for?",
+  value:"I don't estimate what a claim is worth — no one honestly can at this stage. What I can do is show you every deduction the insurer has made, line by line, so you can see which ones are hard to justify.",
+  arb:"If yours is a retail policy — personal health, motor, life, home or travel — arbitration is not your route. Since the IRDAI circular of 27 October 2023, retail general-insurance policies are not to carry an arbitration clause, and a consumer's right to go to a consumer commission cannot be taken away by one. For a business policy, arbitration is possible, but only where both sides have separately and mutually agreed to it.",
+  omb:"The Insurance Ombudsman is a free statutory forum. There are 17 offices, you don't need a lawyer, it handles claims up to ₹50 lakh, and an award binds the insurer up to ₹30 lakh — but does not bind you. You must first complain to your insurer in writing and give them 30 days, and you must file within one year of their reply. Confirm the current limits on the Council for Insurance Ombudsmen website before filing.",
+  clock:"Three clocks usually matter: 30 days for the insurer to reply to your written representation; one year from that reply to file with the Insurance Ombudsman; and ordinarily two years from the cause of action for a consumer complaint. Mediation does not pause any of them — which is why we give you the dates in writing.",
+  whoami:"No. Equator Resolution is a private dispute-resolution institution. We are not the Insurance Ombudsman, not IRDAI, not a consumer commission and not a court. Nothing you do here affects your right to go to any of them.",
+  room:"Room-rent proportionality reduces charges that vary with the room category you took. The question worth asking is whether the head of charge actually varies with room category — surgeon's fees, the anaesthetist and implants usually do not. It's also worth checking whether co-pay was applied after the proportionate reduction rather than before, which double-counts it.",
+  ped:"For a pre-existing-disease ground, the dates decide it more often than the medicine. What matters is the first-ever inception date of continuous cover, whether the waiting period was already complete at the date of admission, and — if you ported the policy — whether continuity credit for waiting periods carried over.",
+  s45:"Section 45 of the Insurance Act, 1938 restricts an insurer from calling a life policy in question after the statutory period, running from the later of issue, commencement of risk, revival or rider. It also requires the ground to be communicated in writing with the materials relied on. Check those dates first — they often decide the matter. Please verify the current text before relying on it.",
+  voucher:"Don't simply sign a full-and-final discharge voucher for an amount you dispute. Write above your signature: \"Received ₹____ on account and under protest. I reserve my right to claim the balance of ₹____.\" A voucher signed under protest does not, by itself, bar a claim for the balance.",
+  bharosa:"Bima Bharosa is IRDAI's free online grievance system for policyholders. Register your grievance there at the same time as you write to the insurer, and keep the token number — it is independent proof of the date you complained.",
+  missell:"Since the 2021 amendment, the Insurance Ombudsman covers deficiency in service and complaints about agents, brokers and other intermediaries — not just the insurer's claim decision. Collect the benefit illustration, the proposal form, any call recording and your bank statement. Settlements here can go beyond a refund: conversion to a paid-up policy, waiver of future premiums, or substitution.",
+  consumer:"Your consumer remedy is an independent statutory right and cannot be taken away by an arbitration clause. But note the order: once you file in a consumer commission, the Ombudsman can no longer entertain the same matter. So think about the sequence before you file.",
+  fraud:"Where an insurer alleges fabricated documents or a staged loss, that is not something we mediate. It needs to be investigated or litigated. I'll connect you with a case manager to talk it through.",
+  bereaved:"I'm sorry. We can go at whatever pace works for you, and you don't have to do this alone. There is one date I should give you today because it doesn't wait, and then we can stop there. Let me bring in a case manager.",
+  def:"I can help with three things: working out which forum is open to you, calculating your deadlines, and drafting a grievance or complaint for a person on our team to review. I can't tell you whether your claim will succeed or what it is worth. What would you like to start with?"
+ },
+ hi:{
+  merits:"यह मैं नहीं बता सकता, और अनुमान लगाना आपके साथ अन्याय होगा। मैं यह बता सकता हूँ कि ऐसे मामलों में सामान्यतः क्या निर्णायक होता है, और वे दस्तावेज़ जुटाने में मदद कर सकता हूँ। क्या बताऊँ कि बीमा कंपनी से क्या-क्या माँगना है?",
+  value:"दावे का मूल्य मैं नहीं आँकता — इस स्तर पर कोई ईमानदारी से नहीं आँक सकता। मैं यह दिखा सकता हूँ कि बीमा कंपनी ने कौन-कौन सी कटौतियाँ कीं, एक-एक करके, ताकि आप देख सकें कि कौन-सी उचित ठहराना कठिन है।",
+  arb:"यदि आपकी पॉलिसी रिटेल है — व्यक्तिगत स्वास्थ्य, मोटर, जीवन, गृह या यात्रा — तो मध्यस्थम् आपका रास्ता नहीं है। 27 अक्टूबर 2023 के IRDAI परिपत्र के बाद रिटेल जनरल-इंश्योरेंस पॉलिसियों में मध्यस्थम् खंड नहीं होना चाहिए, और उपभोक्ता आयोग जाने का अधिकार किसी खंड से छीना नहीं जा सकता। व्यावसायिक पॉलिसी में मध्यस्थम् तभी संभव है जब दोनों पक्षों ने अलग से सहमति दी हो।",
+  omb:"बीमा लोकपाल एक निःशुल्क वैधानिक मंच है। 17 कार्यालय हैं, वकील की ज़रूरत नहीं, ₹50 लाख तक के दावे, और अवार्ड ₹30 लाख तक बीमा कंपनी पर बाध्यकारी — पर आप पर नहीं। पहले बीमा कंपनी को लिखित शिकायत देकर 30 दिन देने होंगे, और उत्तर से एक वर्ष के भीतर शिकायत दर्ज करनी होगी। दाखिल करने से पहले वर्तमान सीमाओं की पुष्टि कर लें।",
+  clock:"तीन समय-सीमाएँ मुख्य हैं: लिखित अभ्यावेदन पर बीमा कंपनी के उत्तर के लिए 30 दिन; उस उत्तर से बीमा लोकपाल के लिए एक वर्ष; और उपभोक्ता शिकायत के लिए सामान्यतः दो वर्ष। मध्यस्थता से इनमें से कोई नहीं रुकती — इसीलिए हम आपको तारीखें लिखित में देते हैं।",
+  whoami:"नहीं। इक्वेटर रेज़ोल्यूशन एक निजी विवाद-समाधान संस्था है। हम न बीमा लोकपाल हैं, न IRDAI, न उपभोक्ता आयोग, न न्यायालय। यहाँ कुछ भी करने से उन मंचों तक जाने का आपका अधिकार प्रभावित नहीं होता।",
+  room:"आनुपातिक कटौती उन शुल्कों को घटाती है जो कमरे की श्रेणी के साथ बदलते हैं। पूछने योग्य प्रश्न यह है कि क्या वह शुल्क वास्तव में कमरे की श्रेणी से बदलता है — सर्जन शुल्क, निश्चेतक और इम्प्लांट सामान्यतः नहीं बदलते। यह भी देखें कि को-पे आनुपातिक कटौती के बाद तो नहीं लगाया गया, जिससे वही कटौती दो बार गिनी जाती है।",
+  ped:"पूर्व-विद्यमान रोग के आधार में तारीखें चिकित्सा से अधिक निर्णायक होती हैं। महत्वपूर्ण है: निरंतर कवर की प्रथम आरंभ तिथि, भर्ती की तिथि तक प्रतीक्षा अवधि पूरी हुई या नहीं, और पोर्ट किया हो तो निरंतरता का लाभ आगे बढ़ा या नहीं।",
+  s45:"बीमा अधिनियम, 1938 की धारा 45 वैधानिक अवधि बीत जाने के बाद जीवन पॉलिसी पर प्रश्न उठाने से रोकती है — यह अवधि जारी होने, जोखिम आरंभ, पुनर्चालन या राइडर में से बाद वाली तिथि से चलती है। साथ ही आधार लिखित रूप में, संबंधित सामग्रियों सहित सूचित करना आवश्यक है। पहले तारीखें जाँचें। वर्तमान पाठ की पुष्टि अवश्य करें।",
+  voucher:"जिस राशि से आप असहमत हैं उसके लिए 'फुल एंड फाइनल' वाउचर पर सीधे हस्ताक्षर न करें। हस्ताक्षर के ऊपर लिखें: \"₹____ खाते में, विरोध के अधीन प्राप्त। शेष ₹____ का दावा करने का अधिकार सुरक्षित।\" विरोध के अधीन हस्ताक्षरित वाउचर स्वयं में शेष का दावा नहीं रोकता।",
+  bharosa:"बीमा भरोसा IRDAI की निःशुल्क ऑनलाइन शिकायत प्रणाली है। बीमा कंपनी को लिखते समय ही वहाँ भी शिकायत दर्ज करें और टोकन नंबर रखें — यह शिकायत की तारीख का स्वतंत्र प्रमाण है।",
+  missell:"2021 के संशोधन के बाद बीमा लोकपाल के दायरे में सेवा में कमी तथा एजेंट, ब्रोकर व अन्य मध्यवर्तियों की शिकायतें भी आती हैं। लाभ-चित्रण, प्रस्ताव फॉर्म, कॉल रिकॉर्डिंग और बैंक विवरण जुटाएँ। यहाँ समाधान केवल धन-वापसी तक सीमित नहीं — पेड-अप में रूपांतरण, भावी प्रीमियम की छूट, या उत्पाद प्रतिस्थापन भी संभव है।",
+  consumer:"उपभोक्ता उपचार एक स्वतंत्र वैधानिक अधिकार है और किसी मध्यस्थम् खंड से छीना नहीं जा सकता। पर क्रम का ध्यान रखें: उपभोक्ता आयोग में दाखिल करने के बाद लोकपाल उसी मामले पर विचार नहीं कर सकते।",
+  fraud:"जहाँ बीमा कंपनी जाली दस्तावेज़ या रचे गए नुकसान का आरोप लगाती है, हम उसमें मध्यस्थता नहीं करते। उसकी जाँच होनी चाहिए या मुकदमा चलना चाहिए। मैं आपको केस मैनेजर से जोड़ता हूँ।",
+  bereaved:"मुझे खेद है। हम आपकी सुविधा की गति से चल सकते हैं, और यह सब आपको अकेले नहीं करना है। एक तारीख आज बता देना ज़रूरी है क्योंकि वह प्रतीक्षा नहीं करती — उसके बाद हम रुक सकते हैं। मैं केस मैनेजर को जोड़ता हूँ।",
+  def:"मैं तीन चीज़ों में मदद कर सकता हूँ: कौन-सा मंच आपके लिए खुला है, आपकी समय-सीमाएँ क्या हैं, और शिकायत का प्रारूप तैयार करना जिसे हमारी टीम का कोई व्यक्ति जाँचेगा। मैं यह नहीं बता सकता कि दावा सफल होगा या उसका मूल्य क्या है। किससे शुरू करें?"
+ }
+};
+var CHIPS={
+ en:["Is the Ombudsman free?","What are my deadlines?","Should I arbitrate?","Are you the government?","Why was my room rent cut?","They say it was pre-existing","Should I sign the discharge voucher?","Will I win?","How much will I get?"],
+ hi:["क्या लोकपाल निःशुल्क है?","मेरी समय-सीमाएँ क्या हैं?","क्या मुझे मध्यस्थम् में जाना चाहिए?","क्या आप सरकारी हैं?","रूम रेंट पर कटौती क्यों?","वे कहते हैं यह पूर्व-विद्यमान था","क्या डिस्चार्ज वाउचर पर हस्ताक्षर करूँ?","क्या मैं जीतूँगा?","मुझे कितना मिलेगा?"]
+};
+function toggleAI(){ var p=$('aiPanel'); p.classList.toggle('open'); if(p.classList.contains('open')&&!$('aiLog').innerHTML) aiBoot(); }
+function aiBoot(){
+  $('aiLog').innerHTML=''; say('ai', AI_ANS[LANG].def); renderChips();
+}
+function renderChips(){
+  $('aiChips').innerHTML = CHIPS[LANG].map(function(c,i){
+    return '<span class="chip" onclick="askChip('+i+')">'+esc(c)+'</span>';}).join('');
+}
+function say(who,txt){ var l=$('aiLog'); var dv=document.createElement('div'); dv.className='msg '+who; dv.textContent=txt; l.appendChild(dv); l.scrollTop=l.scrollHeight; }
+function answer(q){
+  for(var i=0;i<AI_RULES.length;i++){ if(AI_RULES[i].re.test(q)) return AI_ANS[LANG][AI_RULES[i].k]||AI_ANS[LANG].def; }
+  return AI_ANS[LANG].def;
+}
+function askChip(i){ var q=CHIPS[LANG][i]; say('me',q); setTimeout(function(){ say('ai',answer(q)); },220); }
+function askFree(e){ e.preventDefault(); var v=$('aiInput').value.trim(); if(!v) return false;
+  say('me',v); $('aiInput').value=''; setTimeout(function(){ say('ai',answer(v)); },220); return false; }
+
+function setLang(l){ LANG=l; $('lEN').className = l==='en'?'on':''; $('lHI').className = l==='hi'?'on':'';
+  if($('aiLog').innerHTML) aiBoot(); render(); }
+render();
+</script>
+</body></html>

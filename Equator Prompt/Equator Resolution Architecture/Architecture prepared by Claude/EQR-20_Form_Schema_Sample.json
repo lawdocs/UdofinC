@@ -1,0 +1,132 @@
+{
+  "id": "F1",
+  "version": "1.0.0",
+  "title": "party.registration.title",
+  "description": "party.registration.desc",
+  "submit": {
+    "operation": "POST /parties",
+    "idempotencyKey": "client-generated"
+  },
+  "mapsTo": "parties",
+  "fields": [
+    {
+      "name": "full_name",
+      "label": "party.full_name",
+      "type": "text",
+      "required": true,
+      "validation": {
+        "minLength": 2,
+        "maxLength": 120
+      },
+      "mapsTo": "parties.full_name"
+    },
+    {
+      "name": "dob",
+      "label": "party.dob",
+      "type": "date",
+      "required": true,
+      "validation": {
+        "max": "today-18y"
+      },
+      "mapsTo": "parties.dob"
+    },
+    {
+      "name": "gender",
+      "label": "party.gender",
+      "type": "select",
+      "required": false,
+      "optionsFrom": "enum:gender",
+      "mapsTo": "parties.gender"
+    },
+    {
+      "name": "mobile",
+      "label": "party.mobile",
+      "type": "phone",
+      "required": true,
+      "validation": {
+        "format": "E164"
+      },
+      "verify": "otp",
+      "mapsTo": "parties.mobile"
+    },
+    {
+      "name": "email",
+      "label": "party.email",
+      "type": "email",
+      "required": true,
+      "verify": "otp",
+      "mapsTo": "parties.email"
+    },
+    {
+      "name": "address",
+      "label": "party.address",
+      "type": "address",
+      "required": true,
+      "mapsTo": "parties.address"
+    },
+    {
+      "name": "id_type",
+      "label": "kyc.id_type",
+      "type": "select",
+      "required": true,
+      "optionsFrom": "enum:id_type",
+      "mapsTo": "kyc_records.id_type"
+    },
+    {
+      "name": "id_number",
+      "label": "kyc.id_number",
+      "type": "text",
+      "required": true,
+      "sensitive": true,
+      "validation": {
+        "customRule": "idNumberFormat"
+      },
+      "mapsTo": "kyc_records.id_number"
+    },
+    {
+      "name": "party_role",
+      "label": "party.role",
+      "type": "select",
+      "required": true,
+      "optionsFrom": "enum:party_role",
+      "mapsTo": "case_parties.role"
+    },
+    {
+      "name": "language",
+      "label": "party.language",
+      "type": "select",
+      "required": false,
+      "optionsFrom": "enum:language",
+      "default": "English",
+      "mapsTo": "parties.language"
+    },
+    {
+      "name": "confidentiality_tier",
+      "label": null,
+      "type": "computed",
+      "compute": "tierFromContext()",
+      "mapsTo": "cases.confidentiality_tier"
+    },
+    {
+      "name": "consent_flag",
+      "label": "party.consent",
+      "type": "consent",
+      "required": true,
+      "validation": {
+        "mustEqual": true
+      },
+      "mapsTo": "consents.granted"
+    }
+  ],
+  "rules": [
+    {
+      "id": "minorGuardian",
+      "when": "age(dob) < 18",
+      "then": {
+        "require": [
+          "guardian_group"
+        ]
+      }
+    }
+  ]
+}

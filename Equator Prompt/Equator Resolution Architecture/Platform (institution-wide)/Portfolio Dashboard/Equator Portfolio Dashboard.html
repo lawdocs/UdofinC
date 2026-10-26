@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Portfolio Dashboard</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;
+       --lt:#DCEAEF;--lg:#F5ECD6;--lr:#F6E0E4;--lgr:#DCEEE4;--bg:#EDF2F4;--line:#CBD7DC;--card:#fff;}
+ *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI","Nirmala UI",Calibri,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:16px 26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:19px}
+ header .tag{color:#CADCEA;font-size:12.5px;font-style:italic;flex:1}
+ header .asof{font-size:12px;color:#9fc0d0}
+ .wrap{max-width:1200px;margin:0 auto;padding:22px 18px 70px}
+ h2{font-size:15px;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;margin:26px 0 12px;border-bottom:2px solid var(--line);padding-bottom:6px}
+ .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+ .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 6px 16px rgba(18,59,79,.06)}
+ .kpi b{display:block;font-size:26px;color:var(--teal);font-weight:700;line-height:1.1}
+ .kpi span{font-size:12px;color:var(--grey)} .kpi .sub{color:var(--green);font-size:11.5px;margin-top:4px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+ .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 6px 16px rgba(18,59,79,.06)}
+ .card h3{margin:0 0 4px;font-size:15px;color:var(--navy)} .card .role{font-size:11.5px;color:var(--grey);font-style:italic;margin-bottom:10px}
+ .row{display:flex;justify-content:space-between;font-size:12.5px;margin:4px 0}
+ .row b{color:var(--navy)}
+ .bar{height:8px;background:#e6edf0;border-radius:6px;overflow:hidden;margin:8px 0 2px}
+ .bar>i{display:block;height:100%;border-radius:6px}
+ .pill{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11px;margin:2px 3px 0 0}
+ .pl-g{background:var(--lgr);color:#1e5a41}.pl-t{background:var(--lt);color:var(--navy)}.pl-r{background:var(--lr);color:#8e2434}.pl-gold{background:var(--lg);color:#6d5320}
+ table{width:100%;border-collapse:collapse;font-size:12.5px}
+ th{background:#eef3f5;color:var(--navy);text-align:left;padding:7px 9px;font-size:11px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid var(--line)}
+ td{padding:7px 9px;border-bottom:1px solid #e8eef0}
+ .chart{display:flex;align-items:flex-end;gap:14px;height:180px;padding:10px 4px 0}
+ .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+ .chart .stack{width:70%;display:flex;flex-direction:column-reverse;border-radius:6px 6px 0 0;overflow:hidden}
+ .chart .stack>i{display:block}
+ .chart .lbl{font-size:11px;color:var(--grey);margin-top:6px;text-align:center}
+ .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--grey);margin-top:8px}
+ .legend span{display:inline-flex;align-items:center;gap:5px}.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+ .banner{border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;margin-top:12px}
+ .b-t{background:var(--lt);border-left:5px solid var(--teal)}.b-r{background:var(--lr);border-left:5px solid var(--red)}.b-g{background:var(--lg);border-left:5px solid var(--gold)}
+ .foot{font-size:11px;color:var(--grey);margin-top:26px;line-height:1.6}
+ .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+ .toolbar button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 13px;font-size:12px;cursor:pointer;color:var(--navy)}
+ .toolbar button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+</style></head><body>
+<header>
+ <span class="brand">EQUATOR RESOLUTION</span>
+ <span class="tag">Portfolio Dashboard — five verticals, one platform</span>
+ <span class="asof" id="asof"></span>
+</header>
+<div class="wrap">
+ <div class="toolbar" id="scenario"></div>
+
+ <h2>Portfolio at a glance</h2>
+ <div class="kpis" id="kpis"></div>
+
+ <h2>Verticals</h2>
+ <div class="grid" id="verticals"></div>
+
+ <h2>Outcomes by vertical (illustrative, last 12 months)</h2>
+ <div class="card">
+   <div class="chart" id="chart"></div>
+   <div class="legend">
+     <span><i style="background:#2E7D5B"></i> Settled in full</span>
+     <span><i style="background:#1E7A8C"></i> Settled in part</span>
+     <span><i style="background:#C6A15B"></i> Signposted (not settled)</span>
+     <span><i style="background:#B23A48"></i> Withdrawn / non-commencement</span>
+   </div>
+ </div>
+
+ <h2>Clock risk — matters approaching a statutory deadline</h2>
+ <div class="card">
+   <table><thead><tr><th>Case</th><th>Vertical</th><th>Clock</th><th>Expiry</th><th>Days left</th><th>Owner</th></tr></thead>
+   <tbody id="clockrows"></tbody></table>
+   <div class="banner b-r"><b>Zero expired on our watch (all time).</b> A statutory window expiring during an Equator
+     matter is a Critical incident, not a missed target — and the platform blocks closure while any clock is unowned.</div>
+ </div>
+
+ <h2>Consolidated financials (steady state)</h2>
+ <div class="kpis" id="fin"></div>
+ <div class="banner b-t"><b>One core, five verticals.</b> Built as five separate businesses the platform never covers
+   its shared overhead; built as one platform, the overhead is carried once and the portfolio reaches a healthy
+   steady-state margin. The shared core is what makes the shared-cost line real.</div>
+
+ <div class="foot" id="foot"></div>
+</div>
+
+<script>
+/* ---- illustrative portfolio data (three scenarios). Replace with live connector reads when available. ---- */
+var SCEN = {
+  Base: {
+    verticals: [
+      {v:"Family",     role:"Divorce · maintenance · custody · property",     cert:"ECMN", matters:1120, settle:0.62, rev:42, cost:21, rec:0.35, tone:'pl-t'},
+      {v:"Commercial", role:"Contract · MSME s.12A · shareholder · EPC",       cert:"ECCN", matters:640,  settle:0.58, rev:95, cost:44, rec:0.30, tone:'pl-t'},
+      {v:"Financial",  role:"Loan/OTS · NI-138 · digital lending · recovery",  cert:"ECFC", matters:1480, settle:0.55, rev:68, cost:33, rec:0.55, tone:'pl-g'},
+      {v:"Workplace",  role:"Wages · F&F · termination · POSH support",        cert:"ECWN", matters:960,  settle:0.60, rec:0.70, rev:55, cost:26, tone:'pl-g'},
+      {v:"Insurance",  role:"Repudiation · deductions · mis-selling · quantum", cert:"ECIN", matters:2160, settle:0.55, rec:0.41, rev:119, cost:71, tone:'pl-gold'},
+    ],
+    shared: 54, invest: 145, ask: 200
+  },
+  Downside: {
+    verticals: [
+      {v:"Family",     role:"Divorce · maintenance · custody · property",     cert:"ECMN", matters:700,  settle:0.55, rev:26, cost:16, rec:0.35, tone:'pl-t'},
+      {v:"Commercial", role:"Contract · MSME s.12A · shareholder · EPC",       cert:"ECCN", matters:380,  settle:0.52, rev:58, cost:31, rec:0.30, tone:'pl-t'},
+      {v:"Financial",  role:"Loan/OTS · NI-138 · digital lending · recovery",  cert:"ECFC", matters:900,  settle:0.50, rev:44, cost:24, rec:0.55, tone:'pl-g'},
+      {v:"Workplace",  role:"Wages · F&F · termination · POSH support",        cert:"ECWN", matters:560,  settle:0.55, rev:34, cost:19, rec:0.70, tone:'pl-g'},
+      {v:"Insurance",  role:"Repudiation · deductions · mis-selling · quantum", cert:"ECIN", matters:1200, settle:0.50, rev:70, cost:52, rec:0.41, tone:'pl-gold'},
+    ],
+    shared: 50, invest: 165, ask: 230
+  },
+  Upside: {
+    verticals: [
+      {v:"Family",     role:"Divorce · maintenance · custody · property",     cert:"ECMN", matters:1600, settle:0.66, rev:60, cost:29, rec:0.35, tone:'pl-t'},
+      {v:"Commercial", role:"Contract · MSME s.12A · shareholder · EPC",       cert:"ECCN", matters:980,  settle:0.62, rev:140,cost:62, rec:0.30, tone:'pl-t'},
+      {v:"Financial",  role:"Loan/OTS · NI-138 · digital lending · recovery",  cert:"ECFC", matters:2100, settle:0.60, rev:95, cost:44, rec:0.55, tone:'pl-g'},
+      {v:"Workplace",  role:"Wages · F&F · termination · POSH support",        cert:"ECWN", matters:1400, settle:0.64, rev:78, cost:35, rec:0.70, tone:'pl-g'},
+      {v:"Insurance",  role:"Repudiation · deductions · mis-selling · quantum", cert:"ECIN", matters:3200, settle:0.60, rev:180,cost:104,rec:0.41, tone:'pl-gold'},
+    ],
+    shared: 58, invest: 130, ask: 180
+  }
+};
+var CLOCKS = [
+  {c:"INS-2026-03981", v:"Insurance", k:"Ombudsman 1 year", e:"18 Sep 2026", d:59, o:"R. Menon"},
+  {c:"FIN-2026-02210", v:"Financial", k:"NI-138 limitation", e:"27 Sep 2026", d:68, o:"A. Rao"},
+  {c:"COM-2026-00815", v:"Commercial",k:"s.29A arbitral", e:"04 Oct 2026", d:75, o:"S. Iyer"},
+  {c:"FAM-2026-01144", v:"Family",    k:"Maintenance arrears", e:"11 Oct 2026", d:82, o:"P. Nair"},
+  {c:"INS-2026-04417", v:"Insurance", k:"Ombudsman 1 year", e:"02 Apr 2027", d:255, o:"R. Menon"},
+];
+var COL = {Family:"#1E7A8C",Commercial:"#123B4F",Financial:"#2E7D5B",Workplace:"#C6A15B",Insurance:"#7A5CA3"};
+var CUR = "Base";
+/* vertical figures are in ₹ millions (to match the per-vertical & portfolio models); 1 crore = 10 million */
+var money = function(m){ return "₹" + (m/10).toFixed(1) + " Cr"; };
+
+function compute(s){
+  var d = SCEN[s]; var rev=0,cost=0,matters=0,recW=0;
+  d.verticals.forEach(function(x){ rev+=x.rev; cost+=x.cost; matters+=x.matters; recW+=x.rev*x.rec; });
+  var contrib = rev - cost; var ebitda = contrib - d.shared;
+  return {rev:rev,cost:cost,contrib:contrib,shared:d.shared,ebitda:ebitda,
+          margin: Math.round(ebitda/rev*1000)/10, matters:matters,
+          rec: Math.round(recW/rev*1000)/10, invest:d.invest, ask:d.ask};
+}
+function el(tag,cls,html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+
+function render(){
+  var d = SCEN[CUR], t = compute(CUR);
+  document.getElementById('asof').textContent = "Scenario: "+CUR+" · illustrative · as-at July 2026";
+  // scenario toolbar
+  var tb = document.getElementById('scenario'); tb.innerHTML='';
+  ["Base","Downside","Upside"].forEach(function(s){
+    var b=el('button',s===CUR?'on':'',s+" case"); b.onclick=function(){CUR=s;render();}; tb.appendChild(b);
+  });
+  // KPIs
+  var k = document.getElementById('kpis'); k.innerHTML='';
+  [["Active matters (12 mo)", t.matters.toLocaleString('en-IN'), "across five verticals"],
+   ["Portfolio revenue", money(t.rev), "steady-state annual"],
+   ["Steady-state EBITDA", money(t.ebitda), t.margin+"% margin"],
+   ["Recurring revenue", t.rec+"%", "subscriptions + protocols"],
+   ["Shared platform cost", money(t.shared), "built once, not five times"],
+   ["Clocks expired on our watch", "0", "all time"]].forEach(function(x){
+    var c=el('div','kpi'); c.appendChild(el('b',null,x[1])); c.appendChild(el('span',null,x[0]));
+    if(x[2])c.appendChild(el('div','sub',x[2])); k.appendChild(c);
+  });
+  // verticals
+  var g = document.getElementById('verticals'); g.innerHTML='';
+  d.verticals.forEach(function(x){
+    var c=el('div','card');
+    c.appendChild(el('h3',null,x.v+' <span class="pill '+x.tone+'">'+x.cert+'</span>'));
+    c.appendChild(el('div','role',x.role));
+    c.appendChild(el('div','row','<span>Matters (12 mo)</span><b>'+x.matters.toLocaleString('en-IN')+'</b>'));
+    c.appendChild(el('div','row','<span>Settlement rate</span><b>'+Math.round(x.settle*100)+'%</b>'));
+    var bar=el('div','bar'); bar.innerHTML='<i style="width:'+Math.round(x.settle*100)+'%;background:'+COL[x.v]+'"></i>'; c.appendChild(bar);
+    c.appendChild(el('div','row','<span>Annual revenue</span><b>'+money(x.rev)+'</b>'));
+    c.appendChild(el('div','row','<span>Recurring</span><b>'+Math.round(x.rec*100)+'%</b>'));
+    g.appendChild(c);
+  });
+  // chart (stacked outcomes)
+  var ch = document.getElementById('chart'); ch.innerHTML='';
+  d.verticals.forEach(function(x){
+    var full=x.settle*0.7, part=x.settle*0.3, sign=(1-x.settle)*0.7, wd=(1-x.settle)*0.3;
+    var col=el('div','col'); var stack=el('div','stack'); stack.style.height='100%';
+    [["#2E7D5B",full],["#1E7A8C",part],["#C6A15B",sign],["#B23A48",wd]].forEach(function(seg){
+      var i=el('i'); i.style.background=seg[0]; i.style.height=Math.round(seg[1]*100)+'%'; stack.appendChild(i);
+    });
+    col.appendChild(stack); col.appendChild(el('div','lbl',x.v)); ch.appendChild(col);
+  });
+  // clock rows
+  var cr = document.getElementById('clockrows'); cr.innerHTML='';
+  CLOCKS.forEach(function(x){
+    var cls = x.d<60?'pl-r':(x.d<120?'pl-gold':'pl-g');
+    cr.innerHTML += '<tr><td>'+x.c+'</td><td>'+x.v+'</td><td>'+x.k+'</td><td>'+x.e+'</td>'+
+                    '<td><span class="pill '+cls+'">'+x.d+'</span></td><td>'+x.o+'</td></tr>';
+  });
+  // financials
+  var f = document.getElementById('fin'); f.innerHTML='';
+  [["Contribution", money(t.contrib), "revenue less direct cost"],
+   ["Shared cost", money(t.shared), "one core"],
+   ["EBITDA", money(t.ebitda), t.margin+"% margin"],
+   ["Investment to break-even", money(t.invest), "[verify]"],
+   ["Funding ask", money(t.ask), "incl. 18-mo runway [verify]"]].forEach(function(x){
+    var c=el('div','kpi'); c.appendChild(el('b',null,x[1])); c.appendChild(el('span',null,x[0]));
+    if(x[2])c.appendChild(el('div','sub',x[2])); f.appendChild(c);
+  });
+  document.getElementById('foot').innerHTML =
+    "Illustrative figures for demonstration; not a forecast. Financials require Board approval (consolidated [verify] register V-23). "+
+    "When connectors are available this page can be reissued as a live artifact that reads caseload, clock-risk and outcomes from the "+
+    "case-management system on each open. Equator Resolution is a private dispute-resolution institution and is not a court or regulator.";
+}
+render();
+</script>
+</body></html>

@@ -1,0 +1,75 @@
+{
+  "color": {
+    "brand": {
+      "navy": "#0B2E4F",
+      "teal": "#1F7A8C",
+      "gold": "#B98A2E"
+    },
+    "ink": "#1A1A1A",
+    "muted": "#5A6B7B",
+    "border": "#C9D3DC",
+    "surface": "#FFFFFF",
+    "surfaceAlt": "#EAF1F6",
+    "success": "#2E7D5B",
+    "warning": "#B9822E",
+    "danger": "#8A2E4F"
+  },
+  "font": {
+    "familyBase": "Arial, Inter, system-ui, sans-serif",
+    "familyMono": "Consolas, Menlo, monospace",
+    "size": {
+      "display": "32px",
+      "h1": "24px",
+      "h2": "19px",
+      "h3": "16px",
+      "body": "15px",
+      "small": "13px"
+    },
+    "weight": {
+      "regular": 400,
+      "medium": 600,
+      "bold": 700
+    },
+    "lineHeight": 1.45
+  },
+  "space": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "24px",
+    "2xl": "32px",
+    "3xl": "48px",
+    "4xl": "64px"
+  },
+  "radius": {
+    "sm": "4px",
+    "md": "8px",
+    "lg": "12px",
+    "pill": "999px"
+  },
+  "elevation": {
+    "0": "none",
+    "1": "0 1px 3px rgba(11,46,79,.08)",
+    "2": "0 8px 24px rgba(11,46,79,.16)"
+  },
+  "breakpoint": {
+    "xs": "480px",
+    "sm": "640px",
+    "md": "768px",
+    "lg": "1024px",
+    "xl": "1280px"
+  },
+  "zIndex": {
+    "base": 0,
+    "dropdown": 100,
+    "sticky": 200,
+    "modal": 1000,
+    "toast": 1100
+  },
+  "clock": {
+    "green": "#2E7D5B",
+    "amber": "#B9822E",
+    "red": "#8A2E4F"
+  }
+}

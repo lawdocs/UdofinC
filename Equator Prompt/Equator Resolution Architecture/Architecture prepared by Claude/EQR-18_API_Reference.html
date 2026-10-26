@@ -1,0 +1,83 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EQR-18 · Equator Resolution API Reference</title><style>
+:root{--navy:#0B2E4F;--teal:#1F7A8C;--gold:#B98A2E;--ink:#1A1A1A;--muted:#5A6B7B;--border:#C9D3DC;--light:#EAF1F6}
+*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);margin:0;line-height:1.45;background:#fff}
+.wrap{max-width:960px;margin:0 auto;padding:28px}
+header.top{border-bottom:3px solid var(--gold);padding-bottom:14px}
+.eyebrow{color:var(--teal);font-weight:700;font-size:13px;letter-spacing:.5px}
+h1{color:var(--navy);font-size:30px;margin:6px 0 2px} .sub{color:var(--muted);font-style:italic}
+.meta0{color:var(--muted);font-size:12px;margin-top:8px}
+.nav{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin:18px 0;font-size:14px}
+.nav a{color:var(--navy);text-decoration:none;font-weight:600}
+h2{color:var(--navy);border-left:5px solid var(--teal);padding-left:10px;margin-top:26px}
+.op{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.opline{display:flex;align-items:center;gap:10px}
+.m{color:#fff;font-weight:700;font-size:12px;padding:3px 9px;border-radius:5px}
+.path{font-size:15px;color:var(--navy);font-weight:700}
+.sum{margin:6px 0 4px} .meta{font-size:12.5px;color:var(--ink)} .muted{color:var(--muted)}
+.rb{margin:3px 0} .resp{margin-top:3px} .rc{display:inline-block;background:var(--light);border:1px solid var(--border);border-radius:4px;padding:0 6px;margin-right:4px;font-size:12px}
+code{background:#f3f6f9;padding:1px 5px;border-radius:4px;font-family:Consolas,Menlo,monospace;font-size:13px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}
+th,td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top} th{background:var(--navy);color:#fff}
+tr:nth-child(even) td{background:var(--light)}
+.auth{background:#F4F8FB;border:1px solid var(--border);border-left:5px solid var(--teal);border-radius:8px;padding:10px 14px;margin:14px 0}
+footer{color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:26px;padding-top:10px;text-align:center}
+</style></head><body><div class="wrap">
+<header class="top"><div class="eyebrow">FAMILY F · VISUAL &amp; REFERENCE</div>
+<h1>API Reference</h1><div class="sub">Browsable reference for the Equator Resolution Platform API — companion to the OpenAPI 3.1 spec (EQR-18_OpenAPI.yaml).</div>
+<div class="meta0">Document EQR-18 · Version 1.0 · 8 July 2026 · Confidential — Internal · See EQR-06 (integration) &amp; EQR-12 (schema)</div></header>
+<div class="auth"><b>Base URLs.</b> <code>https://api.equatorresolution.com/v1</code> (prod) · <code>https://sandbox.api.equatorresolution.com/v1</code> (sandbox).
+<b>Auth.</b> Bearer JWT via OAuth2/OIDC on every request. <b>Webhooks</b> are signed, retried and idempotent.</div>
+<div class="nav"><b>Endpoints:</b> <a href="#Parties">Parties</a> · <a href="#Cases">Cases</a> · <a href="#Escalation">Escalation</a> · <a href="#Documents">Documents</a> · <a href="#Hearings">Hearings</a> · <a href="#Outcomes">Outcomes</a> · <a href="#Payments">Payments</a> · <a href="#Dispute Explorer">Dispute Explorer</a> · <a href="#schemas">Schemas</a> · <a href="#webhooks">Webhooks</a></div>
+<h2 id="Parties">Parties</h2><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/parties</code></div><div class="sum">Register an individual party (F1)</div>
+        <div class="meta"><div class='rb'>Body: <code>PartyCreate</code></div><div class="resp">Responses: <span class='rc'>201</span><span class='rc'>400</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/parties/{id}</code></div><div class="sum">Get a party</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span><span class='rc'>404</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/parties/{id}/kyc</code></div><div class="sum">Submit KYC (video-KYC/DigiLocker)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class='rb'>Body: <code>KycSubmit</code></div><div class="resp">Responses: <span class='rc'>202</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/entities</code></div><div class="sum">Register an organisation (KYB, F2)</div>
+        <div class="meta"><div class='rb'>Body: <code>EntityCreate</code></div><div class="resp">Responses: <span class='rc'>201</span></div></div></div><h2 id="Cases">Cases</h2><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases</code></div><div class="sum">List cases</div>
+        <div class="meta">Params: <code>pillar</code> <span class='muted'>(query)</span> <code>status</code> <span class='muted'>(query)</span> <code>limit</code> <span class='muted'>(query)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/cases</code></div><div class="sum">File a case (master filing, F5)</div>
+        <div class="meta"><div class='rb'>Body: <code>CaseCreate</code></div><div class="resp">Responses: <span class='rc'>201</span><span class='rc'>400</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases/{id}</code></div><div class="sum">Get a case</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span><span class='rc'>404</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases/{id}/status</code></div><div class="sum">Get case status timeline (eCourts-style)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/cases/{id}/responses</code></div><div class="sum">File a response/defence (F9)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class='rb'>Body: <code>ResponseCreate</code></div><div class="resp">Responses: <span class='rc'>201</span></div></div></div><h2 id="Escalation">Escalation</h2><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/escalations</code></div><div class="sum">Escalate a company ticket into a case (F22)</div>
+        <div class="meta"><div class='rb'>Body: <code>EscalationCreate</code></div><div class="resp">Responses: <span class='rc'>201</span><span class='rc'>409</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/escalations/{id}</code></div><div class="sum">Get an escalation</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><h2 id="Documents">Documents</h2><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/cases/{id}/documents</code></div><div class="sum">Upload a document (hashed on write)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class='rb'>Body: <code>(multipart)</code></div><div class="resp">Responses: <span class='rc'>201</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/documents/{id}</code></div><div class="sum">Get document metadata (with hash)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><h2 id="Hearings">Hearings</h2><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases/{id}/hearings</code></div><div class="sum">List hearings for a case</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/hearings/{id}/join</code></div><div class="sum">Get a hearing join token (liveness-gated)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><h2 id="Outcomes">Outcomes</h2><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases/{id}/settlement</code></div><div class="sum">Get the mediated settlement (MSA)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases/{id}/award</code></div><div class="sum">Get the arbitral award</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/cases/{id}/execution-bundle</code></div><div class="sum">Get the court-ready execution bundle (S.36/S.27)</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><h2 id="Payments">Payments</h2><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/invoices</code></div><div class="sum">Raise an invoice</div>
+        <div class="meta"><div class='rb'>Body: <code>InvoiceCreate</code></div><div class="resp">Responses: <span class='rc'>201</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/payments</code></div><div class="sum">Initiate a payment (Razorpay/PayPal)</div>
+        <div class="meta"><div class='rb'>Body: <code>PaymentCreate</code></div><div class="resp">Responses: <span class='rc'>201</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/payouts/{id}</code></div><div class="sum">Get a neutral payout</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div><h2 id="Dispute Explorer">Dispute Explorer</h2><div class="op"><div class="opline"><span class="m" style="background:#2E7D5B">POST</span>
+        <code class="path">/explorer/sessions</code></div><div class="sum">Start a Dispute Explorer session (AI, advisory)</div>
+        <div class="meta"><div class='rb'>Body: <code>ExplorerCreate</code></div><div class="resp">Responses: <span class='rc'>201</span></div></div></div><div class="op"><div class="opline"><span class="m" style="background:#1F7A8C">GET</span>
+        <code class="path">/explorer/sessions/{id}</code></div><div class="sum">Get a Dispute Explorer session</div>
+        <div class="meta">Params: <code>id</code> <span class='muted'>(path)</span> <div class="resp">Responses: <span class='rc'>200</span></div></div></div>
+<h2 id="webhooks">Webhooks</h2><ul><li><code>case.filed</code> — A case was filed</li><li><code>neutral.appointed</code> — A neutral was appointed</li><li><code>hearing.scheduled</code> — A hearing was scheduled</li><li><code>award.signed</code> — An award was signed & stamped</li><li><code>settlement.paid</code> — Settlement funds released</li><li><code>case.closed</code> — A case was closed</li></ul>
+<h2 id="schemas">Schemas (selected)</h2>
+<table><tr><th>Schema</th><th>Properties</th><th>Required</th></tr><tr><td><code>PartyCreate</code></td><td>full_name, dob, mobile, email, party_role, consent_flag</td><td class="muted">full_name, mobile, email, party_role, consent_flag</td></tr><tr><td><code>Party</code></td><td>party_id, full_name, role, kyc_status</td><td class="muted"></td></tr><tr><td><code>KycSubmit</code></td><td>id_type, method</td><td class="muted">id_type, method</td></tr><tr><td><code>EntityCreate</code></td><td>legal_name, entity_type, pan, gstin, signatory_name</td><td class="muted">legal_name, entity_type, pan</td></tr><tr><td><code>Entity</code></td><td>entity_id, legal_name, entity_type</td><td class="muted"></td></tr><tr><td><code>CaseCreate</code></td><td>claimant_ids, respondent_ids, pillar, mechanism, claim_value, currency, facts, reliefs, clause_ref, consent_flag, explorer_session_id</td><td class="muted">claimant_ids, respondent_ids, pillar, mechanism, facts, reliefs, consent_flag</td></tr><tr><td><code>Case</code></td><td>case_id, pillar, mechanism, status, confidentiality_tier, ruleset_version_id, filed_at</td><td class="muted"></td></tr><tr><td><code>CaseList</code></td><td>data, next_cursor</td><td class="muted"></td></tr><tr><td><code>CaseStatus</code></td><td>case_id, status, timeline, clocks</td><td class="muted"></td></tr><tr><td><code>ResponseCreate</code></td><td>reply, counter_claims, consent_flag</td><td class="muted">reply, consent_flag</td></tr><tr><td><code>EscalationCreate</code></td><td>source_system, ticket_ref, party_consent_ref, pillar, payload, confidentiality_tier, callback</td><td class="muted">source_system, ticket_ref, party_consent_ref, pillar, callback</td></tr><tr><td><code>Escalation</code></td><td>escalation_id, case_id, status</td><td class="muted"></td></tr><tr><td><code>Document</code></td><td>document_id, kind, sha256, created_at</td><td class="muted"></td></tr><tr><td><code>HearingList</code></td><td>data</td><td class="muted"></td></tr><tr><td><code>JoinToken</code></td><td>token, expires_at, liveness_required</td><td class="muted"></td></tr><tr><td><code>Settlement</code></td><td>settlement_id, case_id, terms, signed, stamped, enforceable_basis</td><td class="muted"></td></tr><tr><td><code>Award</code></td><td>award_id, case_id, signed, enforceable_basis, s29a_due_at</td><td class="muted"></td></tr><tr><td><code>ExecutionBundle</code></td><td>bundle_id, case_id, items, format, generated_at</td><td class="muted"></td></tr><tr><td><code>InvoiceCreate</code></td><td>case_id, rate_card_id, amount, currency</td><td class="muted">case_id, amount</td></tr><tr><td><code>Invoice</code></td><td>invoice_id, amount, status</td><td class="muted"></td></tr><tr><td><code>PaymentCreate</code></td><td>invoice_id, rail</td><td class="muted">invoice_id, rail</td></tr><tr><td><code>Payment</code></td><td>payment_id, rail, status, redirect_url</td><td class="muted"></td></tr><tr><td><code>Payout</code></td><td>payout_id, neutral_id, amount, rail, status</td><td class="muted"></td></tr><tr><td><code>ExplorerCreate</code></td><td>description, document_id, consent_flag</td><td class="muted">description, consent_flag</td></tr><tr><td><code>ExplorerSession</code></td><td>session_id, category, method, viability, rationale, disclaimer, model_ref</td><td class="muted"></td></tr><tr><td><code>Error</code></td><td>code, message, details</td><td class="muted"></td></tr></table>
+<footer>Confidential — © 2026 Equator Resolution (Infrabyx Consultancy (OPC) Pvt. Ltd.). Draft API surface; field names align to EQR-12. Re-verify before publishing externally.</footer>
+</div></body></html>

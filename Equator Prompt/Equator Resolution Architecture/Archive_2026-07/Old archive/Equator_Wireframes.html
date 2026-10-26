@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equator Resolution — UI Wireframes</title>
+<style>
+:root{
+  --navy:#0B2A4A; --teal:#0E7C7B; --teal2:#1FA39A; --accent:#1F6FB2; --ice:#EAF2F8;
+  --paper:#F5F8FB; --ink:#1F2937; --grey:#6B7280; --line:#D8E0E9; --amber:#B45309;
+  --amberbg:#FDEBD6; --mint:#E3F1F0; --ok:#0E7C7B; --bg:#eef2f6; --field:#fff;
+  --shadow:0 1px 3px rgba(11,42,74,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);}
+.shell{max-width:1180px;margin:0 auto;padding:18px;}
+.head{background:var(--navy);color:#fff;border-radius:14px;padding:20px 26px;margin-bottom:14px;display:flex;align-items:center;gap:16px;}
+.logo{width:46px;height:46px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.head h1{font-size:22px;letter-spacing:.3px;}
+.head .sub{color:#9fc8c6;font-size:13px;font-style:italic;margin-top:2px;}
+.head .meta{margin-left:auto;color:#9fb6cc;font-size:12px;text-align:right;}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.tab{background:#fff;border:1px solid var(--line);border-radius:30px;padding:9px 16px;font-size:13px;cursor:pointer;color:var(--navy);font-weight:600;transition:.15s;}
+.tab:hover{border-color:var(--teal);}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.screen{display:none;}
+.screen.active{display:block;}
+.note{background:var(--mint);border-left:5px solid var(--teal);border-radius:8px;padding:11px 16px;font-size:13px;color:var(--ink);margin-bottom:14px;}
+.note b{color:var(--navy);}
+
+/* app chrome (looks like the product) */
+.app{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line);background:#fff;}
+.brandmini{display:flex;align-items:center;gap:9px;font-weight:700;color:var(--navy);font-size:15px;}
+.brandmini .dot{width:26px;height:26px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:14px;}
+.nav{display:flex;gap:18px;margin-left:8px;font-size:13px;color:var(--grey);}
+.nav span{padding:4px 0;cursor:pointer;}
+.nav span.on{color:var(--navy);font-weight:600;border-bottom:2px solid var(--teal);}
+.usr{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--grey);}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--ice);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+
+.body{display:grid;grid-template-columns:230px 1fr;min-height:560px;}
+.side{background:var(--paper);border-right:1px solid var(--line);padding:16px 12px;}
+.side h4{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--grey);margin:6px 8px 10px;}
+.side a{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;font-size:13px;color:var(--ink);text-decoration:none;margin-bottom:3px;cursor:pointer;}
+.side a.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:var(--shadow);}
+.side a .ic{width:18px;text-align:center;}
+.main{padding:22px 26px;}
+.crumb{font-size:12px;color:var(--grey);margin-bottom:4px;}
+.h2{font-size:20px;color:var(--navy);font-weight:700;margin-bottom:3px;}
+.h2sub{font-size:13px;color:var(--grey);margin-bottom:18px;}
+
+/* stepper */
+.steps{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap;}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--grey);}
+.step .n{width:24px;height:24px;border-radius:50%;background:var(--ice);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.step.done .n{background:var(--teal);color:#fff;}
+.step.cur .n{background:var(--navy);color:#fff;}
+.step.cur{color:var(--navy);font-weight:600;}
+.step .bar{width:26px;height:2px;background:var(--line);}
+
+/* forms */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 18px;}
+.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:4px;}
+.fld label{font-size:12.5px;color:var(--navy);font-weight:600;}
+.fld label .req{color:var(--amber);}
+.fld .hint{font-size:11px;color:var(--grey);}
+.inp,.sel,.ta{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px;background:var(--field);color:var(--ink);font-family:inherit;width:100%;}
+.inp:focus,.sel:focus,.ta:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(31,111,178,.12);}
+.ta{min-height:74px;resize:vertical;}
+.inp::placeholder,.ta::placeholder{color:#9aa7b4;}
+.section{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--teal);font-weight:700;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line);}
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{border:1px solid var(--line);border-radius:20px;padding:6px 13px;font-size:12.5px;cursor:pointer;background:#fff;color:var(--ink);}
+.chip.sel{background:var(--mint);border-color:var(--teal);color:var(--navy);font-weight:600;}
+.radio{display:flex;gap:10px;flex-wrap:wrap;}
+.rb{border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;background:#fff;}
+.rb.sel{border-color:var(--accent);background:var(--ice);color:var(--navy);font-weight:600;}
+.rb .o{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);}
+.rb.sel .o{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 2px #fff;}
+.upload{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--grey);font-size:13px;background:var(--paper);}
+.upload b{color:var(--accent);}
+.uprow{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12.5px;margin-top:8px;}
+.uprow .x{margin-left:auto;color:var(--grey);cursor:pointer;}
+.actions{display:flex;gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line);}
+.btn{border:none;border-radius:8px;padding:11px 20px;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn.primary{background:var(--teal);color:#fff;}
+.btn.primary:hover{background:#0a615f;}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--navy);}
+.btn.navy{background:var(--navy);color:#fff;}
+.right-rail{font-size:12.5px;}
+.callout{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px;}
+.callout h5{font-size:12px;color:var(--navy);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;}
+.kv{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line);}
+.kv:last-child{border-bottom:none;}
+.kv .v{font-weight:600;color:var(--navy);}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.pill.posh{background:#fde2e2;color:#9b1c1c;}
+.pill.high{background:var(--amberbg);color:var(--amber);}
+.pill.ok{background:var(--mint);color:var(--teal);}
+.banner{display:flex;gap:10px;align-items:flex-start;background:#fde2e2;border:1px solid #f6caca;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#7f1d1d;margin-bottom:16px;}
+.banner .i{font-size:16px;}
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;}
+table.tbl th{background:var(--navy);color:#fff;text-align:left;padding:8px 10px;font-weight:600;font-size:11.5px;}
+table.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);}
+table.tbl tr:nth-child(even) td{background:var(--paper);}
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:var(--shadow);}
+.stat .v{font-size:24px;font-weight:700;color:var(--navy);}
+.stat .l{font-size:11.5px;color:var(--grey);margin-top:2px;}
+.queue{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.qrow{display:grid;grid-template-columns:90px 1fr 120px 120px 110px;gap:10px;padding:11px 14px;font-size:12.5px;align-items:center;border-bottom:1px solid var(--line);}
+.qrow.hd{background:var(--paper);font-weight:600;color:var(--grey);font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+.qrow:last-child{border-bottom:none;}
+.tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:600;display:inline-block;}
+.t-med{background:var(--mint);color:var(--teal);}
+.t-arb{background:var(--ice);color:var(--accent);}
+.t-due{background:var(--amberbg);color:var(--amber);}
+.t-new{background:#e8f5e9;color:#2e7d32;}
+.foot{text-align:center;color:var(--grey);font-size:11px;margin-top:14px;}
+.printbtn{position:fixed;right:18px;bottom:18px;background:var(--teal);color:#fff;border:none;border-radius:30px;padding:11px 18px;font-size:13px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2);}
+@media print{
+  body{background:#fff;} .tabs,.printbtn{display:none;}
+  .screen{display:block!important;page-break-after:always;}
+  .head{border-radius:0;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="head">
+    <div class="logo">⚖️</div>
+    <div>
+      <h1>Equator Resolution — UI Wireframes</h1>
+      <div class="sub">High-fidelity mockups for the priority screens · fields mapped to the Forms &amp; DB Spec</div>
+    </div>
+    <div class="meta">v1.0 · June 2026<br>Confidential</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-s="s1">1 · Case Filing (master)</div>
+    <div class="tab" data-s="s2">2 · NBFC Bulk Intake</div>
+    <div class="tab" data-s="s3">3 · POSH Complaint</div>
+    <div class="tab" data-s="s4">4 · Case Manager Console</div>
+    <div class="tab" data-s="s5">5 · Neutral Workspace</div>
+  </div>
+
+  <!-- ============ SCREEN 1: CASE FILING ============ -->
+  <div class="screen active" id="s1">
+    <div class="note"><b>Screen 1 — Case Filing (master), Step 3 of 5.</b> The universal intake. Selecting a pillar/mechanism on Step 1 drives the rest of the flow and the governing ruleset. Required fields marked <span style="color:var(--amber)">*</span> map to <i>cases</i>, <i>parties</i>, <i>pleadings</i> and <i>documents</i> tables.</div>
+    <div class="app">
+      <div class="topbar">
+        <div class="brandmini"><span class="dot">E</span> Equator</div>
+        <div class="nav"><span>Dashboard</span><span class="on">File a Case</span><span>My Cases</span><span>Payments</span><span>Help</span></div>
+        <div class="usr"><span>Acting as: Claimant</span><div class="avatar">RS</div></div>
+      </div>
+      <div class="body">
+        <div class="side">
+          <h4>New Filing</h4>
+          <a><span class="ic">①</span> Case basics</a>
+          <a><span class="ic">②</span> Parties</a>
+          <a class="on"><span class="ic">③</span> Claim &amp; relief</a>
+          <a><span class="ic">④</span> Clause &amp; documents</a>
+          <a><span class="ic">⑤</span> Declaration &amp; fee</a>
+        </div>
+        <div class="main">
+          <div class="crumb">File a Case ›&nbsp; Commercial ›&nbsp; Arbitration</div>
+          <div class="h2">Claim &amp; relief</div>
+          <div class="h2sub">Tell us what the dispute is about and what you are seeking.</div>
+          <div class="steps">
+            <div class="step done"><span class="n">✓</span>Basics</div><div class="bar"></div>
+            <div class="step done"><span class="n">✓</span>Parties</div><div class="bar"></div>
+            <div class="step cur"><span class="n">3</span>Claim</div><div class="bar"></div>
+            <div class="step"><span class="n">4</span>Documents</div><div class="bar"></div>
+            <div class="step"><span class="n">5</span>Fee</div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 280px;gap:26px;">
+            <div>
+              <div class="fld">
+                <label>Nature of dispute <span class="req">*</span></label>
+                <textarea class="ta" placeholder="Describe the dispute in plain language (50–5000 characters)…">Breach of a supply agreement dated 12 Mar 2025; respondent failed to deliver Phase-2 milestones and disputes the retention amount of ₹42,00,000…</textarea>
+                <span class="hint">Maps to cases (claim summary). 248 / 5000 characters.</span>
+              </div>
+              <div class="grid2">
+                <div class="fld">
+                  <label>Claim value</label>
+                  <input class="inp" value="42,00,000">
+                  <span class="hint">Numeric ≥ 0 · maps to cases.claim_value</span>
+                </div>
+                <div class="fld">
+                  <label>Currency <span class="req">*</span></label>
+                  <select class="sel"><option>INR — ₹ Indian Rupee</option><option>USD — $</option><option>SGD — S$</option></select>
+                  <span class="hint">ISO 4217 · cases.claim_currency</span>
+                </div>
+              </div>
+              <div class="fld">
+                <label>Relief sought <span class="req">*</span></label>
+                <textarea class="ta" placeholder="What outcome are you seeking?">Recovery of the retention amount with interest, plus costs of the proceedings.</textarea>
+                <span class="hint">Maps to pleadings (statement of claim).</span>
+              </div>
+              <div class="section">Tribunal preference</div>
+              <div class="fld">
+                <label>Tribunal composition <span class="req">*</span></label>
+                <div class="radio">
+                  <div class="rb sel"><span class="o"></span> Sole arbitrator</div>
+                  <div class="rb"><span class="o"></span> Panel of three</div>
+                </div>
+                <span class="hint">Drives number of assignments created.</span>
+              </div>
+            </div>
+            <div class="right-rail">
+              <div class="callout">
+                <h5>This case</h5>
+                <div class="kv"><span>Pillar</span><span class="v">Commercial</span></div>
+                <div class="kv"><span>Mechanism</span><span class="v">Arbitration</span></div>
+                <div class="kv"><span>Ruleset</span><span class="v">India · A&amp;C 1996</span></div>
+                <div class="kv"><span>Confidentiality</span><span class="v"><span class="pill ok">Standard</span></span></div>
+                <div class="kv"><span>Seat</span><span class="v">Mumbai</span></div>
+              </div>
+              <div class="callout">
+                <h5>Statutory clock</h5>
+                <div class="kv"><span>Award time-limit</span><span class="v">12 months (S.29A)</span></div>
+                <div class="kv"><span>Starts</span><span class="v">On registration</span></div>
+                <span class="hint" style="display:block;margin-top:8px;">Equator tracks this automatically and alerts before breach.</span>
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost">← Back</button>
+            <button class="btn primary">Save &amp; continue →</button>
+            <button class="btn ghost" style="margin-left:auto;">Save draft</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Wireframe — Equator Resolution · Case Filing (master) · maps to F5 in the Forms &amp; DB Spec</div>
+  </div>
+
+  <!-- ============ SCREEN 2: NBFC BULK INTAKE ============ -->
+  <div class="screen" id="s2">
+    <div class="note"><b>Screen 2 — NBFC Bulk Intake (lender console).</b> A lender uploads a CSV (or calls the API) to create many borrower-dispute cases at once. The grid shows live validation; clean rows are created, error rows go to an exception queue. Maps to F6 and the bulk pipeline.</div>
+    <div class="app">
+      <div class="topbar">
+        <div class="brandmini"><span class="dot">E</span> Equator <span style="font-weight:400;color:var(--grey);font-size:12px;">· Lender Console</span></div>
+        <div class="nav"><span>Overview</span><span class="on">Bulk Intake</span><span>Cases</span><span>Recovery</span><span>API Keys</span></div>
+        <div class="usr"><span>Acme Capital (NBFC)</span><div class="avatar">AC</div></div>
+      </div>
+      <div class="body" style="grid-template-columns:1fr;">
+        <div class="main">
+          <div class="h2">Bulk case intake</div>
+          <div class="h2sub">Upload defaulted / disputed loans to initiate conciliation. One row = one case. Idempotent on (lender, loan&nbsp;ID).</div>
+
+          <div class="grid3" style="margin-bottom:6px;">
+            <div class="fld"><label>Batch reference <span class="req">*</span></label><input class="inp" value="ACME-2026-06-W4"><span class="hint">Unique per lender · bulk_batch</span></div>
+            <div class="fld"><label>Default ruleset <span class="req">*</span></label><select class="sel"><option>NBFC · Conciliation→Arb (India)</option></select><span class="hint">cases.ruleset_id</span></div>
+            <div class="fld"><label>Status callback URL</label><input class="inp" value="https://acme.example/odr/webhook"><span class="hint">HTTPS · signed · optional</span></div>
+          </div>
+
+          <div class="upload" style="margin:8px 0 4px;">⬆ Drag a CSV here or <b>browse</b> &nbsp;·&nbsp; <span style="font-size:12px;">acme_disputes_w4.csv (1,284 rows)</span> &nbsp;·&nbsp; <a href="#" style="color:var(--accent);text-decoration:none;">download template</a></div>
+
+          <div class="statgrid" style="margin-top:16px;">
+            <div class="stat"><div class="v">1,284</div><div class="l">Rows uploaded</div></div>
+            <div class="stat"><div class="v" style="color:var(--teal);">1,251</div><div class="l">Valid · ready to create</div></div>
+            <div class="stat"><div class="v" style="color:var(--amber);">33</div><div class="l">Errors · exception queue</div></div>
+            <div class="stat"><div class="v">₹19.4 Cr</div><div class="l">Total outstanding</div></div>
+          </div>
+
+          <div class="section">Validation preview</div>
+          <table class="tbl">
+            <tr><th>Row</th><th>Loan ID</th><th>Borrower</th><th>Mobile</th><th>Outstanding (₹)</th><th>Clause</th><th>Status</th></tr>
+            <tr><td>1</td><td>LN-882301</td><td>Ravi Menon</td><td>+91 98••• ••231</td><td>1,42,000</td><td>Yes</td><td><span class="tag t-new">✓ Valid</span></td></tr>
+            <tr><td>2</td><td>LN-882302</td><td>S. Iyer</td><td>+91 99••• ••880</td><td>2,07,500</td><td>Yes</td><td><span class="tag t-new">✓ Valid</span></td></tr>
+            <tr><td>3</td><td>LN-882303</td><td>(blank)</td><td>+91 90••• ••145</td><td>96,000</td><td>Yes</td><td><span class="tag t-due">⚠ Missing borrower name</span></td></tr>
+            <tr><td>4</td><td>LN-882304</td><td>D. Rao</td><td>invalid</td><td>3,11,200</td><td>No</td><td><span class="tag t-due">⚠ Invalid mobile</span></td></tr>
+            <tr><td>5</td><td>LN-882305</td><td>P. Sharma</td><td>+91 98••• ••502</td><td>78,400</td><td>Yes</td><td><span class="tag t-new">✓ Valid</span></td></tr>
+          </table>
+
+          <div class="actions">
+            <button class="btn primary">Create 1,251 cases →</button>
+            <button class="btn ghost">Download 33 errors (CSV)</button>
+            <button class="btn navy" style="margin-left:auto;">View API equivalent ⟩</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Wireframe — Equator Resolution · NBFC Bulk Intake · maps to F6 + bulk pipeline</div>
+  </div>
+
+  <!-- ============ SCREEN 3: POSH COMPLAINT ============ -->
+  <div class="screen" id="s3">
+    <div class="note"><b>Screen 3 — POSH Complaint (highest confidentiality).</b> Tier = POSH: identity fields are field-encrypted and visible only to the Internal Committee. Note the privacy banner, restricted access, and the 90-day inquiry clock. Maps to F11.</div>
+    <div class="app">
+      <div class="topbar">
+        <div class="brandmini"><span class="dot">E</span> Equator <span style="font-weight:400;color:var(--grey);font-size:12px;">· Workplace</span></div>
+        <div class="nav"><span>Home</span><span class="on">Raise a Complaint</span><span>My Complaints</span><span>Resources</span></div>
+        <div class="usr"><span class="pill posh">POSH · Confidential</span><div class="avatar">—</div></div>
+      </div>
+      <div class="body">
+        <div class="side">
+          <h4>POSH Complaint</h4>
+          <a class="on"><span class="ic">①</span> Parties</a>
+          <a><span class="ic">②</span> Incident</a>
+          <a><span class="ic">③</span> Relief &amp; consent</a>
+          <div style="margin-top:18px;padding:12px;background:#fde2e2;border-radius:8px;font-size:11.5px;color:#7f1d1d;">
+            <b>Who can see this</b><br>Only the Internal Committee (IC). Your identity is encrypted and hidden from the employer's general admins.
+          </div>
+        </div>
+        <div class="main">
+          <div class="banner"><span class="i">🔒</span><div><b>This is a confidential POSH complaint.</b> Your name and the respondent's name are encrypted. Access is restricted to the Internal Committee, with every view recorded in a tamper-evident log.</div></div>
+          <div class="h2">Parties</div>
+          <div class="h2sub">Filing against your employer's Internal Committee. The inquiry must conclude within 90 days.</div>
+
+          <div class="grid2">
+            <div class="fld">
+              <label>Your name (complainant) <span class="req">*</span></label>
+              <input class="inp" value="•••••• (encrypted)" disabled style="background:#f1f1f1;">
+              <span class="hint">Auto-filled from your verified login · field-encrypted</span>
+            </div>
+            <div class="fld">
+              <label>Employer / workplace <span class="req">*</span></label>
+              <input class="inp" value="Northwind Technologies Pvt Ltd" disabled style="background:#f1f1f1;">
+              <span class="hint">From SSO context · grievances.tenant_id</span>
+            </div>
+            <div class="fld">
+              <label>Respondent name <span class="req">*</span></label>
+              <input class="inp" placeholder="Person the complaint is about">
+              <span class="hint">Field-encrypted · grievances.respondent_name_enc</span>
+            </div>
+            <div class="fld">
+              <label>Respondent designation / department</label>
+              <input class="inp" placeholder="e.g., Manager, Sales">
+            </div>
+          </div>
+
+          <div class="section">Incident</div>
+          <div class="grid2">
+            <div class="fld">
+              <label>Date(s) of incident <span class="req">*</span></label>
+              <input class="inp" type="text" value="2026-05-18" >
+              <span class="hint">Within limitation (3 months, extendable +3)</span>
+            </div>
+            <div class="fld">
+              <label>Location / digital channel <span class="req">*</span></label>
+              <input class="inp" placeholder="Office, or WhatsApp / email / video call">
+              <span class="hint">Digital channels are within scope (per case law).</span>
+            </div>
+          </div>
+          <div class="fld">
+            <label>Description of incident <span class="req">*</span></label>
+            <textarea class="ta" placeholder="Describe what happened. This text is encrypted at rest."></textarea>
+            <span class="hint">grievances.narrative_enc · field-encrypted (SENSITIVE)</span>
+          </div>
+          <div class="fld">
+            <label>Evidence (optional)</label>
+            <div class="upload">⬆ Upload screenshots, emails, documents — <b>encrypted, POSH-tier</b></div>
+          </div>
+
+          <div style="display:flex;gap:14px;align-items:center;margin-top:18px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;">
+            <span class="pill high">90-day clock</span>
+            <span style="font-size:12.5px;color:var(--grey);">The IC must complete the inquiry within 90 days of receiving the complaint. Equator tracks and alerts the committee.</span>
+          </div>
+
+          <div class="actions">
+            <button class="btn ghost">Save draft (encrypted)</button>
+            <button class="btn primary">Continue to incident details →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Wireframe — Equator Resolution · POSH Complaint · maps to F11 (confidentiality tier = POSH)</div>
+  </div>
+
+  <!-- ============ SCREEN 4: CASE MANAGER CONSOLE ============ -->
+  <div class="screen" id="s4">
+    <div class="note"><b>Screen 4 — Case Manager Console.</b> The operational cockpit: queues by stage, compliance-clock alerts, and one-click actions (allocate neutral, schedule hearing, serve notice). This is where throughput happens.</div>
+    <div class="app">
+      <div class="topbar">
+        <div class="brandmini"><span class="dot">E</span> Equator <span style="font-weight:400;color:var(--grey);font-size:12px;">· Case Manager</span></div>
+        <div class="nav"><span class="on">My Queue</span><span>All Cases</span><span>Hearings</span><span>Neutrals</span><span>Reports</span></div>
+        <div class="usr"><span>EDRS Ops · Priya N.</span><div class="avatar">PN</div></div>
+      </div>
+      <div class="body" style="grid-template-columns:1fr;">
+        <div class="main">
+          <div class="h2">My queue</div>
+          <div class="h2sub">28 active cases · 4 need action today</div>
+          <div class="statgrid">
+            <div class="stat"><div class="v">28</div><div class="l">Active cases</div></div>
+            <div class="stat"><div class="v" style="color:var(--amber);">4</div><div class="l">SLA risk (≤7 days)</div></div>
+            <div class="stat"><div class="v">6</div><div class="l">Awaiting allocation</div></div>
+            <div class="stat"><div class="v">9</div><div class="l">Hearings this week</div></div>
+          </div>
+
+          <div class="queue">
+            <div class="qrow hd"><div>Case</div><div>Parties / matter</div><div>Stage</div><div>Neutral</div><div>SLA</div></div>
+            <div class="qrow"><div><b>EQ/ARB/0123</b></div><div>Acme Capital ▾ Ravi Menon · loan default</div><div><span class="tag t-arb">Arbitration</span></div><div>— <a style="color:var(--accent);cursor:pointer;">Allocate</a></div><div><span class="tag t-due">5 days</span></div></div>
+            <div class="qrow"><div><b>EQ/MED/0456</b></div><div>Sharma vs Verma · matrimonial</div><div><span class="tag t-med">Mediation</span></div><div>R. Kapoor</div><div>62 days</div></div>
+            <div class="qrow"><div><b>EQ/CON/0789</b></div><div>Northwind ▾ vendor · payment</div><div><span class="tag t-med">Conciliation</span></div><div>— <a style="color:var(--accent);cursor:pointer;">Allocate</a></div><div><span class="tag t-due">3 days</span></div></div>
+            <div class="qrow"><div><b>EQ/ARB/0810</b></div><div>BluePeak vs Orion · contract</div><div><span class="tag t-arb">Arbitration</span></div><div>Panel (3)</div><div>120 days</div></div>
+            <div class="qrow"><div><b>EQ/MED/0844</b></div><div>Anon ▾ employer · grievance (escalated)</div><div><span class="tag t-med">Mediation</span></div><div>S. Devi</div><div><span class="tag t-new">New</span></div></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary">⚖ Allocate neutral (round-robin)</button>
+            <button class="btn ghost">📅 Schedule hearing</button>
+            <button class="btn ghost">✉ Serve notice</button>
+            <button class="btn navy" style="margin-left:auto;">Bulk actions ▾</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Wireframe — Equator Resolution · Case Manager Console</div>
+  </div>
+
+  <!-- ============ SCREEN 5: NEUTRAL WORKSPACE ============ -->
+  <div class="screen" id="s5">
+    <div class="note"><b>Screen 5 — Neutral Workspace (arbitrator view), with Private Court toggle.</b> The neutral's case room: hearings, evidence, orders, and award drafting with optional AI assist (advisory only). The toggle (top-right) flips an independent neutral into their self-managed Private Court.</div>
+    <div class="app">
+      <div class="topbar">
+        <div class="brandmini"><span class="dot">E</span> Equator <span style="font-weight:400;color:var(--grey);font-size:12px;">· Neutral Workspace</span></div>
+        <div class="nav"><span class="on">Case Room</span><span>Hearings</span><span>Drafting</span><span>Fee Notes</span></div>
+        <div class="usr"><span style="font-size:12px;">Mode:</span> <span class="pill ok">EDRS</span><span style="font-size:11px;color:var(--grey);">⇄ Private Court</span><div class="avatar">RK</div></div>
+      </div>
+      <div class="body">
+        <div class="side">
+          <h4>EQ/ARB/0810</h4>
+          <a class="on"><span class="ic">🗂</span> Overview</a>
+          <a><span class="ic">📄</span> Pleadings</a>
+          <a><span class="ic">📎</span> Evidence (14)</a>
+          <a><span class="ic">📅</span> Hearings (3)</a>
+          <a><span class="ic">⚖</span> Orders</a>
+          <a><span class="ic">✍</span> Award draft</a>
+          <div style="margin-top:16px;padding:11px;background:var(--ice);border-radius:8px;font-size:11.5px;color:var(--navy);">
+            <b>S.29A clock</b><br>248 days remaining<br><span style="color:var(--grey);">Award due 28 Feb 2027</span>
+          </div>
+        </div>
+        <div class="main">
+          <div class="crumb">Case Room ›&nbsp; BluePeak Pvt Ltd vs Orion Industries</div>
+          <div class="h2">Award draft</div>
+          <div class="h2sub">Draft the reasoned award. AI can produce a first skeleton from the record — you review, edit and own every word.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 250px;gap:22px;">
+            <div>
+              <div class="fld">
+                <label>Findings &amp; reasoning <span class="req">*</span></label>
+                <textarea class="ta" style="min-height:120px;" placeholder="Set out the tribunal's reasoning…">On the evidence and the parties' submissions, the Tribunal finds that the retention sum was wrongfully withheld because…</textarea>
+                <span class="hint">awards.reasoning</span>
+              </div>
+              <div class="fld">
+                <label>Operative relief <span class="req">*</span></label>
+                <textarea class="ta" placeholder="The order the tribunal makes…">The Respondent shall pay the Claimant ₹42,00,000 with interest at 9% p.a. from the date of breach, and costs of ₹3,50,000.</textarea>
+                <span class="hint">awards.relief</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;background:var(--mint);border:1px solid var(--teal);border-radius:10px;padding:11px 14px;margin-top:6px;">
+                <span style="font-size:18px;">🤖</span>
+                <div style="font-size:12.5px;color:var(--navy);"><b>AI draft assist</b> — generate a structured skeleton from pleadings &amp; evidence. <span style="color:var(--grey);">Advisory only · labelled AI · fully editable.</span></div>
+                <button class="btn ghost" style="margin-left:auto;padding:7px 14px;">Generate</button>
+              </div>
+            </div>
+            <div class="right-rail">
+              <div class="callout">
+                <h5>Tribunal</h5>
+                <div class="kv"><span>Composition</span><span class="v">Panel of 3</span></div>
+                <div class="kv"><span>Presiding</span><span class="v">R. Kapoor</span></div>
+                <div class="kv"><span>Claim value</span><span class="v">₹42,00,000</span></div>
+              </div>
+              <div class="callout">
+                <h5>Finalise</h5>
+                <div class="kv"><span>Signatures</span><span class="v">1 / 3</span></div>
+                <div class="kv"><span>e-Stamp</span><span class="v">Pending</span></div>
+                <button class="btn primary" style="width:100%;margin-top:10px;">Send for e-signature</button>
+                <button class="btn ghost" style="width:100%;margin-top:8px;">Save draft</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">Wireframe — Equator Resolution · Neutral Workspace (with Private Court toggle)</div>
+  </div>
+
+  <div class="foot" style="margin-top:18px;">Equator Resolution — UI Wireframes · screens are illustrative; field names align to the Forms &amp; Database Specification.</div>
+</div>
+<button class="printbtn" onclick="window.print()">Print / Save as PDF</button>
+<script>
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.s).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>

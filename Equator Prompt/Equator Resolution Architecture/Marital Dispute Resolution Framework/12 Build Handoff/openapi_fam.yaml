@@ -1,0 +1,338 @@
+openapi: 3.0.3
+info:
+  title: Equator Resolution — Family & Marital Mediation API
+  description: >
+    REST API for the Equator family mediation platform: intake and DPDP consent, safety
+    screening (MIAM/MASIC analogue), case management, mediator appointment and conflict
+    checks, sessions and sealed caucus notes, documents with Aadhaar e-Sign and e-Stamp,
+    settlement (MSA) with s.20 registration and s.27 enforceability, escrow, court referral,
+    and the guardrailed AI Dispute Explorer.
+    Draft for engineering — settle authentication, scopes, and data-protection controls with
+    security and counsel before build.
+  version: 0.1.0
+  contact: { name: Equator Resolution, url: https://www.equatorresolution.com }
+servers:
+  - url: https://api.equatorresolution.com/family/v1
+    description: Production (illustrative)
+  - url: https://staging-api.equatorresolution.com/family/v1
+    description: Staging
+security:
+  - bearerAuth: []
+tags:
+  - name: Cases
+  - name: Parties & Consent
+  - name: Screening & Safety
+  - name: Neutrals
+  - name: Sessions
+  - name: Documents
+  - name: Settlement
+  - name: Escrow
+  - name: Court
+  - name: AI Explorer
+paths:
+  /cases:
+    post:
+      tags: [Cases]
+      summary: Create a case (Request for Mediation)
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CaseCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+    get:
+      tags: [Cases]
+      summary: List / search cases
+      parameters:
+        - { in: query, name: status, schema: { $ref: '#/components/schemas/CaseStatus' } }
+        - { in: query, name: safetyFlag, schema: { type: boolean } }
+        - { in: query, name: page, schema: { type: integer, default: 1 } }
+      responses:
+        '200': { description: OK }
+  /cases/{caseId}:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    get:
+      tags: [Cases]
+      summary: Get a case
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Cases]
+      summary: Update case state
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/CaseUpdate' } } } }
+      responses: { '200': { description: Updated } }
+  /cases/{caseId}/triage:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Cases]
+      summary: Run route triage (mediable / court / safety pathway)
+      responses:
+        '200': { description: Triage result, content: { application/json: { schema: { $ref: '#/components/schemas/TriageResult' } } } }
+  /parties:
+    post:
+      tags: [Parties & Consent]
+      summary: Create a party
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Party' } } } }
+      responses: { '201': { description: Created } }
+  /parties/{partyId}/consent:
+    parameters: [ { in: path, name: partyId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Parties & Consent]
+      summary: Record DPDP consent (or withdrawal)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Consent' } } } }
+      responses: { '200': { description: Recorded } }
+  /cases/{caseId}/screening:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Screening & Safety]
+      summary: Record a confidential safety/suitability screening for one party
+      description: Conducted separately with each party. A safety outcome gates joint sessions.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Screening' } } } }
+      responses:
+        '201': { description: Recorded, content: { application/json: { schema: { $ref: '#/components/schemas/ScreeningResult' } } } }
+  /cases/{caseId}/safety-flag:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Screening & Safety]
+      summary: Raise or clear the case safety flag
+      responses: { '200': { description: Updated } }
+  /neutrals:
+    get:
+      tags: [Neutrals]
+      summary: List / filter neutrals
+      parameters:
+        - { in: query, name: grade, schema: { type: string, enum: [A,B,C] } }
+        - { in: query, name: language, schema: { type: string } }
+        - { in: query, name: gender, schema: { type: string } }
+      responses: { '200': { description: OK } }
+  /cases/{caseId}/appointment:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Neutrals]
+      summary: Appoint a mediator (with conflict check & disclosure)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Appointment' } } } }
+      responses: { '201': { description: Appointed } }
+  /cases/{caseId}/appointment/challenge:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Neutrals]
+      summary: Challenge the appointed mediator
+      responses: { '200': { description: Challenge recorded } }
+  /cases/{caseId}/sessions:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Sessions]
+      summary: Schedule a session (joint / caucus / shuttle / child-inclusive)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Session' } } } }
+      responses:
+        '201': { description: Scheduled }
+        '409': { description: Blocked — safety flag prohibits a joint session }
+  /sessions/{sessionId}/caucus-notes:
+    parameters: [ { in: path, name: sessionId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Sessions]
+      summary: Add a sealed caucus note (mediator only)
+      description: Encrypted at rest and never disclosed across parties (Mediation Act s.22).
+      responses: { '201': { description: Sealed note stored } }
+  /cases/{caseId}/documents:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Documents]
+      summary: Generate or upload a document
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Document' } } } }
+      responses: { '201': { description: Created } }
+  /documents/{documentId}/esign:
+    parameters: [ { in: path, name: documentId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Documents]
+      summary: Initiate Aadhaar e-Sign / DSC
+      responses: { '200': { description: e-Sign initiated } }
+  /documents/{documentId}/estamp:
+    parameters: [ { in: path, name: documentId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Documents]
+      summary: Apply e-stamp (state schedule)
+      responses: { '200': { description: Stamped } }
+  /cases/{caseId}/settlement:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Settlement]
+      summary: Record the mediated settlement agreement (MSA)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Settlement' } } } }
+      responses: { '201': { description: Recorded } }
+  /settlements/{settlementId}/register:
+    parameters: [ { in: path, name: settlementId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Settlement]
+      summary: Register the MSA under s.20 of the Mediation Act, 2023
+      responses: { '202': { description: Registration submitted } }
+  /settlements/{settlementId}/obligations:
+    parameters: [ { in: path, name: settlementId, required: true, schema: { type: string, format: uuid } } ]
+    get:
+      tags: [Settlement]
+      summary: List obligations and compliance status
+      responses: { '200': { description: OK } }
+  /cases/{caseId}/escrow:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Escrow]
+      summary: Create an escrow instruction
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/EscrowInstruction' } } } }
+      responses: { '201': { description: Created } }
+  /escrow/{escrowId}/release:
+    parameters: [ { in: path, name: escrowId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Escrow]
+      summary: Release a milestone tranche
+      responses: { '200': { description: Released } }
+  /cases/{caseId}/court-referral:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Court]
+      summary: Link a court referral (s.89 CPC / Family Courts Act)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/CourtReferral' } } } }
+      responses: { '201': { description: Linked } }
+  /ai/explore:
+    post:
+      tags: [AI Explorer]
+      summary: Guardrailed AI route / rights / remedies assistant
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AiQuery' } } } }
+      responses:
+        '200': { description: AI response with disclaimers and provenance, content: { application/json: { schema: { $ref: '#/components/schemas/AiResponse' } } } }
+  /ai/draft:
+    post:
+      tags: [AI Explorer]
+      summary: Draft a document (statement of claim/defence, application) — human review required
+      responses: { '200': { description: Draft marked non-final } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    BadRequest: { description: Invalid request }
+    NotFound: { description: Not found }
+  schemas:
+    CaseStatus: { type: string, enum: [intake,screening,triaged,notice_served,response,mediator_appointed,in_session,settlement,escrow,court_referral,closed,withdrawn,not_suitable] }
+    DisputeType: { type: string, enum: [divorce_mutual,divorce_contested,judicial_separation,maintenance,custody,visitation,property_division,stridhan,domestic_violence,dowry_harassment,restitution,guardianship,nri_cross_border,other] }
+    Regime: { type: string, enum: [hindu,special_marriage,muslim,christian,parsi,inter_faith,foreign_nri,live_in,unspecified] }
+    CaseCreate:
+      type: object
+      required: [disputeTypes, initiatorRole]
+      properties:
+        disputeTypes: { type: array, items: { $ref: '#/components/schemas/DisputeType' } }
+        regime: { $ref: '#/components/schemas/Regime' }
+        initiatorRole: { type: string, enum: [spouse_a, spouse_b, counsel] }
+        hasChildren: { type: boolean }
+        jurisdictionState: { type: string }
+        amountInDispute: { type: number }
+        facts: { type: string }
+        reliefSought: { type: array, items: { type: string } }
+    Case:
+      allOf:
+        - $ref: '#/components/schemas/CaseCreate'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            caseNumber: { type: string }
+            status: { $ref: '#/components/schemas/CaseStatus' }
+            safetyFlag: { type: boolean }
+            openedAt: { type: string, format: date-time }
+    CaseUpdate: { type: object, properties: { status: { $ref: '#/components/schemas/CaseStatus' } } }
+    TriageResult:
+      type: object
+      properties:
+        route: { type: string, enum: [mediation, court_referral, safety_pathway, not_suitable, lok_adalat] }
+        rationale: { type: string }
+        safetyFlag: { type: boolean }
+        safeguards: { type: array, items: { type: string } }
+    Party:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        role: { type: string, enum: [spouse_a,spouse_b,child,guardian,counsel,relative,other] }
+        fullName: { type: string }
+        maskedGovId: { type: string }
+        preferredLanguage: { type: string }
+        needsSupport: { type: boolean }
+    Consent:
+      type: object
+      properties:
+        purpose: { type: string }
+        basis: { type: string, enum: [dpdp_consent, legal_obligation, legitimate_use] }
+        noticeVersion: { type: string }
+        withdraw: { type: boolean, default: false }
+    Screening:
+      type: object
+      required: [partyId, outcome]
+      properties:
+        partyId: { type: string, format: uuid }
+        dvIndicators: { type: boolean }
+        powerImbalance: { type: boolean }
+        capacityConcern: { type: boolean }
+        coercionConcern: { type: boolean }
+        outcome: { type: string, enum: [suitable, suitable_with_safeguards, shuttle_only, not_suitable_safety, not_suitable_capacity] }
+        safeguards: { type: string }
+    ScreeningResult:
+      type: object
+      properties:
+        outcome: { type: string }
+        safetyFlagRaised: { type: boolean }
+        jointSessionsPermitted: { type: boolean }
+        supportSignposted: { type: array, items: { type: string } }
+    Appointment:
+      type: object
+      properties:
+        neutralId: { type: string, format: uuid }
+        conflictChecked: { type: boolean }
+        disclosureSigned: { type: boolean }
+    Session:
+      type: object
+      properties:
+        mode: { type: string, enum: [joint, caucus, shuttle, child_inclusive, online, in_person] }
+        scheduledAt: { type: string, format: date-time }
+        durationMin: { type: integer }
+    Document:
+      type: object
+      properties:
+        formRef: { type: string, example: F-12 }
+        kind: { type: string, enum: [form, agreement, msa, affidavit, petition, order, evidence, certificate, report] }
+        sha256: { type: string }
+    Settlement:
+      type: object
+      properties:
+        totalValue: { type: number }
+        maintenanceAmount: { type: number }
+        maintenanceFreq: { type: string }
+        custodyTerms: { type: string }
+        propertyTerms: { type: string }
+        registeredS20: { type: boolean }
+        enforceableS27: { type: boolean, default: true }
+    EscrowInstruction:
+      type: object
+      properties:
+        escrowBank: { type: string }
+        amount: { type: number }
+        milestones:
+          type: array
+          items: { type: object, properties: { name: { type: string }, condition: { type: string }, amount: { type: number } } }
+    CourtReferral:
+      type: object
+      properties:
+        courtName: { type: string }
+        courtCaseNo: { type: string }
+        referredUnder: { type: string, example: "s.89 CPC" }
+    AiQuery:
+      type: object
+      properties:
+        query: { type: string }
+        caseId: { type: string, format: uuid }
+    AiResponse:
+      type: object
+      properties:
+        answer: { type: string }
+        recommendedRoute: { type: string }
+        citations: { type: array, items: { type: object, properties: { docId: { type: string }, title: { type: string } } } }
+        disclaimers: { type: array, items: { type: string } }
+        isAdvice: { type: boolean, default: false }
+        safetyTriggered: { type: boolean }
+        humanEscalationOffered: { type: boolean }

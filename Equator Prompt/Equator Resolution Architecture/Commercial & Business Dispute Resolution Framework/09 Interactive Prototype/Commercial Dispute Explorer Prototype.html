@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Commercial AI Dispute Explorer (Prototype)</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8;}
+ *{box-sizing:border-box} body{margin:0;font-family:Segoe UI,Calibri,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:16px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:18px} header .tag{color:#CADCEA;font-size:12.5px;font-style:italic}
+ .wrap{max-width:920px;margin:0 auto;padding:22px 18px 90px}
+ .prog{height:8px;background:#dfe7ea;border-radius:6px;overflow:hidden;margin:6px 0 20px}.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:16%;transition:.3s}
+ .step{background:#fff;border:1px solid #e2e8eb;border-radius:14px;padding:24px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ h1{font-size:22px;margin:.1em 0 .2em;color:var(--navy)} .sub{color:var(--grey);font-size:14px;margin-bottom:16px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+ .opt{border:1.5px solid #d7e0e4;border-radius:10px;padding:14px;cursor:pointer;background:#fff;font-size:14.5px}.opt:hover{border-color:var(--teal);background:#f7fbfc}.opt.sel{border-color:var(--teal);background:var(--ltteal);box-shadow:inset 0 0 0 1px var(--teal)}
+ .opt small{display:block;color:var(--grey);font-size:12px;margin-top:4px}
+ .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:9px 15px;margin:5px 6px 0 0;cursor:pointer;font-size:14px;background:#fff}.chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+ label.f{display:block;font-size:12.5px;color:var(--navy);font-weight:600;margin:12px 0 4px} select,input[type=number],textarea{padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px;font-family:inherit}select,input{min-width:180px}textarea{width:100%;min-height:90px}
+ .nav{display:flex;justify-content:space-between;margin-top:22px} button{border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}.primary{background:var(--teal);color:#fff}.ghost{background:#eaf0f2;color:var(--navy)}
+ .banner{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:14px}.b-red{background:#F6E0E4;border-left:5px solid var(--red)}.b-gold{background:var(--lgold);border-left:5px solid var(--gold)}.b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}.b-green{background:#DCEEE4;border-left:5px solid var(--green)}
+ .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:16px 18px;margin:12px 0;background:#fff}.sumcard h3{margin:.1em 0 .5em;color:var(--navy);font-size:16px}
+ .kv{font-size:14px;margin:4px 0}.kv b{color:var(--navy)} .muted{color:var(--grey);font-size:12.5px}.pill{display:inline-block;background:var(--ltteal);color:var(--navy);border-radius:20px;padding:4px 11px;margin:3px 4px 0 0;font-size:12.5px}
+ .badge{display:inline-block;border-radius:20px;padding:5px 13px;font-size:13px;font-weight:700;color:#fff}
+ a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700;margin-top:8px} .disc{font-size:11.5px;color:var(--grey);margin-top:18px;line-height:1.5}
+ #aiBtn{position:fixed;right:20px;bottom:20px;background:var(--gold);color:#20303a;border-radius:30px;padding:13px 20px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:40}
+ #aiPanel{position:fixed;right:20px;bottom:78px;width:min(420px,92vw);max-height:72vh;background:#fff;border:1px solid #d7e0e4;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:none;flex-direction:column;z-index:41;overflow:hidden}#aiPanel.open{display:flex}
+ #aiPanel .hd{background:var(--navy);color:#fff;padding:12px 16px;font-weight:700;display:flex;justify-content:space-between}#aiLog{padding:12px 14px;overflow:auto;flex:1;font-size:14px}
+ .msg{margin:8px 0;padding:10px 12px;border-radius:10px;line-height:1.45}.msg.ai{background:var(--ltteal)}.msg.me{background:#eef3f5;text-align:right}
+ #aiChips{padding:6px 12px;border-top:1px solid #eee;max-height:120px;overflow:auto}#aiForm{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #eee}#aiForm input{flex:1}
+ .modal{position:fixed;inset:0;background:rgba(10,25,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.modal.open{display:flex}.modal .box{background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:20px}
+</style></head><body>
+<header><span class="brand">EQUATOR RESOLUTION</span><span class="tag">Commercial AI Dispute Explorer — mechanism, arbitrability & drafting</span></header>
+<div class="wrap"><div class="prog"><i id="bar"></i></div><div id="app"></div></div>
+<button id="aiBtn" onclick="toggleAI()">💬 Ask Equator AI</button>
+<div id="aiPanel"><div class="hd"><span>Equator AI assistant</span><span style="cursor:pointer" onclick="toggleAI()">✕</span></div><div id="aiLog"></div><div id="aiChips"></div><form id="aiForm" onsubmit="return askFree(event)"><input id="aiInput" placeholder="Type a question…" autocomplete="off"/><button class="primary" type="submit">Ask</button></form></div>
+<div class="modal" id="draftModal"><div class="box" id="draftBox"></div></div>
+<script>
+const DTYPES={
+ "Breach of contract / damages":{law:"Indian Contract Act, 1872",arbitrable:true},
+ "Payment & recovery":{law:"Contract Act; Sale of Goods Act",arbitrable:true},
+ "Supply / vendor / procurement":{law:"Sale of Goods Act; contract",arbitrable:true},
+ "Shareholder / JV / partnership":{law:"Contract; Companies Act; Partnership Act",arbitrable:true},
+ "Company oppression / mismanagement":{law:"Companies Act ss.241-242 (NCLT)",arbitrable:false,forum:"NCLT"},
+ "Construction & infrastructure":{law:"Contract; sectoral",arbitrable:true},
+ "Technology / IT / IP":{law:"Contract; IP licence",arbitrable:true},
+ "Real estate & lease":{law:"TPA; RERA; contract",arbitrable:true},
+ "Banking / finance / guarantee":{law:"Contract; DRT/SARFAESI interface",arbitrable:true},
+ "MSME delayed payment":{law:"MSMED Act ss.15-19",arbitrable:true,msme:true},
+ "Cross-border / international":{law:"A&C Act Part II; NY Convention",arbitrable:true},
+ "Insolvency":{law:"IBC, 2016 (NCLT)",arbitrable:false,forum:"NCLT (IBC)"}
+};
+const RELIEF=["Damages / compensation","Debt recovery + interest","Specific performance","Injunction","Declaration","Termination / restitution","Return of goods","Costs","Escrow-secured payment"];
+const SECTORS=["Manufacturing","IT / technology","Construction / infrastructure","BFSI / finance","Real estate","Pharma / healthcare","Retail / FMCG","Energy","Logistics","Professional services","Other"];
+const state={etype:null,msme:false,clause:null,value:"",urgent:"no",facts:"",dtypes:new Set(),relief:new Set(),sector:"",seat:"",lang:"",arb:""};
+let step=0; const STEPS=6; const app=document.getElementById('app'),bar=document.getElementById('bar');
+const DISC="This is general information about your options and the law, not legal advice. Please consult a lawyer before deciding.";
+function render(){bar.style.width=Math.round(((step+1)/STEPS)*100)+"%";[stepParty,stepDispute,stepClause,stepRelief,stepPrefs,stepSummary][step]();}
+function nav(l="Continue →",ok=true){return `<div class="nav"><button class="ghost" onclick="go(-1)" ${step===0?'style=\"visibility:hidden\"':''}>← Back</button><button class="primary" onclick="next()" ${ok?'':'disabled style=\"opacity:.5\"'}>${l}</button></div>`;}
+function go(d){step=Math.max(0,Math.min(STEPS-1,step+d));render();window.scrollTo(0,0);} function next(){if(step<STEPS-1){step++;render();window.scrollTo(0,0);}}
+function toggle(set,v){const s=state[set];s.has(v)?s.delete(v):s.add(v);render();}
+function stepParty(){app.innerHTML=`<div class="step"><h1>Who is bringing this dispute?</h1><div class="sub">Nothing is stored on this page.</div>
+ <div class="grid">${["Company / LLP","Partnership / Proprietor","Individual / director","MSME supplier"].map(o=>`<div class="opt ${state.etype===o?'sel':''}" onclick="state.etype='${o}';state.msme=(('${o}'==='MSME supplier'));render()">${o}</div>`).join('')}</div>
+ <label class="f">Approx. amount in dispute (₹)</label><input type="number" value="${state.value}" oninput="state.value=this.value" placeholder="e.g. 5000000">
+ ${nav('Continue →',!!state.etype)}</div>`;}
+function stepDispute(){app.innerHTML=`<div class="step"><h1>What is the dispute about?</h1><div class="sub">Choose all that apply.</div>
+ <div>${Object.keys(DTYPES).map(t=>`<span class="chip ${state.dtypes.has(t)?'sel':''}" onclick="toggle('dtypes','${t.replace(/'/g,"\\'")}')">${t}</span>`).join('')}</div>
+ <label class="f">Sector</label><select onchange="state.sector=this.value"><option value="">Select…</option>${SECTORS.map(s=>`<option ${state.sector===s?'selected':''}>${s}</option>`).join('')}</select>
+ <label class="f">Briefly, what happened? (optional — helps the AI draft your case)</label><textarea oninput="state.facts=this.value" placeholder="e.g. We supplied goods worth ₹50 lakh under a purchase order dated…; payment is overdue by 90 days…">${state.facts}</textarea>
+ ${nav('Continue →',state.dtypes.size>0)}</div>`;}
+function stepClause(){app.innerHTML=`<div class="step"><h1>Is there an arbitration clause?</h1><div class="sub">A written arbitration agreement (s.7) sends the dispute to arbitration.</div>
+ <div>${["Yes, our contract has an arbitration clause","No / not sure"].map((o,i)=>`<span class="chip ${state.clause===(i===0)?'sel':''}" onclick="state.clause=${i===0};render()">${o}</span>`).join('')}</div>
+ <label class="f">Do you need urgent interim relief (e.g. to freeze money / goods)?</label>
+ <div>${["no","yes"].map(o=>`<span class="chip ${state.urgent===o?'sel':''}" onclick="state.urgent='${o}';render()">${o==='yes'?'Yes':'No'}</span>`).join('')}</div>
+ ${nav('Continue →',state.clause!==null)}</div>`;}
+function stepRelief(){app.innerHTML=`<div class="step"><h1>What outcome do you want?</h1><div class="sub">Select any that fit.</div>
+ <div>${RELIEF.map(r=>`<span class="chip ${state.relief.has(r)?'sel':''}" onclick="toggle('relief','${r.replace(/'/g,"\\'")}')">${r}</span>`).join('')}</div>${nav()}</div>`;}
+function stepPrefs(){const opt=(v,arr)=>`<select onchange="state.${v}=this.value"><option value="">No preference</option>${arr.map(a=>`<option ${state[v]===a?'selected':''}>${a}</option>`).join('')}</select>`;
+ app.innerHTML=`<div class="step"><h1>Preferences</h1><div class="sub">For the tribunal / mediator and the proceeding.</div>
+ <div class="row"><div><label class="f">Seat / venue</label>${opt('seat',["Mumbai","Delhi / NCR","Bengaluru","Chennai","Kolkata","Hyderabad","GIFT City (IFSC)"])}</div>
+ <div><label class="f">Language</label>${opt('lang',["English","Hindi"])}</div>
+ <div><label class="f">Arbitrators</label>${opt('arb',["Sole arbitrator","Three arbitrators"])}</div></div>${nav('See my summary →')}</div>`;}
+function recommend(){
+ const dts=[...state.dtypes]; const nonArb=dts.filter(t=>DTYPES[t]&&DTYPES[t].arbitrable===false);
+ const msme=state.msme||dts.some(t=>DTYPES[t]&&DTYPES[t].msme);
+ let mech,color,notes=[];
+ if(nonArb.length){mech="Court / NCLT (with mediation where possible)";color="var(--red)";notes.push("Some of your issues ("+nonArb.join(", ")+") are not arbitrable (they fall to the NCLT/court under the Vidya Drolia test); the commercial layer can still be mediated.");}
+ else if(msme){mech="MSME Samadhaan (s.18)";color="var(--gold)";notes.push("As a micro/small supplier chasing payment, you can use the MSME Facilitation Council — conciliation, then arbitration — with statutory interest at 3× the bank rate (s.16).");}
+ else if(state.clause){mech="Arbitration";color="var(--green)";notes.push("You have an arbitration agreement and the subject-matter is arbitrable — the dispute goes to a private tribunal whose award is enforceable as a decree (s.36).");}
+ else {mech="Pre-institution mediation (s.12A) → then suit/arbitration";color="var(--gold)";notes.push("With no arbitration clause, a commercial suit of specified value must first attempt mandatory s.12A mediation (Patil Automation) — unless you need urgent interim relief.");}
+ if(state.urgent==='yes')notes.push("Because you need urgent relief, you may seek an emergency arbitrator or a court order under Section 9 — and a commercial suit may bypass s.12A if it genuinely contemplates urgent interim relief.");
+ return {mech,color,notes};
+}
+function stepSummary(){const r=recommend();const dts=[...state.dtypes];const money=[...state.relief].some(x=>/damages|recovery|debt|escrow/i.test(x))||state.msme;
+ app.innerHTML=`<div class="step"><h1>Your options at a glance</h1><div class="sub">General guidance, not legal advice — but this is how Equator would approach your matter.</div>
+ <div class="sumcard"><h3>Recommended mechanism</h3><span class="badge" style="background:${r.color}">${r.mech}</span>
+  <div style="margin-top:8px">${r.notes.map(n=>`<div class="kv">• ${n}</div>`).join('')}</div></div>
+ <div class="sumcard"><h3>Applicable law</h3>${dts.map(t=>`<div class="kv">• <b>${t}:</b> ${DTYPES[t]?DTYPES[t].law:''}</div>`).join('')||'<div class="muted">Select your dispute type.</div>'}</div>
+ <div class="sumcard"><h3>Outcomes you're seeking</h3><div>${[...state.relief].map(x=>`<span class="pill">${x}</span>`).join('')||'<span class="muted">None selected.</span>'}</div></div>
+ ${money?`<div class="banner b-gold"><b>Money can be secured by escrow.</b> Award or settlement sums are held by a regulated bank and released against compliance.</div>`:''}
+ ${state.msme?`<div class="banner b-teal"><b>MSME interest.</b> You may claim interest at three times the RBI bank rate, compounded monthly (s.16) — use the MSME interest calculator.</div>`:''}
+ <div class="sumcard"><h3>Draft your case with AI</h3><div class="muted" style="margin-bottom:8px">Generate a first draft from your inputs — review it, then have counsel settle it.</div>
+  <button class="primary" onclick="draft('rfa')">Draft a Request for Arbitration</button>
+  <button class="ghost" onclick="draft('soc')" style="margin-left:8px">Draft a Statement of Claim</button></div>
+ <div class="sumcard"><h3>How it runs — fully online</h3>
+  <div class="kv">• Conflict-checked neutral(s)${state.arb?` (${state.arb.toLowerCase()})`:''}${state.seat?`, seat ${state.seat}`:''}; award within 12 months (s.29A) or a mediated settlement.</div>
+  <div class="kv">• File & sign with <b>Aadhaar e-Sign</b>; settlement/award <b>e-stamped</b> on the platform.</div>
+  <div class="kv">• Enforceable as a decree (award s.36 / MSA s.27); foreign awards under the New York Convention.</div></div>
+ <a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">Start confidentially with Equator →</a>
+ <div class="nav"><button class="ghost" onclick="go(-1)">← Back</button><button class="ghost" onclick="restart()">Start over</button></div>
+ <div class="disc"><b>Prototype.</b> Demonstration of the AI-assisted commercial intake only; stores no data; illustrative AI; not legal advice. Equator is a neutral arbitral & mediation institution.</div></div>`;}
+function restart(){Object.assign(state,{etype:null,msme:false,clause:null,value:"",urgent:"no",facts:"",dtypes:new Set(),relief:new Set(),sector:"",seat:"",lang:"",arb:""});step=0;render();}
+function draft(kind){const facts=(state.facts||"").split(/\n|(?<=\.)\s+/).map(s=>s.trim()).filter(Boolean);const dts=[...state.dtypes],rel=[...state.relief];let t="";
+ if(kind==='rfa'){t=`REQUEST FOR ARBITRATION (DRAFT)\n(AI-assisted — review and have counsel settle before filing)\n\nTo: Equator Resolution (as arbitral institution)\n\n1. PARTIES\nClaimant: [${state.etype||'party'}] · Respondent: [name].\n\n2. ARBITRATION AGREEMENT\nThe parties are bound by the arbitration clause in [contract & date]; seat [${state.seat||'city'}], language [${state.lang||'English'}], ${state.arb||'[sole/three]'}.\n\n3. NATURE OF THE DISPUTE\n`+(dts.length?dts.map((x,i)=>`(${i+1}) ${x}`).join("\n"):"[dispute type]")+`\nAmount in dispute: ₹${state.value||'[amount]'}.\n\n4. FACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts.]")+`\n\n5. RELIEF CLAIMED\n`+(rel.length?rel.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [relief];")+`\n\nWe request Equator to administer the arbitration under the Equator Rules.\n\n_____________________\nClaimant / Counsel`;}
+ else {t=`STATEMENT OF CLAIM (DRAFT)\n(AI-assisted — review and have counsel settle before filing)\n\n1. FACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts.]")+`\n\n2. THE CONTRACT & BREACH\n[Identify the term relied on and the breach.]\n\n3. RELIEF\n`+(rel.length?rel.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [relief];")+`\nAmount claimed: ₹${state.value||'[amount]'} plus interest and costs.\n\nVERIFICATION\nVerified as true to knowledge and belief.\n\n_____________________\nClaimant / Counsel`;}
+ document.getElementById('draftBox').innerHTML=`<h2>${kind==='rfa'?'Request for Arbitration':'Statement of Claim'} — draft</h2><div class="muted" style="margin-bottom:8px">AI-generated from your inputs. Not legal advice — edit and have counsel settle.</div><textarea style="min-height:340px">${t.replace(/</g,'&lt;')}</textarea><div class="nav"><button class="ghost" onclick="closeModal()">Close</button><button class="primary" onclick="copyDraft(this)">Copy draft</button></div>`;
+ document.getElementById('draftModal').classList.add('open');}
+function closeModal(){document.getElementById('draftModal').classList.remove('open');}
+function copyDraft(b){const ta=document.querySelector('#draftBox textarea');ta.select();try{document.execCommand('copy');b.textContent='Copied ✓';}catch(e){b.textContent='Select & copy';}}
+const QUICK=["Which mechanism fits my dispute?","Can my dispute be arbitrated?","How does arbitration work here?","What is s.12A pre-institution mediation?","How does MSME Samadhaan work?","What interest can an MSME claim?","How long does it take?","Is the award enforceable?"];
+function aiAnswer(q){const s=q.toLowerCase();const r=recommend();
+ if(/which|mechanism|route|best|fit/.test(s))return `Based on your inputs: ${r.mech}. ${r.notes.join(" ")} `+DISC;
+ if(/arbitrab|can.*arbitrat|eligible/.test(s)){const na=[...state.dtypes].filter(t=>DTYPES[t]&&DTYPES[t].arbitrable===false);return na.length?`Some issues (${na.join(", ")}) are NOT arbitrable — they go to the NCLT/court (Vidya Drolia four-fold test). The rest can be arbitrated. `+DISC:`On what you've selected, the dispute appears arbitrable, provided there is a valid arbitration agreement (s.7). `+DISC;}
+ if(/how.*arbitrat|process|steps/.test(s))return "Request for Arbitration → tribunal appointed (disclosure & conflict check) → Terms of Reference & Procedural Order 1 → pleadings (claim, defence, counterclaim) → hearings → reasoned award within 12 months (+6), enforceable as a decree (s.36). "+DISC;
+ if(/12a|pre-?institution|before.*suit/.test(s))return "For a commercial suit of specified value that doesn't need urgent interim relief, s.12A of the Commercial Courts Act makes pre-institution mediation MANDATORY before you can file (Patil Automation). It's completed within 3 months (+2). "+DISC;
+ if(/msme|samadhaan|supplier|delayed/.test(s))return "A micro/small supplier files on MSME Samadhaan; the Facilitation Council first conciliates, then arbitrates (s.18), aiming to decide within ~90 days. "+DISC;
+ if(/interest|s.?16|3x|three times/.test(s))return "Under s.16 of the MSMED Act, a defaulting buyer pays interest at THREE TIMES the RBI bank rate, compounded monthly, from the due date. Use the MSME interest calculator for the figure. "+DISC;
+ if(/time|long|days|duration/.test(s))return "Arbitration: award within 12 months of completed pleadings, +6 by consent (s.29A); fast-track 6 months (s.29B). s.12A mediation: 3 months (+2). MSME: ~90 days. "+DISC;
+ if(/enforce|award|decree|final/.test(s))return "A domestic award is enforceable as a decree (s.36) after the s.34 window; a mediated settlement under s.27; foreign awards under the New York Convention (Part II). "+DISC;
+ if(/interim|urgent|emergency|freeze|injunction/.test(s))return "You can seek interim relief from a court (s.9) or the tribunal (s.17), and an emergency arbitrator before the tribunal is constituted (Amazon v Future Retail). "+DISC;
+ if(/cost|fee|pay/.test(s))return "Fees are ad valorem — scaled to the amount in dispute — plus administration and the arbitrator's fee (Fourth Schedule model). Use the fee estimator for an instant figure. "+DISC;
+ if(/draft|request|claim|statement/.test(s))return "Finish the steps and use the 'Draft a Request for Arbitration / Statement of Claim' buttons on the summary — a reviewable draft, not legal advice. "+DISC;
+ return "I can help with the right mechanism, arbitrability, the arbitration and s.12A/MSME processes, interest, timelines, enforcement, interim relief, fees and drafting. Try a question below. "+DISC;}
+function pushMsg(w,t){const l=document.getElementById('aiLog');const d=document.createElement('div');d.className='msg '+w;d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight;}
+function ask(q){pushMsg('me',q);setTimeout(()=>pushMsg('ai',aiAnswer(q)),150);}
+function askFree(e){e.preventDefault();const i=document.getElementById('aiInput');if(i.value.trim()){ask(i.value.trim());i.value='';}return false;}
+function toggleAI(){const p=document.getElementById('aiPanel');p.classList.toggle('open');if(p.classList.contains('open')&&!document.getElementById('aiLog').dataset.init){document.getElementById('aiLog').dataset.init='1';pushMsg('ai',"Hello — I'm the Equator AI assistant for commercial disputes. I can recommend the right mechanism, check arbitrability, explain the process, and draft your case. "+DISC);document.getElementById('aiChips').innerHTML=QUICK.map(q=>`<span class="chip" onclick="ask('${q.replace(/'/g,"\\'")}')">${q}</span>`).join('');}}
+render();
+</script></body></html>

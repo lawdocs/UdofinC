@@ -1,0 +1,123 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Financial & Loan AI Dispute Explorer (Prototype)</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;--ltteal:#DCEAEF;--lgold:#F5ECD6;--bg:#F2F6F8}
+ *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:16px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+ header .brand{font-weight:700;letter-spacing:.5px;font-size:18px}header .tag{color:#CADCEA;font-size:12.5px;font-style:italic}
+ .wrap{max-width:920px;margin:0 auto;padding:22px 18px 90px}
+ .prog{height:8px;background:#dfe7ea;border-radius:6px;overflow:hidden;margin:6px 0 20px}.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));width:18%;transition:.3s}
+ .step{background:#fff;border:1px solid #e2e8eb;border-radius:14px;padding:24px;box-shadow:0 6px 18px rgba(18,59,79,.06)}
+ h1{font-size:22px;margin:.1em 0 .2em;color:var(--navy)}.sub{color:var(--grey);font-size:14px;margin-bottom:16px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+ .opt{border:1.5px solid #d7e0e4;border-radius:10px;padding:14px;cursor:pointer;background:#fff;font-size:14.5px}.opt:hover{border-color:var(--teal);background:#f7fbfc}.opt.sel{border-color:var(--teal);background:var(--ltteal);box-shadow:inset 0 0 0 1px var(--teal)}
+ .opt small{display:block;color:var(--grey);font-size:12px;margin-top:4px}
+ .chip{display:inline-block;border:1.5px solid #d7e0e4;border-radius:22px;padding:9px 15px;margin:5px 6px 0 0;cursor:pointer;font-size:14px;background:#fff}.chip.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+ label.f{display:block;font-size:12.5px;color:var(--navy);font-weight:600;margin:12px 0 4px}select,input[type=number],textarea{padding:9px 10px;border:1.5px solid #d7e0e4;border-radius:8px;font-size:14px;font-family:inherit}select,input{min-width:180px}textarea{width:100%;min-height:80px}
+ .nav{display:flex;justify-content:space-between;margin-top:22px}button{border:0;border-radius:9px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}.primary{background:var(--teal);color:#fff}.ghost{background:#eaf0f2;color:var(--navy)}
+ .banner{border-radius:10px;padding:12px 14px;margin:10px 0;font-size:14px}.b-red{background:#F6E0E4;border-left:5px solid var(--red)}.b-gold{background:var(--lgold);border-left:5px solid var(--gold)}.b-teal{background:var(--ltteal);border-left:5px solid var(--teal)}.b-green{background:#DCEEE4;border-left:5px solid var(--green)}
+ .sumcard{border:1px solid #e2e8eb;border-radius:12px;padding:16px 18px;margin:12px 0;background:#fff}.sumcard h3{margin:.1em 0 .5em;color:var(--navy);font-size:16px}
+ .kv{font-size:14px;margin:4px 0}.kv b{color:var(--navy)}.muted{color:var(--grey);font-size:12.5px}.pill{display:inline-block;background:var(--ltteal);color:var(--navy);border-radius:20px;padding:4px 11px;margin:3px 4px 0 0;font-size:12.5px}
+ .badge{display:inline-block;border-radius:20px;padding:5px 13px;font-size:13px;font-weight:700;color:#fff}
+ a.cta{display:inline-block;background:var(--gold);color:#20303a;text-decoration:none;padding:12px 20px;border-radius:9px;font-weight:700;margin-top:8px}.disc{font-size:11.5px;color:var(--grey);margin-top:18px;line-height:1.5}
+ #aiBtn{position:fixed;right:20px;bottom:20px;background:var(--gold);color:#20303a;border-radius:30px;padding:13px 20px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:40}
+ #aiPanel{position:fixed;right:20px;bottom:78px;width:min(420px,92vw);max-height:72vh;background:#fff;border:1px solid #d7e0e4;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:none;flex-direction:column;z-index:41;overflow:hidden}#aiPanel.open{display:flex}
+ #aiPanel .hd{background:var(--navy);color:#fff;padding:12px 16px;font-weight:700;display:flex;justify-content:space-between}#aiLog{padding:12px 14px;overflow:auto;flex:1;font-size:14px}
+ .msg{margin:8px 0;padding:10px 12px;border-radius:10px;line-height:1.45}.msg.ai{background:var(--ltteal)}.msg.me{background:#eef3f5;text-align:right}
+ #aiChips{padding:6px 12px;border-top:1px solid #eee;max-height:120px;overflow:auto}#aiForm{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #eee}#aiForm input{flex:1}
+ .modal{position:fixed;inset:0;background:rgba(10,25,32,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.modal.open{display:flex}.modal .box{background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:20px}
+</style></head><body>
+<header><span class="brand">EQUATOR RESOLUTION</span><span class="tag">Financial & Loan AI Dispute Explorer — the right route, your rights, a settlement</span></header>
+<div class="wrap"><div class="prog"><i id="bar"></i></div><div id="app"></div></div>
+<button id="aiBtn" onclick="toggleAI()">💬 Ask Equator AI</button>
+<div id="aiPanel"><div class="hd"><span>Equator AI assistant</span><span style="cursor:pointer" onclick="toggleAI()">✕</span></div><div id="aiLog"></div><div id="aiChips"></div><form id="aiForm" onsubmit="return askFree(event)"><input id="aiInput" placeholder="Type a question…" autocomplete="off"/><button class="primary" type="submit">Ask</button></form></div>
+<div class="modal" id="draftModal"><div class="box" id="draftBox"></div></div>
+<script>
+const DTYPES={
+ "Loan default & recovery":{route:"mediation",law:"Contract; Mediation Act"},
+ "One-time settlement (OTS)":{route:"mediation",law:"Mediation Act; RBI 2023 framework"},
+ "Cheque bounce (NI-138)":{route:"ni138",law:"NI Act ss.138,147"},
+ "Wrong / excess charges":{route:"grievance",law:"RBI Fair Practices; consumer"},
+ "Digital-lending grievance":{route:"grievance",law:"RBI Digital Lending Directions 2025"},
+ "Recovery-agent harassment":{route:"harassment",law:"RBI Fair Practices; BNS"},
+ "Credit-bureau dispute":{route:"grievance",law:"Credit Information Cos Act"},
+ "Guarantee / co-borrower":{route:"mediation",law:"Contract Act"},
+ "Secured-debt recovery (bank/FI)":{route:"drt",law:"SARFAESI 2002; RDDBFI (DRT)"}
+};
+const RELIEF=["OTS / waiver","Refund of charges","Stop harassment","Credit-bureau correction","Restructuring","Recovery of amount","Return of security","No-Dues / NOC","Compounding (cheque)"];
+const LOANTYPES=["Personal","Vehicle","Home","Gold","Education","Business / MSME","Credit card","BNPL","Microfinance","P2P"];
+const state={who:null,loan:"",amount:"",dtypes:new Set(),relief:new Set(),facts:"",secured:"no"};
+let step=0;const STEPS=5;const app=document.getElementById('app'),bar=document.getElementById('bar');
+const DISC="This is general information about your options and the law, not legal advice. Please consult a lawyer before deciding.";
+function render(){bar.style.width=Math.round(((step+1)/STEPS)*100)+"%";[stepWho,stepDispute,stepRelief,stepFacts,stepSummary][step]();}
+function nav(l="Continue →",ok=true){return `<div class="nav"><button class="ghost" onclick="go(-1)" ${step===0?'style=\"visibility:hidden\"':''}>← Back</button><button class="primary" onclick="next()" ${ok?'':'disabled style=\"opacity:.5\"'}>${l}</button></div>`;}
+function go(d){step=Math.max(0,Math.min(STEPS-1,step+d));render();window.scrollTo(0,0);}function next(){if(step<STEPS-1){step++;render();window.scrollTo(0,0);}}
+function toggle(set,v){const s=state[set];s.has(v)?s.delete(v):s.add(v);render();}
+function stepWho(){app.innerHTML=`<div class="step"><h1>Are you the borrower or the lender?</h1><div class="sub">Either can start. Nothing is stored on this page.</div>
+ <div class="grid">${["Borrower / customer","Guarantor / co-borrower","Lender (Bank / NBFC / Fintech)"].map(o=>`<div class="opt ${state.who===o?'sel':''}" onclick="state.who='${o}';render()">${o}</div>`).join('')}</div>
+ <label class="f">Loan type</label><select onchange="state.loan=this.value"><option value="">Select…</option>${LOANTYPES.map(l=>`<option ${state.loan===l?'selected':''}>${l}</option>`).join('')}</select>
+ <label class="f">Outstanding / disputed amount (₹)</label><input type="number" value="${state.amount}" oninput="state.amount=this.value" placeholder="e.g. 500000">
+ ${nav('Continue →',!!state.who)}</div>`;}
+function stepDispute(){app.innerHTML=`<div class="step"><h1>What is the dispute about?</h1><div class="sub">Choose all that apply.</div>
+ <div>${Object.keys(DTYPES).map(t=>`<span class="chip ${state.dtypes.has(t)?'sel':''}" onclick="toggle('dtypes','${t.replace(/'/g,"\\'")}')">${t}</span>`).join('')}</div>
+ <label class="f">Is the loan secured (mortgage / hypothecation)?</label>
+ <div>${["no","yes"].map(o=>`<span class="chip ${state.secured===o?'sel':''}" onclick="state.secured='${o}';render()">${o==='yes'?'Yes':'No'}</span>`).join('')}</div>
+ ${nav('Continue →',state.dtypes.size>0)}</div>`;}
+function stepRelief(){app.innerHTML=`<div class="step"><h1>What outcome do you want?</h1><div class="sub">Select any that fit.</div>
+ <div>${RELIEF.map(r=>`<span class="chip ${state.relief.has(r)?'sel':''}" onclick="toggle('relief','${r.replace(/'/g,"\\'")}')">${r}</span>`).join('')}</div>${nav()}</div>`;}
+function stepFacts(){app.innerHTML=`<div class="step"><h1>Briefly, what happened?</h1><div class="sub">Optional — helps the AI draft your complaint/request.</div>
+ <textarea oninput="state.facts=this.value" placeholder="e.g. I took a personal loan of ₹5,00,000; recovery agents are calling at odd hours and the app added charges I never agreed to…">${state.facts}</textarea>${nav('See my summary →')}</div>`;}
+function recommend(){
+ const dts=[...state.dtypes];const routes=new Set(dts.map(t=>DTYPES[t]&&DTYPES[t].route));
+ if(routes.has("drt")){return {r:"DRT / SARFAESI (special forum)",c:"var(--red)",n:["Bank/FI enforcement of security goes to the Debts Recovery Tribunal (non-arbitrable). Equator can still mediate any settlement."]};}
+ if(routes.has("ni138")){return {r:"Mediation → compounding / Lok Adalat",c:"var(--green)",n:["A dishonoured cheque (s.138) is best settled: mediate, then compound (s.147) or record in a Lok Adalat (award = decree). Escrow secures the payment."]};}
+ if(routes.has("harassment")){return {r:"Grievance + mediation (harassment)",c:"var(--gold)",n:["Recovery agents must follow the RBI Fair Practices Code. We escalate the harassment AND mediate the underlying debt. If you're in danger, contact the police."]};}
+ if(routes.has("grievance")){return {r:"RBI grievance / Ombudsman + mediation",c:"var(--gold)",n:["First complain to the lender's grievance officer; if unresolved in 30 days, escalate free of cost to the RBI Ombudsman (cms.rbi.org.in). Equator mediates the money dispute in parallel."]};}
+ return {r:"Mediation / conciliation & one-time settlement",c:"var(--green)",n:["Your matter is well-suited to a mediated settlement (OTS) — a negotiated figure, secured by escrow and released against a No-Dues/NOC, enforceable as a decree (s.27)."]};
+}
+function stepSummary(){const r=recommend();const dts=[...state.dtypes];const ots=[...state.relief].some(x=>/ots|waiver|recovery|no-dues/i.test(x))||dts.some(t=>/default|settlement/i.test(t));
+ app.innerHTML=`<div class="step"><h1>Your options at a glance</h1><div class="sub">General guidance, not legal advice — but this is how Equator would approach your matter.</div>
+ ${dts.includes("Recovery-agent harassment")?`<div class="banner b-red"><b>You have rights.</b> Recovery agents cannot threaten or harass you. If you are in immediate danger, contact the police.</div>`:''}
+ <div class="sumcard"><h3>Recommended route</h3><span class="badge" style="background:${r.c}">${r.r}</span>
+  <div style="margin-top:8px">${r.n.map(n=>`<div class="kv">• ${n}</div>`).join('')}</div></div>
+ <div class="sumcard"><h3>Applicable law</h3>${dts.map(t=>`<div class="kv">• <b>${t}:</b> ${DTYPES[t]?DTYPES[t].law:''}</div>`).join('')||'<div class="muted">Select your dispute type.</div>'}</div>
+ <div class="sumcard"><h3>Outcomes you're seeking</h3><div>${[...state.relief].map(x=>`<span class="pill">${x}</span>`).join('')||'<span class="muted">None selected.</span>'}</div></div>
+ ${ots?`<div class="banner b-gold"><b>A one-time settlement may be possible.</b> Use the OTS estimator to model a settlement; the money is held in escrow and released against a No-Dues/NOC, with your credit record updated.</div>`:''}
+ <div class="sumcard"><h3>Draft with AI</h3><div class="muted" style="margin-bottom:8px">Generate a first draft from your inputs — review it, then have counsel settle it.</div>
+  <button class="primary" onclick="draft('grievance')">Draft a grievance / complaint</button>
+  <button class="ghost" onclick="draft('request')" style="margin-left:8px">Draft a request for resolution</button></div>
+ <div class="sumcard"><h3>How it runs — fully online</h3>
+  <div class="kv">• A neutral mediator/conciliator; fast, confidential; borrower protected from coercion.</div>
+  <div class="kv">• File & sign with <b>Aadhaar e-Sign</b>; settlement <b>e-stamped</b>; escrow releases against the No-Dues/NOC.</div>
+  <div class="kv">• Enforceable as a decree (MSA s.27); Lok Adalat awards are final civil-court decrees.</div></div>
+ <a class="cta" href="https://www.equatorresolution.com" target="_blank" rel="noopener">Start confidentially with Equator →</a>
+ <div class="nav"><button class="ghost" onclick="go(-1)">← Back</button><button class="ghost" onclick="restart()">Start over</button></div>
+ <div class="disc"><b>Prototype.</b> Demonstration of the AI-assisted financial intake only; stores no data; illustrative AI; not legal advice. Equator is a neutral mediation/conciliation & arbitration institution and complements the RBI Ombudsman and the DRT.</div></div>`;}
+function restart(){Object.assign(state,{who:null,loan:"",amount:"",dtypes:new Set(),relief:new Set(),facts:"",secured:"no"});step=0;render();}
+function draft(kind){const facts=(state.facts||"").split(/\n|(?<=\.)\s+/).map(s=>s.trim()).filter(Boolean);const dts=[...state.dtypes],rel=[...state.relief];let t="";
+ if(kind==='grievance'){t=`GRIEVANCE / COMPLAINT (DRAFT)\n(AI-assisted — review and have counsel settle before sending)\n\nTo: [Lender / LSP] grievance-redressal officer\nFrom: [${state.who||'Borrower'}] · Loan a/c: [____]\n\nNATURE OF GRIEVANCE\n`+(dts.length?dts.map((x,i)=>`(${i+1}) ${x}`).join("\n"):"[issue]")+`\n\nFACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts and dates.]")+`\n\nRELIEF SOUGHT\n`+(rel.length?rel.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [relief];")+`\n\nIf this is not resolved within 30 days, I intend to escalate to the RBI Integrated Ombudsman (cms.rbi.org.in) and to seek mediation at Equator Resolution.\n\n_____________________\nBorrower`;}
+ else{t=`REQUEST FOR RESOLUTION (DRAFT)\n(AI-assisted — review and have counsel settle before filing)\n\nTo: Equator Resolution\n\n1. PARTIES\nApplicant: [${state.who||'party'}] · Other party: [lender/borrower].\nLoan type: ${state.loan||'[loan]'} · Amount: ₹${state.amount||'[amount]'}${state.secured==='yes'?' (secured)':''}.\n\n2. THE DISPUTE\n`+(dts.length?dts.map((x,i)=>`(${i+1}) ${x}`).join("\n"):"[dispute type]")+`\n\n3. FACTS\n`+(facts.length?facts.map((f,i)=>`${i+1}. ${f}`).join("\n"):"1. [State the facts.]")+`\n\n4. RELIEF SOUGHT\n`+(rel.length?rel.map((x,i)=>`(${String.fromCharCode(97+i)}) ${x};`).join("\n"):"(a) [relief];")+`\n\nWe request Equator to administer the resolution under its Rules.\n\n_____________________\nApplicant`;}
+ document.getElementById('draftBox').innerHTML=`<h2>${kind==='grievance'?'Grievance / complaint':'Request for resolution'} — draft</h2><div class="muted" style="margin-bottom:8px">AI-generated from your inputs. Not legal advice — edit and have counsel settle.</div><textarea style="min-height:340px">${t.replace(/</g,'&lt;')}</textarea><div class="nav"><button class="ghost" onclick="closeModal()">Close</button><button class="primary" onclick="copyDraft(this)">Copy draft</button></div>`;
+ document.getElementById('draftModal').classList.add('open');}
+function closeModal(){document.getElementById('draftModal').classList.remove('open');}
+function copyDraft(b){const ta=document.querySelector('#draftBox textarea');ta.select();try{document.execCommand('copy');b.textContent='Copied ✓';}catch(e){b.textContent='Select & copy';}}
+const QUICK=["Which route should I use?","How does the RBI Ombudsman work?","Can I settle a cheque-bounce case?","What is a one-time settlement (OTS)?","Recovery agents are harassing me","Will my credit score be fixed?","Is it confidential?","How long does it take?"];
+function aiAnswer(q){const s=q.toLowerCase();const r=recommend();
+ if(/which|route|forum|should i|best/.test(s))return `Based on your inputs: ${r.r}. ${r.n.join(" ")} `+DISC;
+ if(/ombudsman|rbi|complain/.test(s))return "First complain to the lender's grievance officer. If it isn't resolved within 30 days, or the reply is unsatisfactory, you can escalate FREE of cost to the RBI Integrated Ombudsman at cms.rbi.org.in. Equator can mediate the underlying money dispute in parallel. "+DISC;
+ if(/cheque|138|bounce|compound/.test(s))return "Yes — a cheque-bounce case (s.138) can be settled. On payment (secured through escrow), the case is closed by compounding (s.147) or recorded in a Lok Adalat, whose award is a final civil-court decree. Early settlement also reduces the graded costs (Damodar Prabhu). "+DISC;
+ if(/ots|settlement|waiver|one-?time/.test(s))return "A one-time settlement is a negotiated figure — often the principal plus part of the interest, with penal charges waived — paid in one shot or on a schedule, in exchange for closing the loan and a No-Dues/NOC. Use the OTS estimator to model it. "+DISC;
+ if(/harass|recovery agent|threat|abuse/.test(s))return "Recovery agents must follow the RBI Fair Practices Code — no threats, no odd-hour or abusive contact. We escalate the harassment to the lender/RBI and mediate the underlying debt to close it. If you are in immediate danger, contact the police. "+DISC;
+ if(/credit|cibil|bureau|score/.test(s))return "Yes — the settlement builds in a credit-bureau correction: on closure the lender updates your record (CIBIL/CRIF/Experian) to reflect the settled/closed status. "+DISC;
+ if(/confiden|private/.test(s))return "Mediation is confidential and without prejudice — what you say cannot be used against you in court, subject to the legal exceptions. "+DISC;
+ if(/time|long|days|how fast/.test(s))return "Most loan settlements complete within ~45–60 days; a cheque-bounce settlement closes on the next Lok Adalat/court date; the Ombudsman route follows the 30-day grievance window. "+DISC;
+ if(/drt|sarfaesi|secured|mortgage/.test(s))return "If a bank/FI is enforcing security (SARFAESI) or recovering a large debt, that goes to the Debts Recovery Tribunal — a special forum (not arbitrable). Equator can still mediate a settlement (OTS) around it. "+DISC;
+ if(/cost|fee|pay/.test(s))return "Fees are low and volume-friendly, with concessions for small and consumer matters. Use the OTS estimator for the settlement figure. "+DISC;
+ if(/draft|complaint|grievance|request/.test(s))return "Finish the steps and use the 'Draft a grievance/request' buttons on the summary — a reviewable draft, not legal advice. "+DISC;
+ return "I can help with the right route, the RBI Ombudsman, cheque-bounce settlement, one-time settlement, harassment, credit-bureau correction, confidentiality, timelines and drafting. Try a question below. "+DISC;}
+function pushMsg(w,t){const l=document.getElementById('aiLog');const d=document.createElement('div');d.className='msg '+w;d.textContent=t;l.appendChild(d);l.scrollTop=l.scrollHeight;}
+function ask(q){pushMsg('me',q);setTimeout(()=>pushMsg('ai',aiAnswer(q)),150);}
+function askFree(e){e.preventDefault();const i=document.getElementById('aiInput');if(i.value.trim()){ask(i.value.trim());i.value='';}return false;}
+function toggleAI(){const p=document.getElementById('aiPanel');p.classList.toggle('open');if(p.classList.contains('open')&&!document.getElementById('aiLog').dataset.init){document.getElementById('aiLog').dataset.init='1';pushMsg('ai',"Hello — I'm the Equator AI assistant for loan & financial disputes. I can recommend the right route, explain your rights, estimate a settlement, and draft your complaint. "+DISC);document.getElementById('aiChips').innerHTML=QUICK.map(q=>`<span class="chip" onclick="ask('${q.replace(/'/g,"\\'")}')">${q}</span>`).join('');}}
+render();
+</script></body></html>

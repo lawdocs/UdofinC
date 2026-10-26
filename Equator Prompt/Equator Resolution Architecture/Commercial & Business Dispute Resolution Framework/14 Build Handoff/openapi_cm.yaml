@@ -1,0 +1,306 @@
+openapi: 3.0.3
+info:
+  title: Equator Resolution — Commercial & Business Dispute API
+  version: "1.0.0"
+  description: |
+    REST surface for the Commercial & Business Dispute vertical. Law stated as at July 2026.
+
+    **Institutional rules enforced by this API and, beneath it, by database constraints:**
+    * **C1 — no arbitration without an agreement.** `POST /cases/{id}/mechanism` with `arbitration`
+      returns **409** unless an agreement with an arbitration clause is on the record.
+    * **C2 — MSME conciliation before arbitration.** For a matter filed as an MSMED Act s.18 reference,
+      `arbitration` returns **409** until conciliation has been recorded as attempted and failed.
+    * **C3 — s.12A pre-institution mediation.** A `commercial_court` referral returns **409** for a
+      specified-value suit not seeking urgent interim relief until pre-institution mediation is exhausted.
+    * **C4 — registration before closure.** `POST /cases/{id}/close` returns **409** if the matter settled
+      but the settlement is not registered under Mediation Act s.27.
+    * **C5 — caucus confidentiality.** Caucus notes are readable only by the authoring neutral.
+servers:
+  - url: https://api.equatorresolution.com/commercial/v1
+security:
+  - bearerAuth: []
+
+paths:
+  /cases:
+    post:
+      summary: Create a commercial dispute case
+      tags: [Case]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CaseCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '422': { description: "Invalid payload", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+    get:
+      summary: List cases
+      tags: [Case]
+      parameters:
+        - { in: query, name: status, schema: { $ref: '#/components/schemas/CaseStatus' } }
+        - { in: query, name: route, schema: { $ref: '#/components/schemas/Route' } }
+        - { in: query, name: s29aRiskDays, schema: { type: integer }, description: "Cases whose s.29A clock expires within N days" }
+      responses:
+        '200': { description: OK }
+
+  /cases/{id}:
+    get:
+      summary: Get a case
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '404': { description: Not found }
+
+  /agreements:
+    post:
+      summary: Record the underlying agreement (and any arbitration clause)
+      tags: [Agreement]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Agreement' } } }
+      responses:
+        '201': { description: Recorded }
+
+  /cases/{id}/triage:
+    post:
+      summary: Mechanism & route triage
+      description: |
+        Determines the mechanism (mediation / conciliation / arbitration / med-arb / expert determination)
+        and the route. Applies the s.12A applicability test and the MSME reference flag.
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Triage' } } }
+      responses:
+        '201': { description: Triaged }
+        '409':
+          description: "**C1/C2** — arbitration requested without an agreement, or an MSME reference before conciliation failed"
+          content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } }
+
+  /cases/{id}/mechanism:
+    patch:
+      summary: Set or change the mechanism
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { mechanism: { $ref: '#/components/schemas/Mechanism' } }, required: [mechanism] } } }
+      responses:
+        '200': { description: Updated }
+        '409': { description: "**C1** — arbitration without an arbitration clause on the record", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /cases/{id}/s12a:
+    post:
+      summary: Record pre-institution mediation (s.12A, Commercial Courts Act)
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/S12A' } } }
+      responses:
+        '201': { description: Recorded }
+
+  /cases/{id}/conciliation:
+    post:
+      summary: Record an MSMED s.18 conciliation attempt and outcome
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { attempted: { type: boolean }, failed: { type: boolean } }, required: [attempted] } } }
+      responses:
+        '201': { description: Recorded }
+
+  /cases/{id}/neutral:
+    post:
+      summary: Appoint a neutral with disclosure
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/NeutralDisclosure' } } }
+      responses:
+        '201': { description: Appointed }
+        '409': { description: "Independence not declared" }
+
+  /cases/{id}/sessions:
+    post:
+      summary: Schedule a session
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Session' } } }
+      responses:
+        '201': { description: Scheduled }
+
+  /cases/{id}/tribunal:
+    post:
+      summary: Constitute the tribunal and start the s.29A clock
+      tags: [Arbitration]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Tribunal' } } }
+      responses:
+        '201': { description: Constituted }
+        '409': { description: "**C1** — no arbitration agreement on the record" }
+
+  /cases/{id}/award:
+    post:
+      summary: Record the arbitral award
+      tags: [Arbitration]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Award' } } }
+      responses:
+        '201': { description: Recorded }
+        '422': { description: "Award must be reasoned (s.31(3))" }
+
+  /cases/{id}/settlement:
+    post:
+      summary: Record a mediated / conciliated settlement
+      tags: [Settlement]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Settlement' } } }
+      responses:
+        '201': { description: Recorded }
+
+  /cases/{id}/close:
+    post:
+      summary: Close the case
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: Closed }
+        '409':
+          description: "**C4** — a settled matter cannot close until the settlement is registered (Mediation Act s.27)"
+          content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } }
+
+  /reports/route-summary:
+    get:
+      summary: Matters and average value by route
+      tags: [Reporting]
+      responses:
+        '200': { description: OK }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    CaseId:
+      in: path
+      name: id
+      required: true
+      schema: { type: string, format: uuid }
+  schemas:
+    RuleViolation:
+      type: object
+      properties:
+        rule: { type: string, example: "C1" }
+        code: { type: string, example: "arbitration_needs_agreement" }
+        message: { type: string }
+      required: [rule, code, message]
+    Mechanism:
+      type: string
+      enum: [mediation, conciliation, arbitration, med_arb, expert_determination]
+    Route:
+      type: string
+      enum: [equator_mediation, equator_conciliation, equator_arbitration, msme_facilitation_council, s12a_pre_institution_mediation, commercial_court, nclt, civil_court, drt]
+    CaseStatus:
+      type: string
+      enum: [intake, triaged, pre_institution_mediation, in_conciliation, constituted, in_session, settled, award, signposted, closed, withdrawn]
+    CaseCreate:
+      type: object
+      required: [claimant, respondent, disputeTypes]
+      properties:
+        claimant: { type: object }
+        respondent: { type: object }
+        agreementId: { type: string, format: uuid }
+        disputeTypes: { type: array, items: { $ref: '#/components/schemas/DisputeType' } }
+        amountInDispute: { type: number }
+        specifiedValue: { type: boolean, description: "Commercial Courts Act specified-value threshold" }
+        urgentInterim: { type: boolean, description: "Exempts s.12A" }
+        msmeReference: { type: boolean }
+    DisputeType:
+      type: string
+      enum: [breach_of_contract, payment_recovery, msme_delayed_payment, shareholder_oppression, jv_partnership, supply_distribution, construction_epc, ip_licensing, post_ma_indemnity, guarantee_invocation, agency, franchise, it_services, real_estate_commercial, other]
+    Case:
+      allOf:
+        - $ref: '#/components/schemas/CaseCreate'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            caseNo: { type: string }
+            mechanism: { $ref: '#/components/schemas/Mechanism' }
+            route: { $ref: '#/components/schemas/Route' }
+            status: { $ref: '#/components/schemas/CaseStatus' }
+    Agreement:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        hasArbClause: { type: boolean }
+        arbClauseText: { type: string }
+        seat: { type: string }
+        venue: { type: string }
+        governingLaw: { type: string }
+        panelSize: { type: integer, enum: [1, 3] }
+        medPrecondition: { type: boolean }
+        signedOn: { type: string, format: date }
+    Triage:
+      type: object
+      required: [mechanism, route]
+      properties:
+        mechanism: { $ref: '#/components/schemas/Mechanism' }
+        route: { $ref: '#/components/schemas/Route' }
+        s12aApplicable: { type: boolean }
+    S12A:
+      type: object
+      properties:
+        applicable: { type: boolean }
+        commencedOn: { type: string, format: date }
+        concludedOn: { type: string, format: date }
+        outcome: { type: string, enum: [settled, non_starter, failed] }
+        exhausted: { type: boolean }
+    NeutralDisclosure:
+      type: object
+      required: [neutralId, declaredIndependent]
+      properties:
+        neutralId: { type: string, format: uuid }
+        relationships: { type: string }
+        declaredIndependent: { type: boolean }
+    Session:
+      type: object
+      required: [neutralId, mode, scheduledAt]
+      properties:
+        neutralId: { type: string, format: uuid }
+        mode: { type: string, enum: [joint, caucus, online, in_person] }
+        scheduledAt: { type: string, format: date-time }
+    Tribunal:
+      type: object
+      required: [memberCount]
+      properties:
+        memberCount: { type: integer, enum: [1, 3] }
+        constitutedOn: { type: string, format: date }
+        po1On: { type: string, format: date }
+        pleadingsCompleteOn: { type: string, format: date }
+    Award:
+      type: object
+      required: [reasoned]
+      properties:
+        reasoned: { type: boolean, description: "Must be true — s.31(3)" }
+        amountAwarded: { type: number }
+        interestTerms: { type: string }
+        costsTerms: { type: string }
+        signedOn: { type: string, format: date }
+    Settlement:
+      type: object
+      required: [amount]
+      properties:
+        amount: { type: number }
+        paymentTerms: { type: string }
+        registeredAt: { type: string, format: date-time }

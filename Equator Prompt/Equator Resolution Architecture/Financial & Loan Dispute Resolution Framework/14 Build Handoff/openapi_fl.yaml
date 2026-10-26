@@ -1,0 +1,310 @@
+openapi: 3.0.3
+info:
+  title: Equator Resolution — Financial & Loan Dispute API
+  description: >
+    REST API for the Equator financial & loan dispute-resolution platform: intake, KYC,
+    case management, neutral appointment, one-time settlement (OTS), cheque-bounce (NI-138)
+    settlement, escrow, e-Sign/e-Stamp, credit-bureau correction, grievance/forum handoff,
+    and the guardrailed AI Dispute Explorer. Draft for engineering — settle auth, scopes and
+    data-protection controls with security and counsel before build.
+  version: 0.1.0
+  contact: { name: Equator Resolution, url: https://www.equatorresolution.com }
+servers:
+  - url: https://api.equatorresolution.com/fl/v1
+    description: Production (illustrative)
+  - url: https://staging-api.equatorresolution.com/fl/v1
+    description: Staging
+security:
+  - bearerAuth: []
+tags:
+  - name: Cases
+  - name: Parties & KYC
+  - name: Lenders
+  - name: Neutrals
+  - name: Settlements & OTS
+  - name: Escrow & Payments
+  - name: Documents
+  - name: Grievances & Forums
+  - name: AI Explorer
+paths:
+  /cases:
+    post:
+      tags: [Cases]
+      summary: Create a case (Request for Resolution)
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CaseCreate' } } }
+      responses:
+        '201': { description: Case created, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+    get:
+      tags: [Cases]
+      summary: List/search cases
+      parameters:
+        - { in: query, name: status, schema: { $ref: '#/components/schemas/CaseStatus' } }
+        - { in: query, name: disputeType, schema: { $ref: '#/components/schemas/DisputeType' } }
+        - { in: query, name: lenderId, schema: { type: string, format: uuid } }
+        - { in: query, name: page, schema: { type: integer, default: 1 } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Case' } } } } }
+  /cases/{caseId}:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    get:
+      tags: [Cases]
+      summary: Get a case
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Cases]
+      summary: Update case state / assignment
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/CaseUpdate' } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+  /cases/{caseId}/triage:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Cases]
+      summary: Run route triage (recommend forum/mechanism)
+      responses:
+        '200': { description: Triage result, content: { application/json: { schema: { $ref: '#/components/schemas/TriageResult' } } } }
+  /parties:
+    post:
+      tags: [Parties & KYC]
+      summary: Create a party (borrower/guarantor/lender-rep)
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Party' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Party' } } } }
+  /parties/{partyId}/kyc:
+    parameters: [ { in: path, name: partyId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Parties & KYC]
+      summary: Submit/verify KYC/KYB (CKYC)
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/KycRequest' } } }
+      responses:
+        '200': { description: KYC status, content: { application/json: { schema: { $ref: '#/components/schemas/KycResult' } } } }
+  /lenders:
+    get: { tags: [Lenders], summary: List lender panels, responses: { '200': { description: OK } } }
+    post:
+      tags: [Lenders]
+      summary: Onboard a lender panel (SLA config)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Lender' } } } }
+      responses: { '201': { description: Created } }
+  /lenders/{lenderId}/referrals:
+    parameters: [ { in: path, name: lenderId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Lenders]
+      summary: Bulk-refer a batch of matters
+      requestBody: { content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/CaseCreate' } } } } }
+      responses: { '202': { description: Accepted for processing } }
+  /neutrals:
+    get:
+      tags: [Neutrals]
+      summary: List/filter neutrals (grade, expertise, language)
+      parameters:
+        - { in: query, name: grade, schema: { type: string, enum: [A, B, C] } }
+        - { in: query, name: expertise, schema: { type: string } }
+      responses: { '200': { description: OK } }
+  /cases/{caseId}/appointment:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Neutrals]
+      summary: Appoint a neutral (with conflict check & disclosure)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Appointment' } } } }
+      responses: { '201': { description: Appointed } }
+  /cases/{caseId}/ots-estimate:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Settlements & OTS]
+      summary: Compute an indicative OTS range
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/OtsInput' } } } }
+      responses:
+        '200': { description: OTS estimate, content: { application/json: { schema: { $ref: '#/components/schemas/OtsEstimate' } } } }
+  /cases/{caseId}/settlement:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Settlements & OTS]
+      summary: Record a settlement (MSA / consent)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Settlement' } } } }
+      responses: { '201': { description: Settlement recorded, content: { application/json: { schema: { $ref: '#/components/schemas/Settlement' } } } } }
+  /cases/{caseId}/escrow:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Escrow & Payments]
+      summary: Create an escrow instruction
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/EscrowInstruction' } } } }
+      responses: { '201': { description: Escrow created } }
+  /escrow/{escrowId}/release:
+    parameters: [ { in: path, name: escrowId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Escrow & Payments]
+      summary: Release a milestone tranche
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/EscrowRelease' } } } }
+      responses: { '200': { description: Released } }
+  /cases/{caseId}/documents:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Documents]
+      summary: Generate/upload a document (form/settlement)
+      responses: { '201': { description: Created } }
+  /documents/{documentId}/esign:
+    parameters: [ { in: path, name: documentId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Documents]
+      summary: Initiate Aadhaar e-Sign / DSC
+      responses: { '200': { description: e-Sign initiated } }
+  /documents/{documentId}/estamp:
+    parameters: [ { in: path, name: documentId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Documents]
+      summary: Apply SHCIL e-stamp
+      responses: { '200': { description: e-Stamped } }
+  /cases/{caseId}/bureau-update:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Grievances & Forums]
+      summary: File a credit-bureau correction/update on settlement
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/BureauUpdate' } } } }
+      responses: { '202': { description: Update submitted } }
+  /cases/{caseId}/forum-handoff:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Grievances & Forums]
+      summary: Signpost/handoff to Ombudsman/DRT/Lok Adalat/consumer forum
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/ForumHandoff' } } } }
+      responses: { '200': { description: Handoff recorded } }
+  /ai/explore:
+    post:
+      tags: [AI Explorer]
+      summary: Guardrailed AI route/rights/remedy assistant
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AiQuery' } } } }
+      responses:
+        '200': { description: AI response (with disclaimers), content: { application/json: { schema: { $ref: '#/components/schemas/AiResponse' } } } }
+  /ai/draft:
+    post:
+      tags: [AI Explorer]
+      summary: Draft a grievance/request/settlement (human review required)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AiDraftRequest' } } } }
+      responses: { '200': { description: Draft (marked non-final) } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    BadRequest: { description: Invalid request }
+    NotFound: { description: Not found }
+  schemas:
+    CaseStatus: { type: string, enum: [intake, triaged, notice_served, response, neutral_appointed, in_session, settlement, escrow, closed, withdrawn, signposted] }
+    DisputeType: { type: string, enum: [loan_default_ots, cheque_138, wrong_charges, digital_lending, recovery_harassment, credit_bureau, guarantee, secured_debt] }
+    Money: { type: object, properties: { amount: { type: number }, currency: { type: string, default: INR } } }
+    CaseCreate:
+      type: object
+      required: [initiatorRole, disputeType]
+      properties:
+        initiatorRole: { type: string, enum: [borrower, guarantor, lender] }
+        disputeType: { $ref: '#/components/schemas/DisputeType' }
+        lenderId: { type: string, format: uuid }
+        borrowerId: { type: string, format: uuid }
+        loanType: { type: string, enum: [personal, vehicle, home, gold, education, business_msme, credit_card, bnpl, microfinance, p2p] }
+        amountInDispute: { $ref: '#/components/schemas/Money' }
+        secured: { type: boolean }
+        facts: { type: string }
+        reliefSought: { type: array, items: { type: string } }
+    Case:
+      allOf:
+        - $ref: '#/components/schemas/CaseCreate'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            caseNumber: { type: string }
+            status: { $ref: '#/components/schemas/CaseStatus' }
+            createdAt: { type: string, format: date-time }
+    CaseUpdate: { type: object, properties: { status: { $ref: '#/components/schemas/CaseStatus' }, neutralId: { type: string, format: uuid } } }
+    TriageResult:
+      type: object
+      properties:
+        recommendedRoute: { type: string, enum: [mediation_ots, ni138, ombudsman, drt_sarfaesi, consumer, lok_adalat, msme_samadhaan] }
+        rationale: { type: string }
+        nonMediable: { type: boolean }
+        parallelMediation: { type: boolean }
+    Party:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        role: { type: string, enum: [borrower, guarantor, lender_rep] }
+        name: { type: string }
+        maskedId: { type: string, description: Masked government ID }
+        contact: { type: object, properties: { emailHash: { type: string }, phoneHash: { type: string } } }
+    KycRequest: { type: object, properties: { method: { type: string, enum: [ckyc, aadhaar_offline, document] }, reference: { type: string } } }
+    KycResult: { type: object, properties: { status: { type: string, enum: [pending, verified, failed] }, verifiedAt: { type: string, format: date-time } } }
+    Lender:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        type: { type: string, enum: [bank, nbfc, hfc, mfi, fintech_lsp, arc, p2p, card_issuer] }
+        slaConfig: { type: object }
+        settlementAuthority: { type: array, items: { type: string } }
+    Appointment:
+      type: object
+      properties:
+        neutralId: { type: string, format: uuid }
+        conflictChecked: { type: boolean }
+        disclosureSigned: { type: boolean }
+    OtsInput:
+      type: object
+      properties:
+        principal: { type: number }
+        accruedInterest: { type: number }
+        penalCharges: { type: number }
+        interestWaiverPct: { type: number }
+        penalWaiverPct: { type: number }
+        discountPct: { type: number }
+    OtsEstimate:
+      type: object
+      properties:
+        totalOutstanding: { type: number }
+        suggestedOts: { type: number }
+        low: { type: number }
+        high: { type: number }
+        recoveryPct: { type: number }
+        indicative: { type: boolean, default: true }
+        disclaimer: { type: string }
+    Settlement:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        settledAmount: { type: number }
+        schedule: { type: array, items: { type: object, properties: { dueDate: { type: string, format: date }, amount: { type: number } } } }
+        interestWaiver: { type: number }
+        penalWaiver: { type: number }
+        nocOnFinalPayment: { type: boolean }
+        bureauStatus: { type: string, enum: [settled, closed] }
+        enforceableAsDecree: { type: boolean, default: true }
+    EscrowInstruction:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        escrowBank: { type: string }
+        amount: { type: number }
+        milestones: { type: array, items: { type: object, properties: { name: { type: string }, condition: { type: string }, amount: { type: number } } } }
+    EscrowRelease: { type: object, properties: { milestone: { type: string }, confirmedBy: { type: string } } }
+    BureauUpdate: { type: object, properties: { bureau: { type: string, enum: [cibil, crif, experian, equifax] }, status: { type: string, enum: [settled, closed] }, filedAt: { type: string, format: date-time } } }
+    ForumHandoff: { type: object, properties: { forum: { type: string, enum: [ombudsman, drt, consumer, lok_adalat, msme_samadhaan] }, reference: { type: string } } }
+    AiQuery:
+      type: object
+      properties:
+        query: { type: string }
+        caseId: { type: string, format: uuid }
+    AiResponse:
+      type: object
+      properties:
+        answer: { type: string }
+        recommendedRoute: { type: string }
+        disclaimers: { type: array, items: { type: string } }
+        isAdvice: { type: boolean, default: false }
+        escalationOffered: { type: boolean }
+    AiDraftRequest: { type: object, properties: { kind: { type: string, enum: [grievance, request, settlement] }, caseId: { type: string, format: uuid } } }

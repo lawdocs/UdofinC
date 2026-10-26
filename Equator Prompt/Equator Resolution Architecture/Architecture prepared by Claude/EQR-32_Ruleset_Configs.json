@@ -1,0 +1,190 @@
+{
+  "NBFC": {
+    "pillar": "NBFC",
+    "version": "1.0.0",
+    "pathway": {
+      "entry": "Conciliation",
+      "rungs": [
+        "Conciliation",
+        "Mediation",
+        "Arbitration"
+      ],
+      "escalation": "on_fail",
+      "mandatory": [
+        "Conciliation"
+      ]
+    },
+    "clocks": [
+      {
+        "name": "rbi_grievance",
+        "limit_days": 30
+      },
+      {
+        "name": "award_29a",
+        "limit_months": 12,
+        "extend_months": 6
+      }
+    ],
+    "allocation": {
+      "method": "RoundRobin",
+      "panel": "NBFC",
+      "tribunal": "sole",
+      "conflict": "graph"
+    },
+    "fees": {
+      "rate_card": "nbfc_v1",
+      "payer": "lender",
+      "success_fee": false
+    },
+    "templates": {
+      "notice": "tmpl_notice_nbfc",
+      "award": "tmpl_award_std"
+    },
+    "confidentiality": {
+      "tier": "Standard",
+      "on_platform_comms": true
+    },
+    "flags": {
+      "non_arbitrable": []
+    }
+  },
+  "Family": {
+    "pillar": "Family",
+    "version": "1.0.0",
+    "pathway": {
+      "entry": "Mediation",
+      "rungs": [
+        "Mediation"
+      ],
+      "escalation": "none",
+      "mandatory": [
+        "Mediation"
+      ]
+    },
+    "clocks": [
+      {
+        "name": "mediation",
+        "limit_days": 120,
+        "extend_days": 60
+      }
+    ],
+    "allocation": {
+      "method": "RulesBased",
+      "panel": "Family",
+      "conflict": "graph"
+    },
+    "fees": {
+      "rate_card": "family_v1",
+      "payer": "parties",
+      "success_fee": false
+    },
+    "templates": {
+      "msa": "tmpl_msa_family",
+      "parenting_plan": "tmpl_parenting"
+    },
+    "confidentiality": {
+      "tier": "POSH/Marital",
+      "redaction": true,
+      "on_platform_comms": true
+    },
+    "flags": {
+      "non_arbitrable": [
+        "custody",
+        "marital_status"
+      ]
+    }
+  },
+  "CommercialMSME": {
+    "pillar": "Commercial",
+    "version": "1.0.0",
+    "pathway": {
+      "entry": "Mediation",
+      "rungs": [
+        "Mediation",
+        "Arbitration"
+      ],
+      "escalation": "on_fail",
+      "msme_subtrack": {
+        "forum": "MSEFC",
+        "challenge_predeposit_pct": 75
+      }
+    },
+    "clocks": [
+      {
+        "name": "preinstitution_mediation",
+        "limit_days": 90
+      },
+      {
+        "name": "award_29a",
+        "limit_months": 12,
+        "extend_months": 6
+      }
+    ],
+    "allocation": {
+      "method": "Nomination",
+      "fallback": "RulesBased",
+      "tribunal": "sole_or_three",
+      "conflict": "graph"
+    },
+    "fees": {
+      "rate_card": "commercial_v1",
+      "payer": "initiator",
+      "success_fee": true
+    },
+    "templates": {
+      "award": "tmpl_award_reasoned"
+    },
+    "confidentiality": {
+      "tier": "Standard"
+    },
+    "flags": {
+      "non_arbitrable": [
+        "oppression_mismanagement"
+      ]
+    }
+  },
+  "Securities": {
+    "pillar": "Securities",
+    "version": "1.0.0",
+    "pathway": {
+      "entry": "PreConciliation",
+      "rungs": [
+        "PreConciliation",
+        "Conciliation",
+        "Arbitration"
+      ],
+      "escalation": "sequential",
+      "mandatory": [
+        "PreConciliation",
+        "Conciliation"
+      ]
+    },
+    "clocks": [
+      {
+        "name": "pre_conciliation",
+        "limit_days": 21,
+        "extend_days": 10
+      }
+    ],
+    "allocation": {
+      "method": "RoundRobin",
+      "panel": "Securities",
+      "conflict": "graph"
+    },
+    "fees": {
+      "rate_card": "sebi_v1",
+      "conciliation_payer": "market_participant",
+      "arbitration_payer": "both"
+    },
+    "templates": {
+      "notice": "tmpl_notice_sebi"
+    },
+    "confidentiality": {
+      "tier": "Standard",
+      "sso": "SCORES"
+    },
+    "flags": {
+      "non_arbitrable": []
+    }
+  }
+}

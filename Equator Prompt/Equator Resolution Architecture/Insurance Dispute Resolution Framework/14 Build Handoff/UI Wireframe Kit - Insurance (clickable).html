@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equator Resolution — Insurance UI Wireframe Kit</title>
+<style>
+ :root{--navy:#123B4F;--teal:#1E7A8C;--gold:#C6A15B;--green:#2E7D5B;--red:#B23A48;--ink:#1B2A32;--grey:#556168;
+       --lt:#DCEAEF;--lg:#F5ECD6;--lr:#F6E0E4;--lgr:#DCEEE4;--bg:#EDF2F4;--line:#CBD7DC;}
+ *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Calibri,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+ header{background:var(--navy);color:#fff;padding:14px 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+ header .brand{font-weight:700;letter-spacing:.5px}
+ header .tag{color:#CADCEA;font-size:12.5px;font-style:italic;flex:1}
+ nav{background:#fff;border-bottom:1px solid var(--line);padding:8px 18px;display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:52px;z-index:19}
+ nav button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 13px;font-size:12.5px;cursor:pointer;color:var(--navy)}
+ nav button.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+ .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 70px}
+ .screen{display:none}.screen.on{display:block}
+ h1{font-size:20px;color:var(--navy);margin:.2em 0 .1em}
+ .note{color:var(--grey);font-size:13px;margin-bottom:14px}
+ .frame{background:#fff;border:2px solid var(--navy);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(18,59,79,.10)}
+ .chrome{background:var(--navy);color:#fff;padding:9px 14px;font-size:12.5px;display:flex;gap:10px;align-items:center}
+ .chrome .dots{display:flex;gap:5px}.dot{width:9px;height:9px;border-radius:50%;background:#4a6d7e}
+ .body{padding:16px;display:grid;gap:14px}
+ .cols{display:grid;gap:14px}
+ .c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c21{grid-template-columns:2fr 1fr}.c12{grid-template-columns:1fr 2fr}
+ @media(max-width:820px){.c2,.c3,.c21,.c12{grid-template-columns:1fr}}
+ .card{border:1px solid var(--line);border-radius:9px;padding:12px 14px;background:#fff}
+ .card h3{margin:.1em 0 .5em;font-size:13.5px;color:var(--navy);text-transform:uppercase;letter-spacing:.4px}
+ .ph{background:repeating-linear-gradient(135deg,#f2f6f8,#f2f6f8 8px,#e8eff2 8px,#e8eff2 16px);border:1px dashed var(--line);
+     border-radius:6px;height:var(--h,44px);display:flex;align-items:center;justify-content:center;color:var(--grey);font-size:12px}
+ .field{margin:8px 0}.field label{display:block;font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:3px}
+ .inp{border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13px;background:#fbfdfe}
+ .inp.req{border-color:var(--gold);background:#fffdf6}
+ .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+ .btn{border:0;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
+ .p{background:var(--teal);color:#fff}.g{background:#e7edf0;color:var(--navy)}.d{background:var(--red);color:#fff}
+ .pill{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11.5px;margin:2px 3px 2px 0}
+ .pl-t{background:var(--lt);color:var(--navy)}.pl-g{background:var(--lg);color:#6d5320}
+ .pl-r{background:var(--lr);color:#8e2434}.pl-gr{background:var(--lgr);color:#1e5a41}
+ table{width:100%;border-collapse:collapse;font-size:12.5px}
+ th{background:#eef3f5;color:var(--navy);text-align:left;padding:7px 9px;border-bottom:2px solid var(--line);font-size:11.5px;text-transform:uppercase;letter-spacing:.3px}
+ td{padding:7px 9px;border-bottom:1px solid #e8eef0;vertical-align:top}
+ .banner{border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.5}
+ .b-r{background:var(--lr);border-left:5px solid var(--red)}.b-g{background:var(--lg);border-left:5px solid var(--gold)}
+ .b-t{background:var(--lt);border-left:5px solid var(--teal)}.b-gr{background:var(--lgr);border-left:5px solid var(--green)}
+ .anno{margin-top:12px;font-size:12.5px;color:var(--grey);border-left:3px solid var(--gold);padding-left:12px;line-height:1.6}
+ .anno b{color:var(--navy)}
+ .side{background:#f7fafb;border-right:1px solid var(--line);padding:12px}
+ .side a{display:block;padding:7px 9px;border-radius:6px;font-size:12.5px;color:var(--navy);text-decoration:none;margin-bottom:2px}
+ .side a.on{background:var(--navy);color:#fff;font-weight:600}
+ .kpi{text-align:center;padding:10px}.kpi b{display:block;font-size:22px;color:var(--teal)}
+ .kpi span{font-size:11px;color:var(--grey)}
+ .stepbar{display:flex;gap:4px;margin-bottom:10px}
+ .stepbar i{flex:1;height:5px;border-radius:3px;background:#dbe4e8}.stepbar i.on{background:var(--teal)}
+ .toast{position:relative;border-radius:8px;padding:10px 12px;font-size:12.5px;background:var(--lr);border:1px solid var(--red);color:#8e2434}
+</style></head><body>
+<header><span class="brand">EQUATOR RESOLUTION</span>
+ <span class="tag">Insurance vertical — UI wireframe kit · 9 screens · click the tabs</span></header>
+<nav id="nav"></nav>
+<div class="wrap" id="app"></div>
+
+<script>
+var SCREENS=[
+ {id:"explorer", label:"1 · Explorer result", title:"Party — Dispute Explorer result",
+  note:"The first screen a policyholder sees. Three things are non-negotiable here: the free forum is named, the last date to act is stated, and arbitration is absent for a retail policy.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    equatorresolution.com/explore &nbsp;·&nbsp; EN | हिंदी</div>
+  <div class="body">
+    <div class="banner b-r"><b>Your last date to file with the Insurance Ombudsman is 2 April 2027 (255 days).</b>
+      This deadline does not pause for anything, including for mediation with us.</div>
+    <div class="cols c21">
+      <div class="card"><h3>Your routes</h3>
+        <div class="banner b-gr" style="margin-bottom:8px"><b>Insurance Ombudsman</b>
+          <span class="pill pl-gr">Free</span><span class="pill pl-gr">~3 months</span><br>
+          17 offices · no lawyer needed · claims to ₹50 lakh · an award binds the insurer up to ₹30 lakh but does not bind you.</div>
+        <div class="banner b-t" style="margin-bottom:8px"><b>Equator mediation (in parallel)</b>
+          <span class="pill pl-t">Per tariff · waivers</span><span class="pill pl-t">30–45 days</span><br>
+          We get the claim file and survey report, break the decision down ground by ground, and can agree things an award cannot.</div>
+        <div class="banner b-t" style="margin-bottom:8px"><b>Consumer commission</b>
+          <span class="pill pl-t">Low cost</span><span class="pill pl-t">Months–years</span><br>
+          An independent right. Note: filing here closes the Ombudsman route for the same matter.</div>
+        <div class="banner b-r"><b>Arbitration — not available for a retail policy</b><br>
+          Under the IRDAI circular of 27 October 2023, retail policies are not to carry an arbitration clause.
+          A legacy clause in your policy does not force you into arbitration.</div>
+      </div>
+      <div>
+        <div class="card"><h3>Ombudsman eligibility</h3>
+          <table><tr><th>Condition</th><th>?</th></tr>
+          <tr><td>Written representation made</td><td><span class="pill pl-gr">YES</span></td></tr>
+          <tr><td>Rejected / 30 days / unsatisfactory</td><td><span class="pill pl-gr">YES</span></td></tr>
+          <tr><td>Within one year</td><td><span class="pill pl-gr">YES</span></td></tr>
+          <tr><td>Within ₹50 lakh</td><td><span class="pill pl-gr">YES</span></td></tr>
+          <tr><td>Not pending elsewhere</td><td><span class="pill pl-gr">YES</span></td></tr></table>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Your deadlines</h3>
+          <table><tr><th>Clock</th><th>Last date</th><th>Days</th></tr>
+          <tr><td>Insurer reply (30d)</td><td>19 Apr 2026</td><td>—</td></tr>
+          <tr><td><b>Ombudsman (1 year)</b></td><td><b>02 Apr 2027</b></td><td><span class="pill pl-g">255</span></td></tr>
+          <tr><td>Consumer (2 years)</td><td>10 Jan 2028</td><td>538</td></tr></table>
+        </div>
+      </div>
+    </div>
+    <div class="row"><button class="btn p">Start a case</button><button class="btn g">Draft my grievance letter</button>
+      <button class="btn g">Print this page</button></div>
+    <div class="banner b-t">Equator Resolution is a private dispute-resolution institution. It is not the Insurance
+      Ombudsman, IRDAI, a consumer commission or a court, and it does not give legal advice or estimate what a claim is worth.</div>
+  </div>`,
+  anno:"<b>Design rules.</b> The deadline banner is the first element in the DOM and is never collapsible. The Ombudsman card is always rendered above the Equator card for a retail policy — order is enforced by the route matrix, not by the designer. The arbitration card is rendered as a <i>blocked</i> route, in red, rather than being hidden: a party who has been told by an insurer that they must arbitrate needs to see the correction."},
+
+ {id:"intake", label:"2 · Intake (F-I02)", title:"Party — Request for Resolution",
+  note:"The retail/commercial question is a hard gate. It cannot be skipped, defaulted or inferred.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Form F-I02 · Step 2 of 6</div>
+  <div class="body">
+    <div class="stepbar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+    <div class="cols c2">
+      <div class="card"><h3>The policy</h3>
+        <div class="field"><label>Insurer</label><div class="inp">— select —</div></div>
+        <div class="field"><label>Policy number</label><div class="inp"></div></div>
+        <div class="field"><label>Line of business</label><div class="inp">Health — individual</div></div>
+        <div class="field"><label>Date continuous cover FIRST began (health)</label>
+          <div class="inp req">01 Jun 2019</div>
+          <div class="note" style="margin:4px 0 0">Not the current policy year. This drives the pre-existing-disease arithmetic.</div></div>
+      </div>
+      <div class="card"><h3>Retail or commercial — required</h3>
+        <div class="banner b-g" style="margin-bottom:10px">This one answer decides which forums are open to you.
+          It cannot be left blank and it is reviewed by a second officer.</div>
+        <div class="field"><div class="inp req">◉ &nbsp;Retail / individual — a personal policy for me or my family</div></div>
+        <div class="field"><div class="inp">○ &nbsp;Commercial / business — taken by a company, firm or LLP</div></div>
+        <div class="field"><div class="inp">○ &nbsp;Group policy — I am a member making my own claim</div></div>
+        <div class="field"><div class="inp">○ &nbsp;Not sure — please assess</div></div>
+        <div class="field"><label>Does the policy contain an arbitration clause?</label>
+          <div class="inp">Yes — clause 13</div></div>
+        <div class="banner b-r" style="margin-top:8px"><b>Recorded, but it is not a bar.</b> Retail policies are not to
+          carry an arbitration clause (IRDAI, 27 Oct 2023), and your right to a consumer commission cannot be ousted by one.</div>
+      </div>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>Pre-filing steps</h3>
+        <div class="field"><label>Written grievance to the insurer — date</label><div class="inp req">20 Mar 2026</div></div>
+        <div class="field"><label>Insurer's reply — date</label><div class="inp">02 Apr 2026</div></div>
+        <div class="field"><label>Bima Bharosa token</label><div class="inp">— not yet obtained —</div>
+          <div class="note" style="margin:4px 0 0">Free, takes minutes, and is independent proof of your complaint date.
+            <a href="#">Show me how</a></div></div>
+      </div>
+      <div class="card"><h3>Computed, live</h3>
+        <div class="banner b-r"><b>Last date to file with the Ombudsman: 2 April 2027</b><br>
+          Shown as soon as the two dates above are entered — before you finish the form.</div>
+        <div class="row" style="margin-top:10px"><span class="pill pl-gr">Eligible on all 5 conditions</span>
+          <span class="pill pl-t">Route: Ombudsman + mediation</span><span class="pill pl-r">Blocked: arbitration</span></div>
+      </div>
+    </div>
+    <div class="row"><button class="btn g">Back</button><button class="btn p">Continue</button>
+      <span class="note" style="margin:0">Saved automatically.</span></div>
+  </div>`,
+  anno:"<b>Validation.</b> Submitting without a policy class returns 422 from <code>POST /cases</code>; the field has no default and no 'skip'. The last-date banner recomputes on blur of either date field — the party sees their deadline before they finish filing, not after. The arbitration-clause answer is stored for information only; it never enters the routing decision."},
+
+ {id:"caseroom", label:"3 · Case room", title:"Party — Case room",
+  note:"What the policyholder sees for the life of the matter. One deadline, one next action, and everything else secondary.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Case INS-2026-04417 · Health claim · ₹3,70,000 in dispute</div>
+  <div class="body">
+    <div class="banner b-r"><b>255 days left to file with the Insurance Ombudsman (2 April 2027).</b>
+      If we have not settled by 1 February 2027 we will tell you to file, and help you do it.</div>
+    <div class="cols c21">
+      <div>
+        <div class="card"><h3>Your next action</h3>
+          <div class="banner b-g"><b>Upload your first-ever policy document (2019).</b> Your insurer says the
+            pre-existing-disease waiting period was not complete. The 2019 document is what answers that.</div>
+          <div class="row" style="margin-top:8px"><button class="btn p">Upload</button><button class="btn g">I don't have it</button></div>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Progress</h3>
+          <table>
+            <tr><td>✔ Filed</td><td>21 Jul 2026</td><td><span class="pill pl-gr">Done</span></td></tr>
+            <tr><td>✔ Triaged &amp; signposted</td><td>22 Jul 2026</td><td><span class="pill pl-gr">Done</span></td></tr>
+            <tr><td>✔ Notice to insurer</td><td>23 Jul 2026</td><td><span class="pill pl-gr">Done</span></td></tr>
+            <tr><td>◔ Claim file requested</td><td>due 06 Aug 2026</td><td><span class="pill pl-g">14-day clock</span></td></tr>
+            <tr><td>○ Session</td><td>—</td><td></td></tr>
+            <tr><td>○ Settlement</td><td>—</td><td></td></tr>
+          </table>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Your deduction schedule</h3>
+          <table><tr><th>Head</th><th>Billed</th><th>Allowed</th><th>Deducted</th><th>Varies with room?</th></tr>
+          <tr><td>Surgeon's fee</td><td>1,50,000</td><td>93,750</td><td>56,250</td><td><span class="pill pl-r">No</span></td></tr>
+          <tr><td>Implant</td><td>1,65,000</td><td>1,03,125</td><td>61,875</td><td><span class="pill pl-r">No</span></td></tr>
+          <tr><td>Nursing</td><td>18,000</td><td>11,250</td><td>6,750</td><td><span class="pill pl-t">Yes</span></td></tr></table>
+          <div class="banner b-g" style="margin-top:8px"><b>₹1,50,000</b> of proportionate deduction has been applied to
+            heads that do not vary with room category. That is the first thing we will ask about.</div>
+        </div>
+      </div>
+      <div>
+        <div class="card"><h3>Your rights — always visible</h3>
+          <div class="banner b-gr" style="font-size:12px"><b>Insurance Ombudsman</b> — free, no lawyer, 17 offices.
+            Award binds the insurer up to ₹30 lakh. <a href="#">How to file</a></div>
+          <div class="banner b-t" style="font-size:12px;margin-top:8px"><b>Consumer commission</b> — independent right.
+            Filing there closes the Ombudsman route.</div>
+          <div class="note" style="margin-top:8px">Using Equator does not affect either, and does not pause any deadline.</div>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Documents</h3>
+          <div class="ph" style="--h:130px">Policy · proposal form · repudiation letter · bills · discharge summary
+            <br>(health documents shown to you only)</div>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Your case manager</h3>
+          <div class="row"><div class="ph" style="--h:38px;width:38px;border-radius:50%">·</div>
+            <div style="font-size:12.5px"><b>R. Menon</b><br><span class="note">Replies within 1 working day</span></div></div>
+          <button class="btn g" style="margin-top:8px">Message</button></div>
+      </div>
+    </div>
+  </div>`,
+  anno:"<b>Hierarchy.</b> Deadline first, next action second, everything else third. The rights panel is persistent — it does not collapse on mobile and it is not behind a tab. Health documents are visible to the party and to the assigned case manager and neutral only; the insurer portal never renders them."},
+
+ {id:"triage", label:"4 · Triage console", title:"Case manager — Triage (F-I13)",
+  note:"The operational heart of the vertical. Shown here mid-error, because the error state is the point.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Console · INS-2026-04417 · Triage</div>
+  <div class="body">
+    <div class="cols" style="grid-template-columns:180px 1fr">
+      <div class="side">
+        <a href="#" class="on">Triage</a><a href="#">Clocks</a><a href="#">Claim file</a>
+        <a href="#">Schedules</a><a href="#">Sessions</a><a href="#">Settlement</a><a href="#">Closure</a>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="toast"><b>409 — Rule R1.</b> Arbitration cannot be selected on a policy classified <b>retail</b>.
+          IRDAI circular dated 27 October 2023. Available routes: insurer grievance · Insurance Ombudsman ·
+          consumer commission · civil court · Equator mediation.</div>
+        <div class="cols c2">
+          <div class="card"><h3>Step 1 — Classification</h3>
+            <div class="field"><label>Policy class (from F-I02)</label><div class="inp req">Retail / individual</div></div>
+            <div class="field"><label>Classified by</label><div class="inp">R. Menon</div></div>
+            <div class="field"><label>Reviewed by (must differ)</label><div class="inp req">S. Iyer</div></div>
+          </div>
+          <div class="card"><h3>Step 2 — Ombudsman eligibility</h3>
+            <table>
+              <tr><td>1 · Representation made</td><td><span class="pill pl-gr">YES</span></td></tr>
+              <tr><td>2 · Rejected / 30d / unsatisfactory</td><td><span class="pill pl-gr">YES</span></td></tr>
+              <tr><td>3 · Within one year</td><td><span class="pill pl-gr">YES</span></td></tr>
+              <tr><td>4 · Within ₹50 lakh</td><td><span class="pill pl-gr">YES</span></td></tr>
+              <tr><td>5 · Not pending elsewhere</td><td><span class="pill pl-gr">YES</span></td></tr>
+            </table>
+            <div class="banner b-gr" style="margin-top:8px">Eligible · Centre: Mumbai · Last date 02 Apr 2027</div>
+          </div>
+        </div>
+        <div class="card"><h3>Step 3 — Route</h3>
+          <div class="row">
+            <div class="inp" style="border-color:var(--green)">◉ Equator mediation</div>
+            <div class="inp">○ Insurance Ombudsman (primary, parallel)</div>
+            <div class="inp">○ Consumer commission</div>
+            <div class="inp" style="border-color:var(--red);background:var(--lr);color:#8e2434">⊘ Arbitration — blocked (R1)</div>
+          </div>
+        </div>
+        <div class="cols c2">
+          <div class="card"><h3>Step 4 — Clocks (all must have an owner)</h3>
+            <table><tr><th>Clock</th><th>Expiry</th><th>Owner</th></tr>
+            <tr><td>Insurer reply 30d</td><td>19 Apr 2026</td><td>R. Menon</td></tr>
+            <tr><td><b>Ombudsman 1y</b></td><td><b>02 Apr 2027</b></td><td>R. Menon</td></tr>
+            <tr><td>Consumer 2y</td><td>10 Jan 2028</td><td><span class="pill pl-r">unassigned</span></td></tr></table>
+            <div class="banner b-r" style="margin-top:8px">Closure will be blocked while any clock has no owner.</div>
+          </div>
+          <div class="card"><h3>Step 5 — Signposting</h3>
+            <div class="banner b-gr">Delivered 22 Jul 2026, 10:14 · by phone · in Hindi · script v3.1 · by R. Menon</div>
+            <div class="note" style="margin-top:8px">Recorded as an event, not a checkbox. The case cannot leave triage without it.</div>
+            <div class="field" style="margin-top:8px"><label>Vulnerability / safeguards</label>
+              <div class="inp">Bereaved — shuttle format; interpreter (Hindi)</div></div>
+          </div>
+        </div>
+        <div class="row"><button class="btn g">Save draft</button><button class="btn p">Complete triage</button></div>
+      </div>
+    </div>
+  </div>`,
+  anno:"<b>Why the error is shown.</b> The R1 block is the vertical's defining control, so the console is designed to make the refusal legible rather than silent: it names the rule, cites the circular, and lists the routes that <i>are</i> available. A control that only says 'not permitted' teaches the operator nothing and invites a workaround request."},
+
+ {id:"clocks", label:"5 · Clock board", title:"Case manager — Clock board",
+  note:"The screen that prevents the second-worst thing that can happen in this vertical.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Console · Clock board · 42 open matters</div>
+  <div class="body">
+    <div class="cols c3">
+      <div class="card kpi"><b>3</b><span>within 30 days</span></div>
+      <div class="card kpi"><b>7</b><span>within 60 days — prompt required</span></div>
+      <div class="card kpi"><b>0</b><span>expired on our watch (all time)</span></div>
+    </div>
+    <div class="card"><h3>Blocking tasks — cannot be dismissed</h3>
+      <table>
+        <tr><th>Case</th><th>Clock</th><th>Expiry</th><th>Days</th><th>Status</th><th>Action</th></tr>
+        <tr style="background:var(--lr)"><td>INS-2026-03981</td><td>Ombudsman 1y</td><td>18 Sep 2026</td><td>59</td>
+          <td><span class="pill pl-r">Prompt required</span></td>
+          <td><button class="btn d">Record prompt</button></td></tr>
+        <tr style="background:var(--lr)"><td>INS-2026-04012</td><td>Ombudsman 1y</td><td>22 Sep 2026</td><td>63</td>
+          <td><span class="pill pl-g">Approaching</span></td><td><button class="btn g">Open</button></td></tr>
+        <tr><td>INS-2026-04417</td><td>Ombudsman 1y</td><td>02 Apr 2027</td><td>255</td>
+          <td><span class="pill pl-gr">Healthy</span></td><td><button class="btn g">Open</button></td></tr>
+        <tr><td>INS-2026-03774</td><td>Consumer 2y</td><td>04 Nov 2026</td><td>106</td>
+          <td><span class="pill pl-gr">Healthy</span></td><td><button class="btn g">Open</button></td></tr>
+      </table>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>Recording a prompt</h3>
+        <div class="field"><label>Party told to file (channel)</label><div class="inp req">Phone, 21 Jul 2026, 15:40</div></div>
+        <div class="field"><label>Form F-I07 provided?</label><div class="inp req">Yes — sent by email</div></div>
+        <div class="field"><label>Confirmed understanding?</label><div class="inp req">Yes</div></div>
+        <button class="btn p">Record and clear task</button>
+        <div class="note" style="margin-top:6px">Writes <code>clock.prompted_at</code> and an audit entry. This is the
+          only way the task clears.</div>
+      </div>
+      <div class="card"><h3>Escalation ladder</h3>
+        <table><tr><th>Trigger</th><th>Who</th><th>Effect</th></tr>
+        <tr><td>90 days</td><td>Case manager</td><td>Informational alert</td></tr>
+        <tr><td>60 days</td><td>Case manager</td><td><b>Blocking task</b> — must record the prompt</td></tr>
+        <tr><td>30 days</td><td>Head of Operations</td><td>Escalation</td></tr>
+        <tr><td>Expiry unprompted</td><td>Board</td><td><b>Critical incident</b> raised automatically</td></tr></table>
+      </div>
+    </div>
+  </div>`,
+  anno:"<b>The 'zero expired' KPI is deliberate.</b> It is displayed permanently, all-time, and it is the metric the Head of Operations is accountable for. A vertical that quietly tolerated one expiry a quarter would be harming a person a quarter — and the metric makes that impossible to normalise."},
+
+ {id:"deductions", label:"6 · Deduction builder", title:"Case manager — Line-item deduction schedule",
+  note:"The highest-yield document in the vertical, built as a screen rather than a spreadsheet.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Console · INS-2026-04417 · Deduction schedule</div>
+  <div class="body">
+    <div class="cols c3">
+      <div class="card kpi"><b>₹5,00,000</b><span>billed</span></div>
+      <div class="card kpi"><b>₹3,09,250</b><span>allowed</span></div>
+      <div class="card kpi" style="background:var(--lr)"><b>₹1,90,750</b><span>deducted (38.2%)</span></div>
+    </div>
+    <div class="card"><h3>Schedule</h3>
+      <table>
+        <tr><th>Head</th><th>Billed</th><th>Allowed</th><th>Deducted</th><th>Varies with room?</th><th>Insurer's reason</th><th>Answer</th></tr>
+        <tr><td>Room rent</td><td>32,000</td><td>20,000</td><td>12,000</td><td><span class="pill pl-t">Yes</span></td>
+            <td>Above eligible category</td><td>Eligible rent × days = correct cap</td></tr>
+        <tr style="background:var(--lr)"><td>Surgeon's fee</td><td>1,50,000</td><td>93,750</td><td>56,250</td>
+            <td><span class="pill pl-r">No</span></td><td>Proportionate deduction</td>
+            <td><b>Does not vary with room — wrongly applied</b></td></tr>
+        <tr style="background:var(--lr)"><td>Implant</td><td>1,65,000</td><td>1,03,125</td><td>61,875</td>
+            <td><span class="pill pl-r">No</span></td><td>Proportionate deduction</td><td><b>Does not vary with room</b></td></tr>
+        <tr style="background:var(--lr)"><td>Investigations</td><td>40,000</td><td>25,000</td><td>15,000</td>
+            <td><span class="pill pl-r">No</span></td><td>Proportionate deduction</td><td><b>Does not vary with room</b></td></tr>
+        <tr><td>Consumables</td><td>12,000</td><td>0</td><td>12,000</td><td><span class="pill pl-r">No</span></td>
+            <td>Excluded</td><td>Check item by item — some are integral</td></tr>
+      </table>
+      <div class="row" style="margin-top:8px"><button class="btn g">+ Add line</button>
+        <button class="btn g">Import from TPA computation sheet</button></div>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>Computed analysis</h3>
+        <div class="banner b-g"><b>₹1,50,000</b> — proportionate deduction applied to heads that do not vary with room
+          category. <i>Ask about this first.</i></div>
+        <div class="banner b-r" style="margin-top:8px"><b>Co-pay appears to have been applied AFTER the proportionate
+          reduction.</b> That counts the same reduction twice. Ask for the computation sheet showing the order.</div>
+        <div class="banner b-gr" style="margin-top:8px"><b>PED waiting period was complete.</b> Continuous cover since
+          1 Jun 2019 = 81 months against a 36-month waiting period.</div>
+      </div>
+      <div class="card"><h3>Validation</h3>
+        <table><tr><th>Rule</th><th>State</th></tr>
+        <tr><td>allowed ≤ billed on every line</td><td><span class="pill pl-gr">OK</span></td></tr>
+        <tr><td>reason code on every non-zero deduction</td><td><span class="pill pl-gr">OK</span></td></tr>
+        <tr><td>deducted is computed, not entered</td><td><span class="pill pl-gr">GENERATED</span></td></tr>
+        <tr><td>totals reconcile to the insurer's letter</td><td><span class="pill pl-g">Check</span></td></tr></table>
+        <div class="note" style="margin-top:8px">Failing lines return 422 from <code>POST /cases/{id}/deductions</code>.</div>
+      </div>
+    </div>
+  </div>`,
+  anno:"<b>Why this is a screen and not a spreadsheet.</b> The computed flags — proportionality on non-varying heads, and co-pay ordering — are the two errors insurers make most often, and both are invisible in a totals-only view. Making them a rendered conclusion rather than a calculation the case manager has to remember to perform is what makes the finding reliable across a team."},
+
+ {id:"session", label:"7 · Neutral workspace", title:"Neutral — Session workspace",
+  note:"Built around the ground schedule, because that is what the neutral works from.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Neutral workspace · INS-2026-04417 · Session 1 · joint</div>
+  <div class="body">
+    <div class="banner b-g"><b>Before you begin:</b> insurer authority confirmed to ₹4,00,000 (A. Rao, Sr. Manager
+      Claims); approver above that is the Regional Head, 24-hour turnaround. Party has an interpreter present.</div>
+    <div class="cols c21">
+      <div>
+        <div class="card"><h3>Ground-by-ground schedule</h3>
+          <table><tr><th>#</th><th>Ground</th><th>Clause</th><th>Which test?</th><th>On what document?</th></tr>
+          <tr><td>1</td><td>Pre-existing disease</td><td>4.1(a)</td><td>Materiality</td>
+              <td><span class="pill pl-r">Not identified</span></td></tr>
+          <tr><td>2</td><td>Room rent proportionality</td><td>3.7</td><td>Contra proferentem</td>
+              <td>Policy schedule</td></tr>
+          <tr><td>3</td><td>Consumables excluded</td><td>Annexure II</td><td>Fair dealing</td>
+              <td>Itemised bill</td></tr></table>
+          <div class="note" style="margin-top:6px">Each ground is answered separately. A bundled repudiation letter is
+            never treated as a single position.</div>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>The four tests — prompts</h3>
+          <div class="banner b-t" style="font-size:12px">Materiality — <i>“What would underwriting have done differently
+            if it had known?”</i></div>
+          <div class="banner b-t" style="font-size:12px;margin-top:6px">Proximate cause — <i>“What was the dominant,
+            effective cause?”</i></div>
+          <div class="banner b-t" style="font-size:12px;margin-top:6px">Contra proferentem — <i>“Whose wording is this,
+            and does it admit another reading?”</i></div>
+          <div class="banner b-t" style="font-size:12px;margin-top:6px">Fair dealing — <i>“Was this explained and legible
+            at the point of sale?”</i></div>
+        </div>
+      </div>
+      <div>
+        <div class="card"><h3>Package builder</h3>
+          <div class="field"><label>Amount</label><div class="inp">₹3,90,000</div></div>
+          <div class="field"><div class="inp req">☑ Policy reinstated with continuity of waiting periods and bonus</div></div>
+          <div class="field"><div class="inp req">☑ PED entry withdrawn from insurer and industry records</div></div>
+          <div class="field"><div class="inp">☐ Interest for delay</div></div>
+          <div class="field"><div class="inp">☐ Written correction of the earlier decision</div></div>
+          <div class="field"><label>Payment by</label><div class="inp">15 Aug 2026</div></div>
+          <div class="banner b-gr" style="margin-top:8px">Non-monetary terms are pre-ticked as <i>suggested</i> on every
+            health and life settlement. They are what an award cannot give.</div>
+          <button class="btn p" style="margin-top:8px">Draft settlement (F-I16)</button>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Caucus notes</h3>
+          <div class="ph" style="--h:90px">Encrypted · visible only to you · never disclosed without permission</div>
+        </div>
+        <div class="card" style="margin-top:12px"><h3>Reminder</h3>
+          <div class="banner b-r" style="font-size:12px">You do not say whether the claim is good. You do not predict
+            what the Ombudsman would award. You do not advise. Ask questions.</div>
+        </div>
+      </div>
+    </div>
+  </div>`,
+  anno:"<b>The 'Not identified' pill.</b> Where the insurer has not identified a document supporting a ground, the schedule says so on the face of it. That single rendering decision does more negotiating work than any feature in this kit — it converts an assertion into a visible gap, without the neutral having to characterise it."},
+
+ {id:"insurer", label:"8 · Insurer portal", title:"Insurer — Portal and batched settlement day",
+  note:"Scoped strictly to that insurer's matters. Health documents are uploaded here but never rendered back.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Insurer portal · Meridian General Insurance · 214 open matters</div>
+  <div class="body">
+    <div class="cols c3">
+      <div class="card kpi"><b>214</b><span>open matters</span></div>
+      <div class="card kpi"><b>11</b><span>claim files due this week</span></div>
+      <div class="card kpi"><b>2</b><span>batched days scheduled</span></div>
+    </div>
+    <div class="cols c2">
+      <div class="card"><h3>Claim files due</h3>
+        <table><tr><th>Case</th><th>Line</th><th>Due</th><th>Outstanding</th></tr>
+        <tr><td>INS-2026-04417</td><td>Health</td><td>06 Aug</td><td>Survey/TPA sheet, proposal form</td></tr>
+        <tr style="background:var(--lr)"><td>INS-2026-04102</td><td>Motor</td><td>29 Jul <b>(overdue)</b></td>
+          <td>Surveyor's report</td></tr>
+        <tr><td>INS-2026-04390</td><td>Life</td><td>09 Aug</td><td>Investigation report</td></tr></table>
+        <div class="banner b-g" style="margin-top:8px">Non-production is recorded on the file and disclosed to the
+          neutral. No inference is drawn on the merits.</div>
+      </div>
+      <div class="card"><h3>Upload</h3>
+        <div class="ph" style="--h:80px">Drag files, or browse</div>
+        <div class="field" style="margin-top:8px"><label>Document type</label><div class="inp">Discharge summary</div></div>
+        <div class="banner b-r" style="margin-top:8px"><b>Flagged as health data.</b> This will be stored in the
+          segregated store, access-logged, and will not be visible in this portal after upload. An authority reference
+          is required.</div>
+        <div class="field"><label>Authority reference</label><div class="inp req">F-I01 consent · 21 Jul 2026</div></div>
+        <button class="btn p">Upload</button>
+      </div>
+    </div>
+    <div class="card"><h3>Batched settlement day — 14 August 2026</h3>
+      <table><tr><th>#</th><th>Case</th><th>In dispute</th><th>Grid band</th><th>Authority</th><th>Status</th></tr>
+      <tr><td>1</td><td>INS-2026-03881</td><td>₹42,000</td><td>Band A (0–50k)</td><td>Auto</td><td><span class="pill pl-gr">Settled</span></td></tr>
+      <tr><td>2</td><td>INS-2026-03902</td><td>₹1,15,000</td><td>Band B</td><td>Auto</td><td><span class="pill pl-gr">Settled</span></td></tr>
+      <tr><td>3</td><td>INS-2026-03944</td><td>₹3,80,000</td><td>Band C</td><td>Regional Head</td><td><span class="pill pl-g">Awaiting approval</span></td></tr>
+      <tr><td>4</td><td>INS-2026-03960</td><td>₹28,000</td><td>Band A</td><td>Auto</td><td><span class="pill pl-t">Listed</span></td></tr></table>
+      <div class="row" style="margin-top:8px"><span class="pill pl-gr">26 of 30 listed</span>
+        <span class="pill pl-t">Grid v2.1 agreed 02 Jul 2026</span>
+        <button class="btn g">Download settlement pack</button></div>
+      <div class="banner b-t" style="margin-top:8px">The settlement grid is confidential to Equator and the insurer.
+        It is never disclosed to a policyholder, no policyholder is bound by it, and every party remains free to decline
+        any offer.</div>
+    </div>
+  </div>`,
+  anno:"<b>The write-only health upload.</b> The insurer can upload a discharge summary but cannot then browse it back through the portal — the document leaves their control at the point of upload. This is deliberate: it removes any incentive to use Equator as a document-retrieval channel and makes the segregation visible to the party whose records they are."},
+
+ {id:"closure", label:"9 · Closure & signposting", title:"Case manager — Closure and the signposting report",
+  note:"An unsettled matter is not a failure. An unsignposted one is.",
+  html:`
+  <div class="chrome"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    Console · INS-2026-04102 · Closure (not settled)</div>
+  <div class="body">
+    <div class="toast"><b>409 — Rule R3.</b> This case cannot be closed: the <b>Consumer 2y</b> clock has no owner, and
+      the signposting table is missing a last-date-to-act for <b>civil court</b>.</div>
+    <div class="cols c2">
+      <div class="card"><h3>Signposting table (F-I19) — required for every forum</h3>
+        <table><tr><th>Forum</th><th>What it can do</th><th>Cost</th><th>Last date to act</th></tr>
+        <tr><td>Insurance Ombudsman</td><td>Decide the claim; award binds the insurer to ₹30 lakh</td><td>Free</td>
+            <td><b>18 Sep 2026</b></td></tr>
+        <tr><td>Consumer commission</td><td>Deficiency in service; compensation</td><td>Low</td><td>04 Nov 2027</td></tr>
+        <tr style="background:var(--lr)"><td>Civil court</td><td>Any relief</td><td>High</td>
+            <td><span class="pill pl-r">missing</span></td></tr>
+        </table>
+        <div class="banner b-g" style="margin-top:8px">The report records only the fact and dates of the process.
+          Nothing said or offered in the mediation appears anywhere in it.</div>
+      </div>
+      <div class="card"><h3>Compliance grid (F-I20)</h3>
+        <table><tr><th>Check</th><th>State</th></tr>
+        <tr><td>Signposting delivered and acknowledged</td><td><span class="pill pl-gr">Done</span></td></tr>
+        <tr><td>Every clock has an owner</td><td><span class="pill pl-r">1 unassigned</span></td></tr>
+        <tr><td>Ombudsman prompt recorded (60-day)</td><td><span class="pill pl-gr">21 Jul 2026</span></td></tr>
+        <tr><td>Retention class set</td><td><span class="pill pl-gr">Class C</span></td></tr>
+        <tr><td>Medical records erased</td><td><span class="pill pl-g">Scheduled 20 Aug</span></td></tr>
+        <tr><td>Documents returned</td><td><span class="pill pl-gr">Done</span></td></tr></table>
+        <div class="field" style="margin-top:8px"><label>Party feedback — “did you feel pressured to settle?”</label>
+          <div class="inp">1 — not at all</div></div>
+      </div>
+    </div>
+    <div class="row"><button class="btn g">Assign the missing clock</button>
+      <button class="btn g">Complete the signposting table</button>
+      <button class="btn d" disabled style="opacity:.5">Close case — blocked</button></div>
+    <div class="banner b-t">On a settled matter, closure additionally verifies <b>performance</b>: payment received,
+      policy reinstated with continuity, adverse remark withdrawn in writing, and any pending complaint disposed of
+      <i>in terms of</i> the settlement rather than merely withdrawn.</div>
+  </div>`,
+  anno:"<b>Blocked, with the fix in reach.</b> The closure button is disabled and the two remedial actions sit beside it. A guard that only refuses generates workaround requests; a guard that refuses <i>and</i> hands over the fix generates compliance. Both R3 conditions are enforced by a database trigger, so a direct write fails the same way."},
+];
+
+function render(){
+ var nav=document.getElementById("nav"), app=document.getElementById("app");
+ nav.innerHTML=SCREENS.map(function(s,i){return '<button data-i="'+i+'">'+s.label+'</button>';}).join('');
+ app.innerHTML=SCREENS.map(function(s){
+   return '<section class="screen" id="s_'+s.id+'"><h1>'+s.title+'</h1><div class="note">'+s.note+'</div>'+
+          '<div class="frame">'+s.html+'</div><div class="anno">'+s.anno+'</div></section>';
+ }).join('');
+ nav.querySelectorAll("button").forEach(function(b){ b.onclick=function(){ show(parseInt(b.dataset.i,10)); }; });
+ show(0);
+}
+function show(i){
+ var nav=document.getElementById("nav");
+ nav.querySelectorAll("button").forEach(function(b,k){ b.className = (k===i?"on":""); });
+ document.querySelectorAll(".screen").forEach(function(s,k){ s.className = "screen"+(k===i?" on":""); });
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+render();
+</script>
+</body></html>

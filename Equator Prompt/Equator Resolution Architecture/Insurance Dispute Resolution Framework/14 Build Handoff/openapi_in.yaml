@@ -1,0 +1,610 @@
+openapi: 3.0.3
+info:
+  title: Equator Resolution — Insurance Dispute API
+  version: "1.0.0"
+  description: |
+    REST surface for the Insurance Dispute vertical. Law stated as at July 2026.
+
+    **Three institutional rules are enforced by this API and, beneath it, by database constraints.**
+    They are not advisory and there is no override header.
+
+    * **R1 — the retail arbitration bar.** `POST /cases/{id}/triage` returns **409** if a route of
+      `arbitration` is requested on a policy classified `retail` or `group_member`.
+      (IRDAI circular dated 27 October 2023.)
+    * **R2 — no waiver of a non-waivable right.** `POST /cases/{id}/settlement` returns **422** if
+      `statutoryRightsWaived` or `futureClaimsDischarged` is true.
+    * **R3 — no closure without signposting and owned clocks.** `POST /cases/{id}/close` returns **409**
+      if no signposting event exists or any clock has no owner. `PATCH /cases/{id}/status` out of
+      `triaged` returns **409** if no signposting event exists.
+
+    Health data is served only from `/cases/{id}/health/*`, which requires the `health` scope,
+    an assignment to the case, and writes an access-log entry on every read.
+servers:
+  - url: https://api.equatorresolution.com/insurance/v1
+security:
+  - bearerAuth: []
+
+paths:
+  /cases:
+    post:
+      summary: Create an insurance dispute case (Form F-I02)
+      tags: [Case]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CaseCreate' }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '422': { description: "policyClass missing, or amountOffered > amountClaimed", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+    get:
+      summary: List cases
+      tags: [Case]
+      parameters:
+        - { in: query, name: status, schema: { $ref: '#/components/schemas/CaseStatus' } }
+        - { in: query, name: insurerId, schema: { type: string, format: uuid } }
+        - { in: query, name: clockRiskDays, schema: { type: integer }, description: "Only cases with a clock expiring within N days" }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Case' } } } } }
+
+  /cases/{id}:
+    get:
+      summary: Get a case
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '404': { description: Not found }
+
+  /cases/{id}/signposting:
+    post:
+      summary: Record delivery of the standing signposting script
+      description: |
+        Must be called before the case leaves triage (R3). Records channel, language, script version
+        and who delivered it.
+      tags: [Rights]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SignpostingEvent' }
+      responses:
+        '201': { description: Recorded }
+
+  /cases/{id}/eligibility:
+    get:
+      summary: Insurance Ombudsman eligibility engine
+      description: |
+        Evaluates all five conditions. Eligibility requires every one to be true.
+        Monetary and centre parameters are configuration, not code — see `configVersion`.
+      tags: [Rights]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Eligibility' } } } }
+
+  /cases/{id}/clocks:
+    get:
+      summary: The clock table
+      tags: [Rights]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Clock' } } } } }
+    post:
+      summary: Create or update a clock
+      tags: [Rights]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Clock' } } }
+      responses:
+        '201': { description: Created }
+
+  /cases/{id}/clocks/{kind}/prompt:
+    post:
+      summary: Record the 60-day "go and file" prompt
+      description: Mandatory when an `ombudsman_1y` clock is within 60 days and the matter has not settled.
+      tags: [Rights]
+      parameters:
+        - { $ref: '#/components/parameters/CaseId' }
+        - { in: path, name: kind, required: true, schema: { $ref: '#/components/schemas/ClockKind' } }
+      responses:
+        '201': { description: Recorded }
+
+  /cases/{id}/triage:
+    post:
+      summary: Route triage (Form F-I13)
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Triage' } } }
+      responses:
+        '201': { description: Triaged }
+        '409':
+          description: |
+            **R1** — `arbitration` requested on a retail policy; or the reviewer is the same person as
+            the classifier; or a mediation route requested where `fraudAlleged` is true.
+          content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } }
+
+  /cases/{id}/status:
+    patch:
+      summary: Advance the case state
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { status: { $ref: '#/components/schemas/CaseStatus' } }, required: [status] } } }
+      responses:
+        '200': { description: Updated }
+        '409': { description: "**R3** — leaving triage without a recorded signposting event", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /cases/{id}/notice:
+    post:
+      summary: Issue notice to the other party (Form F-I03)
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '201': { description: Issued }
+        '409': { description: Triage incomplete }
+
+  /cases/{id}/claimfile:
+    post:
+      summary: Record production of a claim-file item (Form F-I06)
+      description: Items flagged `isHealth` are stored in the segregated health store and are not returned here.
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/ClaimFileItem' } } }
+      responses:
+        '201': { description: Recorded }
+    get:
+      summary: List claim-file items (health items excluded)
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK }
+
+  /cases/{id}/grounds:
+    post:
+      summary: Ground-by-ground schedule (Form F-I05)
+      tags: [Preparation]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/GroundAnalysis' } } } }
+      responses:
+        '201': { description: Saved }
+
+  /cases/{id}/deductions:
+    post:
+      summary: Line-item deduction schedule (Forms F-I09 / F-I10 / F-I12)
+      tags: [Preparation]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/DeductionLine' } } } }
+      responses:
+        '201': { description: Saved }
+        '422': { description: "allowed > billed, or a non-zero deduction without a reason code", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+    get:
+      summary: Retrieve the schedule with computed analysis
+      description: |
+        Returns totals plus two computed flags: the amount of proportionate deduction applied to heads
+        marked `variesWithRoom: false`, and whether co-pay appears to have been applied after rather than
+        before the proportionate reduction.
+      tags: [Preparation]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/DeductionAnalysis' } } } }
+
+  /cases/{id}/neutral:
+    post:
+      summary: Appoint a neutral with disclosure (Form F-I15)
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/NeutralDisclosure' } } }
+      responses:
+        '201': { description: Appointed }
+        '409': { description: "Concentration cap exceeded (>40% of the neutral's 24-month appointments from this insurer), or independence not declared", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /cases/{id}/sessions:
+    post:
+      summary: Schedule a session (Form F-I14)
+      tags: [Process]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Session' } } }
+      responses:
+        '201': { description: Scheduled }
+        '409': { description: "Insurer settlement authority not confirmed", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /cases/{id}/settlement:
+    post:
+      summary: Record the settlement (Form F-I16)
+      tags: [Settlement]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Settlement' } } }
+      responses:
+        '201': { description: Recorded }
+        '422':
+          description: "**R2** — `statutoryRightsWaived` or `futureClaimsDischarged` is true"
+          content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } }
+
+  /cases/{id}/voucher:
+    post:
+      summary: Record a discharge voucher (Form F-I17)
+      tags: [Settlement]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Voucher' } } }
+      responses:
+        '201': { description: Recorded }
+        '422': { description: "`under_protest` without a reserved balance", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /cases/{id}/escrow:
+    post:
+      summary: Open escrow with milestones (Form F-I18)
+      tags: [Settlement]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Escrow' } } }
+      responses:
+        '201': { description: Created }
+
+  /cases/{id}/escrow/milestones/{seq}/release:
+    post:
+      summary: Release a milestone
+      tags: [Settlement]
+      parameters:
+        - { $ref: '#/components/parameters/CaseId' }
+        - { in: path, name: seq, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { evidenceRef: { type: string } }, required: [evidenceRef] } } }
+      responses:
+        '200': { description: Released }
+        '409': { description: "Condition not satisfied or evidence not on file", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /cases/{id}/signpost-report:
+    post:
+      summary: Issue the non-commencement / signposting report (Form F-I19)
+      tags: [Rights]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/SignpostReport' } } }
+      responses:
+        '201': { description: Issued }
+        '422': { description: "Signposting table incomplete — a forum row is missing a last-date-to-act" }
+
+  /cases/{id}/close:
+    post:
+      summary: Close the case (Form F-I20)
+      tags: [Case]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/Closure' } } }
+      responses:
+        '200': { description: Closed }
+        '409':
+          description: "**R3** — no signposting event, or a clock without an owner"
+          content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } }
+
+  /cases/{id}/health/records:
+    get:
+      summary: List medical records for a case (segregated store)
+      description: |
+        Requires the `health` scope AND an active assignment to this case. Every call writes an entry to
+        `medical_access_log`. Records are never returned in any other endpoint, never appear in analytics,
+        and are never used in AI training or evaluation.
+      tags: [Health]
+      security: [{ bearerAuth: [health] }]
+      parameters: [{ $ref: '#/components/parameters/CaseId' }]
+      responses:
+        '200': { description: OK }
+        '403': { description: "Missing `health` scope, no assignment, or no authority on file", content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } } }
+
+  /ai/explore:
+    post:
+      summary: Guardrailed AI Dispute Explorer
+      description: |
+        Classifies, routes, states clocks and explains. Guardrails IN-G-01 to IN-G-12 apply.
+        Requests for a merits opinion or a claim valuation are refused with **403** and a
+        `guardrail` code, not answered evasively.
+      tags: [AI]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { query: { type: string }, caseId: { type: string, format: uuid }, language: { type: string, enum: [en, hi] } }, required: [query] } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/AiResponse' } } } }
+        '403':
+          description: "Guardrail triggered — merits opinion, valuation, retail arbitration suggestion, or a claim of official status"
+          content: { application/json: { schema: { $ref: '#/components/schemas/RuleViolation' } } }
+
+  /ai/draft:
+    post:
+      summary: Draft a grievance or Ombudsman complaint for human review
+      description: "Never sends or files. The response always carries requiresHumanReview = true."
+      tags: [AI]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { caseId: { type: string, format: uuid }, docType: { type: string, enum: [grievance, ombudsman_complaint, reminder, voucher_endorsement] }, language: { type: string, enum: [en, hi] } }, required: [caseId, docType] } } }
+      responses:
+        '200': { description: OK }
+
+  /reports/outcomes:
+    get:
+      summary: Aggregate, anonymised outcomes by insurer (Rule 25)
+      tags: [Reporting]
+      parameters:
+        - { in: query, name: quarter, schema: { type: string, example: "2026-Q2" } }
+      responses:
+        '200': { description: OK }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    CaseId:
+      in: path
+      name: id
+      required: true
+      schema: { type: string, format: uuid }
+  schemas:
+    RuleViolation:
+      type: object
+      properties:
+        rule: { type: string, example: "R1" }
+        code: { type: string, example: "no_arbitration_on_retail" }
+        message: { type: string, example: "Retail policies shall not carry an arbitration clause (IRDAI circular, 27 October 2023). Available routes: insurer_grievance, insurance_ombudsman, consumer_commission, civil_court, equator_mediation." }
+        availableRoutes: { type: array, items: { $ref: '#/components/schemas/Route' } }
+      required: [rule, code, message]
+    PolicyClass:
+      type: string
+      enum: [retail, commercial, group_member, group_master]
+    Route:
+      type: string
+      enum: [insurer_grievance, bima_bharosa, internal_ombudsman, insurance_ombudsman, consumer_commission, civil_court, arbitration, mact, equator_mediation]
+    CaseStatus:
+      type: string
+      enum: [intake, triaged, notified, collecting, prepared, in_session, settlement, escrow, signposted, closed, withdrawn]
+    ClockKind:
+      type: string
+      enum: [insurer_reply_30d, ombudsman_1y, consumer_2y, policy_suit_bar, arb_29a, mediation_period]
+    CaseCreate:
+      type: object
+      required: [insurerId, policyNo, line, policyClass, applicant, disputeTypes]
+      properties:
+        insurerId: { type: string, format: uuid }
+        policyNo: { type: string }
+        line: { type: string }
+        policyClass: { $ref: '#/components/schemas/PolicyClass' }
+        firstEverInception: { type: string, format: date, description: "Health: drives PED waiting-period arithmetic" }
+        lastRevivalDate: { type: string, format: date, description: "Life: drives the section 45 clock" }
+        legacyArbitrationClause: { type: boolean }
+        claimNo: { type: string }
+        lossDate: { type: string, format: date }
+        intimationDate: { type: string, format: date }
+        amountClaimed: { type: number }
+        amountOffered: { type: number }
+        decisionDate: { type: string, format: date }
+        grounds: { type: array, items: { type: string } }
+        disputeTypes: { type: array, items: { type: string } }
+        reliefSought: { type: array, items: { type: string } }
+        applicant: { type: object }
+        representationDate: { type: string, format: date }
+        insurerReplyDate: { type: string, format: date }
+        replyOutcome: { type: string, enum: [rejected, unsatisfactory, satisfactory, none] }
+        bimaBharosaToken: { type: string }
+        pendingForum: { type: string }
+        fraudAlleged: { type: boolean }
+    Case:
+      allOf:
+        - $ref: '#/components/schemas/CaseCreate'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            caseNo: { type: string }
+            status: { $ref: '#/components/schemas/CaseStatus' }
+            route: { $ref: '#/components/schemas/Route' }
+            isRetail: { type: boolean, readOnly: true }
+    SignpostingEvent:
+      type: object
+      required: [channel, language, scriptVersion, deliveredBy]
+      properties:
+        channel: { type: string, enum: [call, video, email, in_person] }
+        language: { type: string }
+        scriptVersion: { type: string }
+        deliveredBy: { type: string }
+        acknowledged: { type: boolean }
+    Eligibility:
+      type: object
+      properties:
+        c1RepresentationMade: { type: boolean }
+        c2RejectedOr30Days: { type: boolean }
+        c3WithinOneYear: { type: boolean }
+        c4WithinMonetaryLimit: { type: boolean }
+        c5NotPendingElsewhere: { type: boolean }
+        eligible: { type: boolean }
+        lastDateToFile: { type: string, format: date }
+        fallbackRoute: { $ref: '#/components/schemas/Route' }
+        configVersion: { type: string, description: "Monetary limits and centre list are configuration. [verify] against the Council for Insurance Ombudsmen." }
+    Clock:
+      type: object
+      required: [kind, triggerDate, periodDays]
+      properties:
+        kind: { $ref: '#/components/schemas/ClockKind' }
+        triggerDate: { type: string, format: date }
+        periodDays: { type: integer }
+        expiryDate: { type: string, format: date, readOnly: true }
+        owner: { type: string }
+        promptedAt: { type: string, format: date-time }
+        daysLeft: { type: integer, readOnly: true }
+    Triage:
+      type: object
+      required: [classifiedBy, reviewedBy, route, suitability]
+      properties:
+        classifiedBy: { type: string }
+        reviewedBy: { type: string }
+        route: { $ref: '#/components/schemas/Route' }
+        fallbackRoute: { $ref: '#/components/schemas/Route' }
+        ombudsmanCentre: { type: string }
+        suitability: { type: string, enum: [suitable, suitable_with_safeguards, shuttle_only, not_suitable_forum, not_suitable_fraud, not_suitable_criminal] }
+        safeguards: { type: string }
+        vulnerability: { type: string }
+        languageSupport: { type: string }
+        feeWaiver: { type: boolean }
+    ClaimFileItem:
+      type: object
+      required: [docType]
+      properties:
+        docType: { type: string }
+        requestedAt: { type: string, format: date-time }
+        producedAt: { type: string, format: date-time }
+        withheldGround: { type: string }
+        isHealth: { type: boolean }
+    GroundAnalysis:
+      type: object
+      properties:
+        seq: { type: integer }
+        ground: { type: string }
+        clauseCited: { type: string }
+        answer: { type: string }
+        proofDoc: { type: string }
+        testMateriality: { type: string }
+        testProximate: { type: string }
+        testContra: { type: string }
+        testFairDealing: { type: string }
+    DeductionLine:
+      type: object
+      required: [seq, head, billed, allowed]
+      properties:
+        seq: { type: integer }
+        head: { type: string }
+        billed: { type: number }
+        allowed: { type: number }
+        variesWithRoom: { type: boolean }
+        reasonCode: { type: string }
+        response: { type: string }
+    DeductionAnalysis:
+      type: object
+      properties:
+        totalBilled: { type: number }
+        totalAllowed: { type: number }
+        totalDeducted: { type: number }
+        deductionPct: { type: number }
+        proportionalityOnNonVaryingHeads: { type: number, description: "The amount to argue for first" }
+        copayAppliedAfterProportionality: { type: boolean, description: "If true, the same reduction has been counted twice" }
+        lines: { type: array, items: { $ref: '#/components/schemas/DeductionLine' } }
+    NeutralDisclosure:
+      type: object
+      required: [neutralId, insurerId, declaredIndependent, appts24mTotal, appts24mThisInsurer]
+      properties:
+        neutralId: { type: string, format: uuid }
+        insurerId: { type: string, format: uuid }
+        relationships: { type: string }
+        appts24mTotal: { type: integer }
+        appts24mThisInsurer: { type: integer }
+        incomePctThisInsurer: { type: number }
+        declaredIndependent: { type: boolean }
+    Session:
+      type: object
+      required: [neutralId, mode, scheduledAt, authorityConfirmed]
+      properties:
+        neutralId: { type: string, format: uuid }
+        mode: { type: string, enum: [joint, caucus, shuttle, online, in_person] }
+        scheduledAt: { type: string, format: date-time }
+        authorityConfirmed: { type: boolean }
+        authorityLimit: { type: number }
+        approver: { type: string }
+    Settlement:
+      type: object
+      required: [amount]
+      properties:
+        amount: { type: number }
+        interestComponent: { type: number }
+        tds: { type: number }
+        payableBy: { type: string, format: date }
+        continuityPreserved: { type: boolean }
+        adverseRemarkWithdrawn: { type: boolean }
+        policyReinstatedFrom: { type: string, format: date }
+        productConvertedTo: { type: string }
+        pendingComplaintDisposed: { type: boolean }
+        statutoryRightsWaived: { type: boolean, default: false, description: "Must be false — R2" }
+        futureClaimsDischarged: { type: boolean, default: false, description: "Must be false — R2" }
+    Voucher:
+      type: object
+      required: [basis, amount]
+      properties:
+        basis: { type: string, enum: [full_final, under_protest, on_account] }
+        amount: { type: number }
+        balanceReserved: { type: number }
+        utr: { type: string }
+        valueDate: { type: string, format: date }
+    Escrow:
+      type: object
+      required: [amount, milestones]
+      properties:
+        amount: { type: number }
+        milestones:
+          type: array
+          items:
+            type: object
+            properties:
+              seq: { type: integer }
+              name: { type: string }
+              condition: { type: string }
+              amount: { type: number }
+              dueDate: { type: string, format: date }
+    SignpostReport:
+      type: object
+      required: [reason, forums]
+      properties:
+        reason: { type: string, enum: [no_response, declined, withdrawn, no_settlement, partial, not_suitable, terminated] }
+        forums:
+          type: array
+          items:
+            type: object
+            required: [forum, lastDateToAct]
+            properties:
+              forum: { $ref: '#/components/schemas/Route' }
+              whatItCanDo: { type: string }
+              cost: { type: string }
+              timeLimit: { type: string }
+              lastDateToAct: { type: string, format: date }
+    Closure:
+      type: object
+      required: [outcome, retentionClass]
+      properties:
+        outcome: { type: string, enum: [settled_full, settled_part, not_settled, withdrawn, non_commencement, referred] }
+        amountSettled: { type: number }
+        daysToSettle: { type: integer }
+        sessionsHeld: { type: integer }
+        paymentVerified: { type: boolean }
+        registrationVerified: { type: boolean }
+        remarkWithdrawalVerified: { type: boolean }
+        retentionClass: { type: string }
+        healthErasureConfirmedAt: { type: string, format: date-time }
+        feedbackPressureScore: { type: integer, minimum: 1, maximum: 5 }
+    AiResponse:
+      type: object
+      properties:
+        classification: { type: object }
+        recommendedRoutes: { type: array, items: { $ref: '#/components/schemas/Route' } }
+        blockedRoutes: { type: array, items: { $ref: '#/components/schemas/Route' } }
+        mandatoryDisclosure: { type: string }
+        clocks: { type: array, items: { $ref: '#/components/schemas/Clock' } }
+        answer: { type: string }
+        guardrailsApplied: { type: array, items: { type: string } }
+        requiresHumanReview: { type: boolean }
+        handoff: { type: boolean }

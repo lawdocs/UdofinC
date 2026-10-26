@@ -1,0 +1,332 @@
+openapi: 3.0.3
+info:
+  title: Equator Resolution — Workplace & HR Dispute API
+  description: >
+    REST API for the Equator workplace platform: intake and DPDP consent, route triage,
+    mediation of wage/full-and-final/separation/grievance matters, escrow, e-Sign/e-Stamp,
+    and a SEALED POSH surface that is deliberately separated from the ordinary case API.
+    Statutory anchors: POSH Act 2013 (s.4, s.10, 90-day inquiry, s.16), the four Labour
+    Codes (in force 21 Nov 2025), Mediation Act 2023 (s.27), DPDP Act 2023.
+    Draft for engineering — settle auth, scopes and data-protection controls before build.
+  version: 0.1.0
+  contact: { name: Equator Resolution, url: https://www.equatorresolution.com }
+servers:
+  - url: https://api.equatorresolution.com/workplace/v1
+    description: Production (illustrative)
+security:
+  - bearerAuth: []
+tags:
+  - name: Cases
+  - name: Parties & Consent
+  - name: Employers
+  - name: Neutrals
+  - name: Sessions
+  - name: Settlement & F&F
+  - name: Escrow
+  - name: POSH (sealed)
+  - name: AI Explorer
+paths:
+  /cases:
+    post:
+      tags: [Cases]
+      summary: Create a workplace case (Request for Resolution, F-W02)
+      description: >
+        If `disputeTypes` includes `posh`, the API returns **422** and the client must use
+        the sealed POSH surface instead. A POSH complaint is never created as an ordinary case.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CaseCreate' } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '422': { description: POSH matter — route to /posh/complaints (sealed); ordinary case creation refused }
+    get:
+      tags: [Cases]
+      summary: List / search cases (excludes POSH)
+      parameters:
+        - { in: query, name: status, schema: { $ref: '#/components/schemas/CaseStatus' } }
+        - { in: query, name: employerId, schema: { type: string, format: uuid } }
+      responses: { '200': { description: OK } }
+  /cases/{caseId}:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    get:
+      tags: [Cases]
+      summary: Get a case
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Case' } } } }
+        '404': { description: Not found }
+  /cases/{caseId}/triage:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Cases]
+      summary: Run route triage
+      responses:
+        '200': { description: Triage result, content: { application/json: { schema: { $ref: '#/components/schemas/TriageResult' } } } }
+  /parties:
+    post:
+      tags: [Parties & Consent]
+      summary: Create a party
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Party' } } } }
+      responses: { '201': { description: Created } }
+  /parties/{partyId}/consent:
+    parameters: [ { in: path, name: partyId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Parties & Consent]
+      summary: Record or withdraw DPDP consent
+      responses: { '200': { description: Recorded } }
+  /employers:
+    post:
+      tags: [Employers]
+      summary: Onboard an employer (panel / POSH subscription)
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Employer' } } } }
+      responses: { '201': { description: Created } }
+  /employers/{employerId}/compliance:
+    parameters: [ { in: path, name: employerId, required: true, schema: { type: string, format: uuid } } ]
+    get:
+      tags: [Employers]
+      summary: POSH & IR-Code compliance status (IC constituted, GRC, annual report filed)
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ComplianceStatus' } } } } }
+  /employers/{employerId}/referrals:
+    parameters: [ { in: path, name: employerId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Employers]
+      summary: Bulk-refer separations (e.g., a restructuring round)
+      responses: { '202': { description: Accepted } }
+  /neutrals:
+    get:
+      tags: [Neutrals]
+      summary: List / filter neutrals
+      parameters:
+        - { in: query, name: grade, schema: { type: string, enum: [A,B,C] } }
+        - { in: query, name: poshEndorsed, schema: { type: boolean } }
+        - { in: query, name: language, schema: { type: string } }
+      responses: { '200': { description: OK } }
+  /cases/{caseId}/appointment:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Neutrals]
+      summary: Appoint a neutral (conflict check + disclosure)
+      description: >
+        Where Equator also supplies an external IC member to this employer, the request MUST
+        set `structuralConflictDisclosed: true` (Rules, Rule 7) or the API returns 409.
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Appointment' } } } }
+      responses:
+        '201': { description: Appointed }
+        '409': { description: Structural conflict not disclosed — appointment refused }
+  /cases/{caseId}/sessions:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Sessions]
+      summary: Schedule a session
+      responses: { '201': { description: Scheduled } }
+  /sessions/{sessionId}/caucus-notes:
+    parameters: [ { in: path, name: sessionId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Sessions]
+      summary: Add a sealed caucus note (neutral only)
+      responses: { '201': { description: Stored (encrypted) } }
+  /cases/{caseId}/ff-computation:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Settlement & F&F]
+      summary: Compute an indicative full-and-final figure
+      description: >
+        Computes gratuity as (15 x wages x completed years)/26 on the **Code on Wages**
+        definition of wages, and flags where `wagesPctOfCtc` is below 0.50 so the figure
+        can be recomputed with the excess added back.
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/FFInput' } } } }
+      responses:
+        '200': { description: F&F computation, content: { application/json: { schema: { $ref: '#/components/schemas/FFResult' } } } }
+  /cases/{caseId}/settlement:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Settlement & F&F]
+      summary: Record the settlement / F&F
+      description: >
+        The API rejects any payload asserting waiver of statutory dues
+        (`statutoryDuesWaived: true`) with 422 — gratuity, PF and ESI are paid, never waived.
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Settlement' } } } }
+      responses:
+        '201': { description: Recorded }
+        '422': { description: Refused — settlement purports to waive statutory dues }
+  /cases/{caseId}/escrow:
+    parameters: [ { in: path, name: caseId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Escrow]
+      summary: Create an escrow instruction (F-W16)
+      responses: { '201': { description: Created } }
+  /escrow/{escrowId}/release:
+    parameters: [ { in: path, name: escrowId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [Escrow]
+      summary: Release a milestone tranche
+      description: The final release requires relieving letter and asset return to be confirmed.
+      responses:
+        '200': { description: Released }
+        '409': { description: Milestone conditions not met }
+  # ---------------- SEALED POSH SURFACE ----------------
+  /posh/complaints:
+    post:
+      tags: [POSH (sealed)]
+      summary: Register a POSH complaint (sealed schema; POSH scope only)
+      description: >
+        Requires the `posh` scope, which is granted only to Internal-Committee members and
+        designated POSH support. Identity and particulars are stored encrypted in a separate
+        schema with no join path to ordinary case data (POSH Act s.16).
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/PoshComplaint' } } } }
+      responses:
+        '201': { description: Registered }
+        '403': { description: Caller lacks the posh scope }
+  /posh/{complaintId}/conciliation:
+    parameters: [ { in: path, name: complaintId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [POSH (sealed)]
+      summary: Record a section 10 conciliation
+      description: >
+        Refused with 422 unless `requestedByAggrievedWoman` is true and `monetaryBasis` is false.
+        The Committee cannot initiate conciliation, and the respondent cannot request it.
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/PoshConciliation' } } } }
+      responses:
+        '201': { description: Recorded and forwarded to the employer }
+        '422': { description: Refused — not requested by the aggrieved woman, or a monetary basis was asserted }
+  /posh/{complaintId}/inquiry:
+    parameters: [ { in: path, name: complaintId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [POSH (sealed)]
+      summary: Open or update the inquiry record (90-day clock)
+      responses:
+        '200': { description: Updated; returns days remaining against the 90-day limit }
+  /posh/{complaintId}/report:
+    parameters: [ { in: path, name: complaintId, required: true, schema: { type: string, format: uuid } } ]
+    post:
+      tags: [POSH (sealed)]
+      summary: Issue the inquiry report to the employer (within 10 days of conclusion)
+      responses: { '201': { description: Report recorded; employer 60-day action clock starts } }
+  /posh/annual-report/{employerId}/{year}:
+    parameters:
+      - { in: path, name: employerId, required: true, schema: { type: string, format: uuid } }
+      - { in: path, name: year, required: true, schema: { type: integer } }
+    get:
+      tags: [POSH (sealed)]
+      summary: Generate the statutory annual report (numbers only, no identifying detail)
+      responses: { '200': { description: Aggregated figures for the employer and District Officer } }
+  /ai/explore:
+    post:
+      tags: [AI Explorer]
+      summary: Guardrailed AI route / rights assistant
+      description: >
+        On any POSH signal the response routes to the Internal Committee, never proposes a
+        monetary settlement, and offers a human. Never gives legal advice.
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AiQuery' } } } }
+      responses: { '200': { description: AI response with disclaimers and provenance } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    CaseStatus: { type: string, enum: [intake,triaged,posh_sealed,notice_served,response,neutral_appointed,in_session,settlement,escrow,signposted,closed,withdrawn] }
+    DisputeType: { type: string, enum: [wage_dues,full_and_final,wrongful_termination,notice_bond,benefits_gratuity_pf_esi,leave_attendance,non_compete,harassment_non_posh,posh,discrimination,grievance,retrenchment_layoff,contractor_gig] }
+    CaseCreate:
+      type: object
+      required: [disputeTypes, initiatorRole]
+      properties:
+        disputeTypes: { type: array, items: { $ref: '#/components/schemas/DisputeType' } }
+        initiatorRole: { type: string, enum: [employee,ex_employee,employer,hr_rep,contractor,gig_worker,union_rep] }
+        employerId: { type: string, format: uuid }
+        amountInDispute: { type: number }
+        facts: { type: string }
+        reliefSought: { type: array, items: { type: string } }
+    Case:
+      allOf:
+        - $ref: '#/components/schemas/CaseCreate'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            caseNumber: { type: string }
+            status: { $ref: '#/components/schemas/CaseStatus' }
+            isPosh: { type: boolean }
+    TriageResult:
+      type: object
+      properties:
+        route: { type: string, enum: [mediation,posh_internal_committee,grc_ir_code,statutory_forum,police,not_suitable] }
+        rationale: { type: string }
+        safetyFlag: { type: boolean }
+    Party:
+      type: object
+      properties:
+        role: { type: string }
+        fullName: { type: string }
+        maskedGovId: { type: string }
+        preferredLanguage: { type: string }
+    Employer:
+      type: object
+      properties:
+        name: { type: string }
+        estabSize: { type: string, enum: [lt_10,10_49,50_99,100_299,300_plus] }
+        sector: { type: string }
+        poshSubscriber: { type: boolean }
+    ComplianceStatus:
+      type: object
+      properties:
+        icConstituted: { type: boolean }
+        externalMemberPresent: { type: boolean }
+        womenAtLeastHalf: { type: boolean }
+        grcConstituted: { type: boolean }
+        annualReportFiled: { type: boolean }
+        gaps: { type: array, items: { type: string } }
+    Appointment:
+      type: object
+      properties:
+        neutralId: { type: string, format: uuid }
+        conflictChecked: { type: boolean }
+        disclosureSigned: { type: boolean }
+        structuralConflictDisclosed: { type: boolean }
+    FFInput:
+      type: object
+      properties:
+        monthlyWages: { type: number, description: Basic + DA + retaining allowance }
+        wagesPctOfCtc: { type: number, description: If below 0.50 the excess is added back }
+        completedYears: { type: integer }
+        unpaidSalary: { type: number }
+        leaveEncashment: { type: number }
+        bonus: { type: number }
+        noticeShortfallDays: { type: integer }
+        deductions: { type: number }
+    FFResult:
+      type: object
+      properties:
+        gratuity: { type: number }
+        grossEarnings: { type: number }
+        totalDeductions: { type: number }
+        netPayable: { type: number }
+        wageDefinitionWarning: { type: boolean, description: True where wagesPctOfCtc < 0.50 }
+        indicative: { type: boolean, default: true }
+    Settlement:
+      type: object
+      properties:
+        netPayable: { type: number }
+        gratuityAmount: { type: number }
+        pfSettled: { type: boolean }
+        statutoryDuesWaived: { type: boolean, default: false, description: Must be false }
+        relievingLetter: { type: boolean }
+        experienceLetter: { type: boolean }
+        assetsReturned: { type: boolean }
+        enforceableS27: { type: boolean, default: true }
+    PoshComplaint:
+      type: object
+      properties:
+        employerId: { type: string, format: uuid }
+        receivedOn: { type: string, format: date }
+        incidentLastOn: { type: string, format: date }
+        within3Months: { type: boolean }
+        extensionGranted: { type: boolean }
+    PoshConciliation:
+      type: object
+      required: [requestedByAggrievedWoman, monetaryBasis]
+      properties:
+        requestedByAggrievedWoman: { type: boolean, description: Must be true }
+        monetaryBasis: { type: boolean, default: false, description: Must be false }
+        terms: { type: string, description: Non-monetary undertakings only }
+    AiQuery:
+      type: object
+      properties:
+        query: { type: string }
+        caseId: { type: string, format: uuid }
